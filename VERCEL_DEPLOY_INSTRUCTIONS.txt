@@ -1,0 +1,15 @@
+Vercel Preview Deployment - Instructions
+Project name you requested: leenelite-demo
+Preview username you requested: leenelite
+
+1) Create a GitHub repo and push these files, OR upload this folder directly when creating a new Vercel project (Import Project -> Upload).
+2) On Vercel, before deploy, set Environment Variables (Project Settings -> Environment Variables):
+   - PREVIEW_USER = leenelite
+   - PREVIEW_PASS = <choose-a-strong-password-here>
+   (Set them for Production)
+3) Deploy. The middleware will enforce HTTP Basic Auth (browser prompt).
+4) After preview, delete the project from Vercel Dashboard to remove the site permanently.
+
+Notes:
+- No password is in the source. You control it via Vercel env vars.
+- If you prefer Netlify or GitHub Pages approach instead, tell me.

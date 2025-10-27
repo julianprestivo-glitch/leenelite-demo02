@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لين إيليت - تنظيم الفعاليات والتسويق</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script defer src="../js/script.js"></script>
+  </head>
+  <body class="rtl">
+    <!-- Intro logo overlay (fades out on load) -->
+    <div id="intro-logo">
+      <img src="../images/logo.png" alt="شعار لين إيليت" />
+    </div>
+    <!-- شريط التنقل العلوي -->
+    <div class="top-nav">
+      <div class="logo">
+        <img src="../images/logo.png" alt="شعار لين إيليت" /> لين&nbsp;إيليت
+      </div>
+      <nav>
+        <a href="#hero" class="active">الرئيسية</a>
+        <a href="#about">من نحن</a>
+        <a href="#have">لماذا نحن</a>
+        <a href="#projects">مشاريعنا</a>
+        <a href="#offer">خدماتنا</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+      <div class="lang-switch"><a href="../en/index.html">English</a></div>
+    </div>
+    <!-- الشريط الجانبي -->
+    <div class="side-nav">
+      <a href="#hero" aria-label="الرئيسية" class="active">
+        <!-- أيقونة المنزل -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#about" aria-label="من نحن">
+        <!-- أيقونة المستخدم -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 12c3.315 0 6-2.686 6-6S15.315 0 12 0 6 2.686 6 6s2.685 6 6 6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 20.5V21a1 1 0 001 1h18a1 1 0 001-1v-.5C22 16.5 17.5 14 12 14S2 16.5 2 20.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#have" aria-label="لماذا نحن">
+        <!-- أيقونة النجمة -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.54 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#projects" aria-label="مشاريعنا">
+        <!-- أيقونة المشاريع -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="7" width="18" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M3 7l9 8 9-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#offer" aria-label="خدماتنا">
+        <!-- أيقونة العرض -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="20" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2 7l10 8 10-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#contact" aria-label="تواصل معنا">
+        <!-- أيقونة الاتصال -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="4" width="20" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2 4l10 8 10-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    <!-- قسم البطل (الهيرو) -->
+    <section id="hero" style="background-image: url('../images/world.png');" data-slides='[
+      {"image":"../images/world.png","title":"السماء هي حدنا","subtitle":"طموح يعانق السماء برؤية عالمية"},
+      {"image":"../images/diamond.png","title":"حلول متكاملة","subtitle":"نمـزج بين إدارة الفعاليات والتسويق والتقنية"},
+      {"image":"../images/wave.png","title":"خبرة موثوقة","subtitle":"أكثر من 16 عاماً من التميز منذ 2009"}
+    ]'>
+      <div class="overlay"></div>
+      <div class="content">
+        <h1 class="hero-heading">السماء هي حدنا</h1>
+        <p class="hero-subtitle">طموح يعانق السماء برؤية عالمية</p>
+        <div class="categories">
+          <a href="events.html">الفعاليات والمؤتمرات</a>
+          <a href="exhibitions.html">المعارض</a>
+          <a href="stand.html">تصميم الأجنحة</a>
+          <a href="marketing.html">خدمات التسويق</a>
+          <a href="giveaways.html">الهدايا والدروع التذكارية</a>
+        </div>
+      </div>
+    </section>
+    <!-- قسم من نحن -->
+    <section id="about" style="background-image: url('../images/background-streak.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>من نحن</h2>
+        <p>لين إيليت شركة سعودية متخصصة في تنظيم الفعاليات وحلول التسويق.  تأسست على إرث من التميز منذ عام 2009.  ننطلق من قوة شركاتنا الشقيقة سيلفر تشين في مجال السلامة وإكس‑تك في الأنظمة الأمنية، لنقدم خبرات تقنية وشبكة علاقات موثوقة وفريق محترف لتنظيم المعارض والمؤتمرات بمعايير عالمية.  طموحنا مستمد من رؤية 2030، ونسعى لإيصال معايير عالمية من قلب المملكة.</p>
+      </div>
+    </section>
+    <!-- قسم لماذا نحن -->
+    <section id="have" style="background-image: url('../images/map.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>لماذا نحن</h2>
+        <p>نمزج الخبرة المحلية مع المعايير العالمية لتقديم تجارب لا تُنسى.  نقاط قوتنا تجعلنا الشريك الموثوق لأهم الفعاليات والمشاريع.</p>
+        <ul class="features">
+          <li>خبرة عميقة منذ 2009 في مشاريع ضخمة مثل مطار الملك خالد، نيوم، مدارس مسك وأبراج الأفنيوز.</li>
+          <li>شبكة قوية من الشركاء والموردين عبر 16 عاماً.</li>
+          <li>تنفيذ موثوق والتزام بالجودة والابتكار.</li>
+          <li>حلول متكاملة تجمع بين تنظيم الفعاليات، التسويق، التقنية والسلامة.</li>
+          <li>فهم لثقافات وبيئات الأعمال المحلية والدولية.</li>
+          <li>استثمار في العنصر البشري؛ موظفون مهرة بروح جماعية يقودون تميزنا التنافسي.</li>
+          <li>قاعدة بيانات واسعة تغطي قطاعات مختلفة، وسائل اتصال متعددة، رجال أعمال ومتخصصين، شركات وأفراد.</li>
+        </ul>
+      </div>
+    </section>
+    <!-- قسم المشاريع -->
+    <section id="projects" style="background-image: url('../images/diamond.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>مشاريعنا</h2>
+        <p>نفخر بتقديم ودعم بعض المشاريع الأكثر طموحاً في المملكة العربية السعودية.  فيما يلي بعض من أبرز إنجازاتنا:</p>
+        <div class="card-grid">
+          <div class="card">
+            <img src="../images/world.png" alt="مطار الملك خالد" />
+            <div class="card-content">
+              <h4>مطار الملك خالد الدولي</h4>
+              <div class="meta">الرياض، المملكة العربية السعودية</div>
+              <p>تطبيق أنظمة السلامة المتكاملة في أحد أكثر المطارات ازدحاماً في المملكة.</p>
+            </div>
+          </div>
+          <div class="card">
+            <img src="../images/map.png" alt="مشروع نيوم" />
+            <div class="card-content">
+              <h4>نيوم</h4>
+              <div class="meta">تبوك، المملكة العربية السعودية</div>
+              <p>دعم المدينة المستقبلية بحلول الأمن والفعاليات.</p>
+            </div>
+          </div>
+          <div class="card">
+            <img src="../images/wave.png" alt="مدارس مسك" />
+            <div class="card-content">
+              <h4>مدارس مسك</h4>
+              <div class="meta">الرياض، المملكة العربية السعودية</div>
+              <p>توفير بيئات آمنة وملهمة لأجيال المستقبل.</p>
+            </div>
+          </div>
+          <div class="card">
+            <img src="../images/diamond.png" alt="أبراج الأفنيوز" />
+            <div class="card-content">
+              <h4>أبراج الأفنيوز</h4>
+              <div class="meta">الكويت والرياض</div>
+              <p>تقديم أنظمة سلامة وخبرات تنظيم فعاليات لمشاريع فاخرة.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- قسم ما نقدمه -->
+    <section id="offer" style="background-image: url('../images/wave.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>خدماتنا</h2>
+        <p>فريقنا يمتلك خبرات واسعة ومتنوعة مع فهم عميق لاحتياجات العملاء.  نقدم خدمات متكاملة تشمل:</p>
+        <div class="categories">
+          <a href="events.html">الفعاليات والمؤتمرات</a>
+          <a href="exhibitions.html">المعارض</a>
+          <a href="stand.html">تصميم الأجنحة</a>
+          <a href="marketing.html">خدمات التسويق</a>
+          <a href="giveaways.html">الهدايا والدروع التذكارية</a>
+        </div>
+      </div>
+    </section>
+    <!-- قسم التواصل -->
+    <section id="contact" style="background-image: url('../images/map.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>تواصل معنا</h2>
+        <p>لأية استفسارات، راسلنا على <a href="mailto:info@leenelite.com.sa" style="color: var(--colour-gold); text-decoration: underline;">info@leenelite.com.sa</a>.</p>
+        <form class="contact-form">
+          <input type="text" placeholder="الاسم" required />
+          <input type="email" placeholder="البريد الإلكتروني" required />
+          <input type="tel" placeholder="الهاتف" />
+          <textarea placeholder="رسالتك" required></textarea>
+          <button type="submit">إرسال الرسالة</button>
+        </form>
+        <div class="contact-info" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;">
+          <!-- تم إزالة عنوان الاتصال بناءً على طلب المستخدم -->
+        </div>
+        <div class="social-icons" style="margin-top: 20px; display:flex; gap:10px; justify-content:center;">
+          <a href="#" aria-label="فيسبوك" class="client">ف</a>
+          <a href="#" aria-label="لينكدإن" class="client">ل</a>
+          <a href="#" aria-label="إنستغرام" class="client">ا</a>
+        </div>
+        <div style="margin-top:40px;">
+          <h3 style="font-size:1.2rem; margin-bottom:15px;">أهم العملاء</h3>
+          <div class="clients-container">
+            <div class="client">مطار الملك خالد</div>
+            <div class="client">نيوم</div>
+            <div class="client">مدارس مسك</div>
+            <div class="client">أبراج الأفنيوز</div>
+            <div class="client">موسم الرياض</div>
+            <div class="client">فُرسان للسفر</div>
+            <div class="client">الطاقة</div>
+            <div class="client">شركة تاتا للاستشارات</div>
+            <div class="client">مالتـي براندز</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

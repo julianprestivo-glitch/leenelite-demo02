@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leen Elite - Event Management & Marketing</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script defer src="../js/script.js"></script>
+  </head>
+  <body>
+    <!-- Intro logo overlay (fades out on load) -->
+    <div id="intro-logo">
+      <img src="../images/logo.png" alt="Leen Elite logo" />
+    </div>
+    <!-- Top navigation bar -->
+    <div class="top-nav">
+      <div class="logo">
+        <img src="../images/logo.png" alt="Leen Elite logo" />
+        LEEN ELITE
+      </div>
+      <nav>
+        <a href="#hero" class="active">Home</a>
+        <a href="#about">Who We Are</a>
+        <a href="#have">Why Us</a>
+        <a href="#projects">Our Projects</a>
+        <a href="#offer">What We Offer</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="lang-switch"><a href="../ar/index.html">العربية</a></div>
+    </div>
+
+    <!-- Side navigation icons -->
+    <div class="side-nav">
+      <a href="#hero" aria-label="Home" class="active">
+        <!-- Home icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9.75L12 3l9 6.75V21a.75.75 0 01-.75.75H3.75A.75.75 0 013 21V9.75z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#about" aria-label="Who we are">
+        <!-- User icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 12c3.315 0 6-2.686 6-6S15.315 0 12 0 6 2.686 6 6s2.685 6 6 6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 20.5V21a1 1 0 001 1h18a1 1 0 001-1v-.5C22 16.5 17.5 14 12 14S2 16.5 2 20.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#have" aria-label="Why us">
+        <!-- Diamond/star icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.54 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#projects" aria-label="Projects">
+        <!-- Projects icon (folder) -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="7" width="18" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M3 7l9 8 9-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#offer" aria-label="Offer">
+        <!-- Offer icon (gift / package) -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="20" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2 7l10 8 10-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="#contact" aria-label="Contact">
+        <!-- Contact icon (envelope) -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="4" width="20" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2 4l10 8 10-8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Hero section with slider -->
+    <section id="hero" style="background-image: url('../images/world.png');" data-slides='[
+      {"image":"../images/world.png","title":"Sky is our limit","subtitle":"Ambition reaches the sky with a global vision"},
+      {"image":"../images/diamond.png","title":"Integrated solutions","subtitle":"Combining event management, marketing and technology"},
+      {"image":"../images/wave.png","title":"Experience you can trust","subtitle":"More than 16 years of excellence since 2009"}
+    ]'>
+      <div class="overlay"></div>
+      <div class="content">
+        <h1 class="hero-heading">Sky is our limit</h1>
+        <p class="hero-subtitle">Ambition reaches the sky with a global vision</p>
+        <div class="categories">
+          <a href="events.html">Events &amp; Conferences</a>
+          <a href="exhibitions.html">Exhibitions</a>
+          <a href="stand.html">Stand&nbsp;Design</a>
+          <a href="marketing.html">Marketing&nbsp;Services</a>
+          <a href="giveaways.html">Gifts &amp; Trophies</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who we are -->
+    <section id="about" style="background-image: url('../images/background-streak.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>Who We Are</h2>
+        <p>Leen Elite is a Saudi event management and marketing company built on a legacy of excellence since 2009.  Born from the strength of our sister companies, Silver Chain in safety solutions and X‑Tech in security and IT, we harness technical expertise, trusted partnerships and a skilled team to deliver world‑class events and exhibitions.  Our ambition is limitless, inspired by Vision 2030, and we strive to bring global standards to the heart of the Kingdom.</p>
+      </div>
+    </section>
+
+    <!-- Why Us / What we have -->
+    <section id="have" style="background-image: url('../images/map.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>Why Choose Us</h2>
+        <p>We combine local insight with international standards to deliver unforgettable experiences.  Our core strengths make us the trusted partner for Saudi Arabia's most iconic events and projects.</p>
+        <ul class="features">
+          <li>Deep experience since 2009 across mega projects like King Khalid Airport, NEOM, Misk Schools and Avenues Towers.</li>
+          <li>Strong network of partners and suppliers built over 16 years.</li>
+          <li>Reliable execution with a commitment to quality and innovation.</li>
+          <li>Integrated solutions blending event management, marketing, technology and safety.</li>
+          <li>Understanding of local and international culture and business environment.</li>
+          <li>Investment in human resources: skilled professionals whose talents and team spirit drive our competitive edge.</li>
+          <li>Extensive database covering diverse sectors, multiple contact methods, business leaders, specialists, companies and individuals.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Projects section -->
+    <section id="projects" style="background-image: url('../images/diamond.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>Our Projects</h2>
+        <p>We are proud to have delivered and supported some of the most ambitious projects in Saudi Arabia.  Here are some of our flagship engagements:</p>
+        <div class="card-grid">
+          <!-- King Khalid Airport -->
+          <div class="card">
+            <img src="../images/world.png" alt="King Khalid Airport" />
+            <div class="card-content">
+              <h4>King&nbsp;Khalid&nbsp;International Airport</h4>
+              <div class="meta">Riyadh, Saudi Arabia</div>
+              <p>Implementing fire safety and integrated systems for one of the Kingdom’s busiest aviation hubs.</p>
+            </div>
+          </div>
+          <!-- NEOM project -->
+          <div class="card">
+            <img src="../images/map.png" alt="NEOM Project" />
+            <div class="card-content">
+              <h4>NEOM</h4>
+              <div class="meta">Tabuk, Saudi Arabia</div>
+              <p>Supporting the visionary megacity with security and event infrastructure solutions.</p>
+            </div>
+          </div>
+          <!-- Misk Schools -->
+          <div class="card">
+            <img src="../images/wave.png" alt="Misk Schools" />
+            <div class="card-content">
+              <h4>Misk&nbsp;Schools</h4>
+              <div class="meta">Riyadh, Saudi Arabia</div>
+              <p>Creating safe, inspiring environments for the next generation of leaders.</p>
+            </div>
+          </div>
+          <!-- Avenues Towers -->
+          <div class="card">
+            <img src="../images/diamond.png" alt="Avenues Towers" />
+            <div class="card-content">
+              <h4>Avenues&nbsp;Towers</h4>
+              <div class="meta">Kuwait &amp; Riyadh</div>
+              <p>Delivering world‑class safety systems and event expertise for luxury mixed‑use developments.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Offer section -->
+    <section id="offer" style="background-image: url('../images/wave.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>What We Offer</h2>
+        <p>Our team has wide and diverse expertise in all fields, with a deep understanding of client needs.  We provide end‑to‑end services across:</p>
+        <div class="categories">
+          <a href="events.html">Events &amp; Conferences</a>
+          <a href="exhibitions.html">Exhibitions</a>
+          <a href="marketing.html">Marketing&nbsp;Services</a>
+          <a href="stand.html">Stand&nbsp;Design</a>
+          <a href="giveaways.html">Gifts &amp; Trophies</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact section -->
+    <section id="contact" style="background-image: url('../images/map.png');">
+      <div class="overlay"></div>
+      <div class="content">
+        <h2>Get in Touch</h2>
+        <p>Still have questions? Email us at <a href="mailto:info@leenelite.com.sa" style="color: var(--colour-gold); text-decoration: underline;">info@leenelite.com.sa</a> for any business or technical enquiries.</p>
+        <form class="contact-form">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+          <input type="tel" placeholder="Your Phone" />
+          <textarea placeholder="Your Message" required></textarea>
+          <button type="submit">Send Message</button>
+        </form>
+        <div class="contact-info" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;">
+          <!-- Contact address removed as requested -->
+        </div>
+        <div class="social-icons" style="margin-top: 20px; display:flex; gap:10px; justify-content:center;">
+          <a href="#" aria-label="Facebook" class="client">F</a>
+          <a href="#" aria-label="LinkedIn" class="client">L</a>
+          <a href="#" aria-label="Instagram" class="client">I</a>
+        </div>
+        <div style="margin-top:40px;">
+          <h3 style="font-size:1.2rem; margin-bottom:15px;">Key Clients</h3>
+          <div class="clients-container">
+            <div class="client">King&nbsp;Khalid&nbsp;Airport</div>
+            <div class="client">NEOM</div>
+            <div class="client">Misk&nbsp;Schools</div>
+            <div class="client">Avenues&nbsp;Towers</div>
+            <div class="client">Riyadh&nbsp;Season</div>
+            <div class="client">Fursan&nbsp;Travel</div>
+            <div class="client">Altaaqa</div>
+            <div class="client">Tata&nbsp;Consultancy</div>
+            <div class="client">Multibrands</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
