@@ -90,4 +90,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // user experience.  Previously the site attempted to block context
     // menus and DevTools shortcuts; this code has been removed in favour
     // of open access【3†L1-L3】.
+
+  /* -----------------------------------------------------------------
+   * Section Fade‑In Observer
+   *
+   * Use the IntersectionObserver API to reveal sections smoothly when
+   * they enter the viewport.  Each element with the .section-fade
+   * class starts at opacity 0 and translates down.  When the
+   * observer fires, the 'visible' class is added once, triggering
+   * CSS transitions defined in styles.css.  Unobserving after
+   * revealing improves performance.
+   */
+  const fadeSections = document.querySelectorAll('.section-fade');
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        sectionObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  fadeSections.forEach(sec => sectionObserver.observe(sec));
+
+  /* -----------------------------------------------------------------
+   * Disable Context Menu and Developer Shortcuts
+   *
+   * To provide a basic protection layer, intercept context menu
+   * invocation and certain keyboard shortcuts (F12, Ctrl+Shift+I,
+   * Ctrl+U) that open developer tools or view the page source.  This
+   * code intentionally prevents those actions from happening.
+   */
+  document.addEventListener('contextmenu', event => {
+    event.preventDefault();
+  });
+  document.addEventListener('keydown', event => {
+    const key = event.key.toLowerCase();
+    if (key === 'f12' || (event.ctrlKey && event.shiftKey && key === 'i') ||
+        (event.ctrlKey && key === 'u')) {
+      event.preventDefault();
+      return false;
+    }
+  });
 });

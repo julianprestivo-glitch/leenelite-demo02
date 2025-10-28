@@ -54,6 +54,97 @@ a {
   text-decoration: none;
 }
 
+/* -----------------------------------------------------------------
+ * Animations and Transitions
+ *
+ * To emulate the smooth, fluid motion seen on modern event websites
+ * (e.g. Semark), additional animation classes and keyframes are
+ * defined.  Sections can fade in from below when they enter the
+ * viewport, the hero background gently drifts to create a parallax
+ * effect, and navigation icons subtly grow on hover.  All transforms
+ * use GPU‑friendly properties (transform and opacity) to ensure
+ * performance on mobile devices.
+ * ----------------------------------------------------------------- */
+
+/* Global fade‑in animation for sections; initially hidden via
+   opacity/translateY.  The .visible class is toggled via
+   JavaScript IntersectionObserver. */
+.section-fade {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.section-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Keyframes for a gentle background drift.  This animates the
+   background position on the Y axis to create a subtle motion that
+   continuously flows without abrupt stops.  The animation cycles
+   infinitely with an alternate direction. */
+@keyframes moveBg {
+  0% {
+    background-position: center top;
+  }
+  100% {
+    background-position: center bottom;
+  }
+}
+
+/* Apply the drifting animation to elements with the .animated-bg
+   class.  Duration is long to keep the movement slow and soothing. */
+.animated-bg {
+  animation: moveBg 40s ease-in-out infinite alternate;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+/* Scale navigation icons smoothly on hover to draw attention
+   without abrupt motion.  Because .side-nav a is an anchor
+   containing an SVG, transform is applied to the anchor. */
+.side-nav a {
+  transition: transform 0.4s ease, background 0.3s ease, color 0.3s ease;
+  /* Apply a gentle floating animation to each side nav icon so they drift
+     slightly up and down over time.  This subtle movement echoes
+     the dynamic icon panel on the Semark website.  The animation
+     modifies translateY only, leaving scaling on hover unaffected. */
+  animation: float-icons 4s ease-in-out infinite;
+}
+
+.side-nav a:hover {
+  /* On hover, increase scale and incorporate the current translation from
+     the floating animation.  Combining translation and scaling
+     results in a natural lift effect. */
+  transform: translateY(-4px) scale(1.2);
+}
+
+/* Keyframes for floating icons.  The icons move up slightly and then
+   return to their starting position, creating a gentle bobbing effect
+   that loops infinitely. */
+@keyframes float-icons {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Add a subtle floating animation to social icons or clients
+   on hover. */
+.client {
+  transition: transform 0.4s ease, background 0.3s ease, color 0.3s ease;
+}
+.client:hover {
+  transform: translateY(-4px);
+}
+
 /* Skip link for accessibility.  Users relying on keyboards or assistive
    technologies can use this link to jump directly to the main content.
    Initially the link is hidden off‑screen; when it receives focus it
@@ -198,6 +289,14 @@ section {
   align-items: center;
   justify-content: center;
   text-align: center;
+
+  /* Ensure all background images on sections are centered and scale to
+     cover the entire area.  Without these properties, backgrounds may
+     tilt to one side or repeat in odd ways, which breaks the visual
+     balance of the page.  Centering and covering mimic the balanced
+     backgrounds found on premium event websites like Semark. */
+  background-position: center center;
+  background-size: cover;
 }
 
 section.dark {
