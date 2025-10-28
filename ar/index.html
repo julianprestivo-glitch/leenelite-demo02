@@ -3,11 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لين إيليت - تنظيم الفعاليات والتسويق</title>
+    <!-- وصف الصفحة (محرك بحث) -->
+    <meta name="description" content="لين إيليت توفر حلولاً متكاملة لتنظيم الفعاليات والمؤتمرات والتسويق، تجمع بين الخبرة المحلية والمعايير العالمية منذ عام 2009." />
+    <meta name="keywords" content="لين إيليت، فعاليات، مؤتمرات، معارض، تسويق، أجنحة، هدايا ودروع" />
+    <meta name="robots" content="index, follow" />
+    <!-- معلومات المشاركة على الشبكات الاجتماعية -->
+    <meta property="og:title" content="لين إيليت – تنظيم الفعاليات والتسويق" />
+    <meta property="og:description" content="شركة سعودية متخصصة في تنظيم الفعاليات والتسويق بخبرة تتجاوز 16 عاماً؛ نقدم حلولاً مبتكرة ومعايير عالمية من قلب المملكة." />
+    <meta property="og:image" content="../images/logo.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:url" content="https://example.com/ar/index.html" />
+    <link rel="canonical" href="https://example.com/ar/index.html" />
+    <link rel="icon" href="../images/logo.png" type="image/png" />
+    <title>لين إيليت – تنظيم الفعاليات والتسويق</title>
     <link rel="stylesheet" href="../css/styles.css" />
     <script defer src="../js/script.js"></script>
   </head>
   <body class="rtl">
+    <!-- وصلة التخطي للوصول إلى المحتوى الرئيسي مباشرة -->
+    <a href="#maincontent" class="skip-link">تخطى إلى المحتوى الرئيسي</a>
     <!-- Intro logo overlay (fades out on load) -->
     <div id="intro-logo">
       <img src="../images/logo.png" alt="شعار لين إيليت" />
@@ -71,6 +86,8 @@
         </svg>
       </a>
     </div>
+    <!-- حاوية المحتوى الرئيسية؛ تضم الأقسام للتنقل السريع ومعيار إمكانية الوصول. -->
+    <main id="maincontent" tabindex="-1">
     <!-- قسم البطل (الهيرو) -->
     <section id="hero" style="background-image: url('../images/world.png');" data-slides='[
       {"image":"../images/world.png","title":"السماء هي حدنا","subtitle":"طموح يعانق السماء برؤية عالمية"},
@@ -79,8 +96,9 @@
     ]'>
       <div class="overlay"></div>
       <div class="content">
-        <h1 class="hero-heading">السماء هي حدنا</h1>
-        <p class="hero-subtitle">طموح يعانق السماء برؤية عالمية</p>
+        <!-- aria-live للتأكد من أن تغييرات العنوان/الوصف تُقرأ بواسطة قارئات الشاشة عندما تتغير الشرائح -->
+        <h1 class="hero-heading" aria-live="polite">السماء هي حدنا</h1>
+        <p class="hero-subtitle" aria-live="polite">طموح يعانق السماء برؤية عالمية</p>
         <div class="categories">
           <a href="events.html">الفعاليات والمؤتمرات</a>
           <a href="exhibitions.html">المعارض</a>
@@ -123,7 +141,7 @@
         <p>نفخر بتقديم ودعم بعض المشاريع الأكثر طموحاً في المملكة العربية السعودية.  فيما يلي بعض من أبرز إنجازاتنا:</p>
         <div class="card-grid">
           <div class="card">
-            <img src="../images/world.png" alt="مطار الملك خالد" />
+            <img src="../images/world.png" alt="صورة من مطار الملك خالد الدولي" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>مطار الملك خالد الدولي</h4>
               <div class="meta">الرياض، المملكة العربية السعودية</div>
@@ -131,7 +149,7 @@
             </div>
           </div>
           <div class="card">
-            <img src="../images/map.png" alt="مشروع نيوم" />
+            <img src="../images/map.png" alt="صورة من مشروع نيوم" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>نيوم</h4>
               <div class="meta">تبوك، المملكة العربية السعودية</div>
@@ -139,7 +157,7 @@
             </div>
           </div>
           <div class="card">
-            <img src="../images/wave.png" alt="مدارس مسك" />
+            <img src="../images/wave.png" alt="صورة من مدارس مسك" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>مدارس مسك</h4>
               <div class="meta">الرياض، المملكة العربية السعودية</div>
@@ -147,7 +165,7 @@
             </div>
           </div>
           <div class="card">
-            <img src="../images/diamond.png" alt="أبراج الأفنيوز" />
+            <img src="../images/diamond.png" alt="صورة من أبراج الأفنيوز" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>أبراج الأفنيوز</h4>
               <div class="meta">الكويت والرياض</div>
@@ -178,11 +196,17 @@
       <div class="content">
         <h2>تواصل معنا</h2>
         <p>لأية استفسارات، راسلنا على <a href="mailto:info@leenelite.com.sa" style="color: var(--colour-gold); text-decoration: underline;">info@leenelite.com.sa</a>.</p>
-        <form class="contact-form">
-          <input type="text" placeholder="الاسم" required />
-          <input type="email" placeholder="البريد الإلكتروني" required />
-          <input type="tel" placeholder="الهاتف" />
-          <textarea placeholder="رسالتك" required></textarea>
+        <form class="contact-form" aria-labelledby="contactFormHeading">
+          <div id="contactFormHeading" class="visually-hidden">نموذج التواصل</div>
+          <!-- أضف تسميات مرتبطة بكل حقل لزيادة الوضوح لقارئات الشاشة -->
+          <label for="contact-name">الاسم</label>
+          <input id="contact-name" name="name" type="text" required />
+          <label for="contact-email">البريد الإلكتروني</label>
+          <input id="contact-email" name="email" type="email" required />
+          <label for="contact-phone">الهاتف</label>
+          <input id="contact-phone" name="phone" type="tel" />
+          <label for="contact-message">رسالتك</label>
+          <textarea id="contact-message" name="message" required></textarea>
           <button type="submit">إرسال الرسالة</button>
         </form>
         <div class="contact-info" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;">
@@ -209,5 +233,7 @@
         </div>
       </div>
     </section>
+    <!-- نهاية المحتوى الرئيسي -->
+    </main>
   </body>
 </html>

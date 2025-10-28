@@ -3,11 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- SEO meta tags -->
+    <meta name="description" content="Leen Elite is a Saudi event management and marketing company offering world‑class events, exhibitions, stand design, marketing services, gifts and trophies." />
+    <meta name="keywords" content="Leen Elite,event management,exhibitions,conferences,marketing services,stand design,gifts,trophies,Saudi Arabia" />
+    <meta name="robots" content="index, follow" />
+    <!-- Open Graph / social tags -->
+    <meta property="og:title" content="Leen Elite – Event Management & Marketing" />
+    <meta property="og:description" content="Leen Elite delivers unforgettable events and marketing experiences across Saudi Arabia and beyond." />
+    <meta property="og:image" content="../images/logo.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://example.com/en/index.html" />
+    <!-- Canonical URL and site icon -->
+    <link rel="canonical" href="https://example.com/en/index.html" />
+    <link rel="icon" href="../images/logo.png" type="image/png" />
     <title>Leen Elite - Event Management & Marketing</title>
     <link rel="stylesheet" href="../css/styles.css" />
     <script defer src="../js/script.js"></script>
   </head>
   <body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#maincontent" class="skip-link">Skip to main content</a>
     <!-- Intro logo overlay (fades out on load) -->
     <div id="intro-logo">
       <img src="../images/logo.png" alt="Leen Elite logo" />
@@ -74,7 +90,8 @@
       </a>
     </div>
 
-    <!-- Hero section with slider -->
+    <!-- Begin main content -->
+    <main id="maincontent" tabindex="-1"><!-- Hero section with slider -->
     <section id="hero" style="background-image: url('../images/world.png');" data-slides='[
       {"image":"../images/world.png","title":"Sky is our limit","subtitle":"Ambition reaches the sky with a global vision"},
       {"image":"../images/diamond.png","title":"Integrated solutions","subtitle":"Combining event management, marketing and technology"},
@@ -130,7 +147,7 @@
         <div class="card-grid">
           <!-- King Khalid Airport -->
           <div class="card">
-            <img src="../images/world.png" alt="King Khalid Airport" />
+            <img src="../images/world.png" alt="Illustration for King Khalid International Airport project" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>King&nbsp;Khalid&nbsp;International Airport</h4>
               <div class="meta">Riyadh, Saudi Arabia</div>
@@ -139,7 +156,7 @@
           </div>
           <!-- NEOM project -->
           <div class="card">
-            <img src="../images/map.png" alt="NEOM Project" />
+            <img src="../images/map.png" alt="Illustration for the NEOM megacity project" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>NEOM</h4>
               <div class="meta">Tabuk, Saudi Arabia</div>
@@ -148,7 +165,7 @@
           </div>
           <!-- Misk Schools -->
           <div class="card">
-            <img src="../images/wave.png" alt="Misk Schools" />
+            <img src="../images/wave.png" alt="Illustration for Misk Schools project" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>Misk&nbsp;Schools</h4>
               <div class="meta">Riyadh, Saudi Arabia</div>
@@ -157,7 +174,7 @@
           </div>
           <!-- Avenues Towers -->
           <div class="card">
-            <img src="../images/diamond.png" alt="Avenues Towers" />
+            <img src="../images/diamond.png" alt="Illustration for Avenues Towers project" loading="lazy" decoding="async" />
             <div class="card-content">
               <h4>Avenues&nbsp;Towers</h4>
               <div class="meta">Kuwait &amp; Riyadh</div>
@@ -191,10 +208,21 @@
         <h2>Get in Touch</h2>
         <p>Still have questions? Email us at <a href="mailto:info@leenelite.com.sa" style="color: var(--colour-gold); text-decoration: underline;">info@leenelite.com.sa</a> for any business or technical enquiries.</p>
         <form class="contact-form">
-          <input type="text" placeholder="Your Name" required />
-          <input type="email" placeholder="Your Email" required />
-          <input type="tel" placeholder="Your Phone" />
-          <textarea placeholder="Your Message" required></textarea>
+          <!-- Provide explicit labels and IDs for all form controls to improve
+               accessibility.  Associating labels with inputs helps screen
+               reader users understand each field’s purpose【2†L1-L3】. -->
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your Name" required />
+
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Your Email" required />
+
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="Your Phone" />
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+
           <button type="submit">Send Message</button>
         </form>
         <div class="contact-info" style="margin-top: 20px; font-size: 0.9rem; line-height: 1.6;">
@@ -221,5 +249,6 @@
         </div>
       </div>
     </section>
+    </main> <!-- End main content -->
   </body>
 </html>

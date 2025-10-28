@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let current = 0;
         const headingEl = hero.querySelector('.hero-heading');
         const subtitleEl = hero.querySelector('.hero-subtitle');
+        // Announce slide changes politely for screen readers.  Setting
+        // aria-live ensures that updates to the heading and subtitle are
+        // conveyed without forcing focus changes【2†L1-L3】.
+        if (headingEl) headingEl.setAttribute('aria-live', 'polite');
+        if (subtitleEl) subtitleEl.setAttribute('aria-live', 'polite');
 
         function updateSlide() {
           const slide = slides[current];
@@ -79,30 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2000);
   }
 
-    /*
-     * Basic client-side deterrents to reduce casual viewing of page source.
-     *
-     * These listeners intercept the context menu and common keyboard
-     * shortcuts used to open developer tools or view the page source,
-     * such as Ctrl+U, Ctrl+Shift+I, F12, etc.  They simply prevent
-     * the default action from firing.  Note that these measures are
-     * purely cosmetic: anyone determined to inspect the code can
-     * disable JavaScript or use other tools.  To truly protect
-     * sensitive data, ensure it is never sent to the client in the
-     * first place.
-     */
-    document.addEventListener('contextmenu', event => {
-      event.preventDefault();
-    });
-    document.addEventListener('keydown', event => {
-      const key = event.key.toLowerCase();
-      // Block Ctrl+U, Ctrl+S, Ctrl+P and similar combos
-      if (event.ctrlKey && !event.shiftKey && ['u', 's', 'p', 'c'].includes(key)) {
-        event.preventDefault();
-      }
-      // Block Ctrl+Shift+I/J/C (dev tools) and F12
-      if ((event.ctrlKey && event.shiftKey && ['i', 'j', 'c'].includes(key)) || key === 'f12') {
-        event.preventDefault();
-      }
-    });
+    // Accessibility and usability: do not interfere with users’ ability to
+    // open context menus or developer tools.  Blocking right–click and
+    // keyboard shortcuts can hinder assistive technologies and harms the
+    // user experience.  Previously the site attempted to block context
+    // menus and DevTools shortcuts; this code has been removed in favour
+    // of open access【3†L1-L3】.
 });

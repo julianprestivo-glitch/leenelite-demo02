@@ -54,6 +54,43 @@ a {
   text-decoration: none;
 }
 
+/* Skip link for accessibility.  Users relying on keyboards or assistive
+   technologies can use this link to jump directly to the main content.
+   Initially the link is hidden off‑screen; when it receives focus it
+   becomes visible and positioned in the viewport.  This pattern is
+   recommended by the Web Content Accessibility Guidelines (WCAG) for
+   providing a meaningful bypass mechanism【2†L1-L3】. */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--colour-gold);
+  color: var(--colour-black);
+  padding: 8px 12px;
+  z-index: 1001;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  left: 10px;
+  top: 10px;
+  width: auto;
+  height: auto;
+  overflow: visible;
+}
+
+/* Provide a visible focus style for interactive elements.  WCAG recommends
+   that keyboard focus be clearly indicated so users navigating with a
+   keyboard can see which element is active【2†L1-L3】. */
+a:focus, button:focus, input:focus, textarea:focus {
+  outline: 2px dashed var(--colour-gold);
+  outline-offset: 2px;
+}
+
 /* Top navigation bar.  Fixed to the top with a translucent
    background.  Contains the logo on the left, navigation links,
    and a language switcher. */
@@ -136,15 +173,18 @@ a {
   justify-content: center;
   border-radius: 50%;
   border: 1px solid var(--colour-gold);
-  colour: var(--colour-gold);
+  /* Use the correct CSS property name `color` instead of the misspelled `colour`.
+     Without the proper property name, the colour settings are ignored by the
+     browser. See W3C CSS specification on property names【1†L1-L3】. */
+  color: var(--colour-gold);
   background: rgba(255, 255, 255, 0.05);
-  transition: background 0.3s ease, colour 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .side-nav a:hover,
 .side-nav a.active {
   background: var(--colour-gold);
-  colour: var(--colour-black);
+  color: var(--colour-black);
 }
 
 /* Section containers.  Each section occupies at least the height of the
@@ -254,12 +294,14 @@ p {
   font-size: 1.1rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  transition: background 0.3s ease, colour 0.3s ease;
+  /* Transition both background and text colour smoothly. Use the correct
+     property name `color` for the text colour transition. */
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .categories a:hover {
   background: var(--colour-gold);
-  colour: var(--colour-black);
+  color: var(--colour-black);
 }
 
 /* Two‑column layout for category pages (e.g., events, exhibitions) */
@@ -271,7 +313,7 @@ p {
 .left-col {
   flex: 0 0 35%;
   background-color: var(--colour-dark);
-  colour: var(--colour-white);
+  color: var(--colour-white);
   padding: 60px 30px;
   display: flex;
   flex-direction: column;
@@ -283,7 +325,7 @@ p {
 .left-col h1 {
   font-size: 2.6rem;
   margin-bottom: 20px;
-  colour: var(--colour-gold);
+  color: var(--colour-gold);
 }
 
 .left-col p {
@@ -299,7 +341,7 @@ p {
 .left-col .cta a {
   display: inline-block;
   background: var(--colour-gold);
-  colour: var(--colour-black);
+  color: var(--colour-black);
   padding: 12px 24px;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -314,7 +356,7 @@ p {
 .right-col {
   flex: 1;
   background-color: var(--colour-black);
-  colour: var(--colour-white);
+  color: var(--colour-white);
   padding: 60px 40px;
   display: flex;
   flex-direction: column;
@@ -324,13 +366,13 @@ p {
 .right-col h2 {
   font-size: 1.8rem;
   margin-bottom: 20px;
-  colour: var(--colour-gold);
+  color: var(--colour-gold);
 }
 
 .right-col h3 {
   margin-top: 30px;
   margin-bottom: 10px;
-  colour: var(--colour-gold);
+  color: var(--colour-gold);
   font-size: 1.2rem;
 }
 
@@ -378,7 +420,7 @@ p {
 .card-content h4 {
   margin: 0 0 10px;
   font-size: 1.1rem;
-  colour: var(--colour-gold);
+  color: var(--colour-gold);
 }
 
 .card-content p {
@@ -408,7 +450,7 @@ p {
   background: #1d1d1d;
   border: 1px solid var(--colour-gray);
   border-radius: 4px;
-  colour: var(--colour-white);
+  color: var(--colour-white);
   /* Increase size of form inputs for better usability */
   font-size: 1rem;
 }
@@ -420,7 +462,7 @@ p {
 
 .contact-form button {
   background: var(--colour-gold);
-  colour: var(--colour-black);
+  color: var(--colour-black);
   border: none;
   padding: 12px 20px;
   font-size: 1rem;
@@ -454,7 +496,7 @@ p {
 
 .client:hover {
   background: var(--colour-gold);
-  colour: var(--colour-black);
+  color: var(--colour-black);
 }
 
 /* Responsive adjustments */
