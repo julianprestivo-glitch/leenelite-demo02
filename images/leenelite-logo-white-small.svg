@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="400 250 400 500">
+  <defs>
+    <style>
+      /* Override the coloured gradient for the white logo. */
+      .cls-1 {
+        /* Render the feather graphic in solid white instead of a gradient. */
+        fill: #ffffff;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        /* Remove the opaque background so the logo has a transparent canvas. */
+        fill: none;
+      }
+
+      .cls-3, .cls-5 {
+        fill:#ffffff;
+      }
+
+      .cls-5 {
+        font-family: Candara, Candara;
+        font-size: 46.56px;
+      }
+
+      .cls-4 {
+        fill:#ffffff;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="3705.81" y1="-2542.11" x2="3705.81" y2="-2542.11" gradientTransform="translate(-107.31 5092.25) rotate(-48.27)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eccf89"/>
+      <stop offset=".1" stop-color="#e4bf72"/>
+      <stop offset=".24" stop-color="#dbae59"/>
+      <stop offset=".33" stop-color="#d8a850"/>
+      <stop offset=".37" stop-color="#e7bf65"/>
+      <stop offset=".42" stop-color="#f4d177"/>
+      <stop offset=".47" stop-color="#fcdd82"/>
+      <stop offset=".53" stop-color="#ffe186"/>
+      <stop offset=".65" stop-color="#e8c066"/>
+      <stop offset=".79" stop-color="#d5a44c"/>
+      <stop offset=".91" stop-color="#ca933b"/>
+      <stop offset="1" stop-color="#c68d36"/>
+    </linearGradient>
+  </defs>
+  <rect class="cls-2" width="1136.43" height="975.6"/>
+  <g>
+    <g>
+      <path class="cls-1" d="M462.27,634.56"/>
+      <g>
+        <path class="cls-3" d="M521.23,535.97s-4.58-54.67,36.68-94.42c31.56-30.41,70.25-53.97,85.26-77.62,0,0,8.5,56.78-53.17,102.38-61.67,45.6-68.77,69.67-68.77,69.67Z"/>
+        <path class="cls-4" d="M643.17,363.95c.21,1.49,7.68,57.36-53.17,102.35-60.28,44.58-68.44,68.57-68.77,69.63h-.01c3.55-33.91,27.92-59.16,72.09-97.06,43.57-37.38,49.7-73.95,49.87-74.92Z"/>
+        <path class="cls-3" d="M525.59,586.85s-10.39-32.46,7.02-56.21c32.26-44.02,79.17-61.5,91.92-83.85,0,0,7.01,46.06-34.63,79.11-36.56,29.02-57.35,39.51-64.3,60.94Z"/>
+        <path class="cls-4" d="M624.53,446.82c.19,1.24,6.43,46.48-34.64,79.09-36.55,29.01-57.33,39.49-64.3,60.92-.01-.01,0-.02-.01-.03-.22-1.34-3.81-26.83,33.23-57.78,38.08-31.79,61.62-47.11,65.73-82.2Z"/>
+        <path class="cls-3" d="M529.9,590.69s3.55-15.74,29.68-34.13c28.89-20.32,42.17-32.67,42.17-32.67,0,0-7.59,30.69-33.04,46.67-15.85,9.95-20.29,24.76-20.29,24.76,0,0-12.01-1.18-18.53-4.64Z"/>
+        <path class="cls-4" d="M601.75,523.94c-.3,1.2-8.1,30.98-33.03,46.63-15.85,9.95-20.28,24.76-20.28,24.76,0,0-3.96-.39-8.57-1.37,1.74-4.96,8.29-19.33,29.31-33.67,21.21-14.48,32.12-35.49,32.57-36.35Z"/>
+      </g>
+      <g>
+        <path class="cls-3" d="M462.08,643.4c0-27.11-.94-127.24,28.92-191.04,33.45-71.46,131.39-111.95,183.44-185.48,0,0,9.63,61.1-68.07,122.8-71.29,56.62-103.85,84.67-86.07,199.34.52,3.32,2.96,6.01,6.12,7.17,8.2,3.01,25.61,7.93,46.77,5.46,29.61-3.44,91.66-23.15,103.79-34.56,0,0-8.54,60.99-61.92,76.16"/>
+        <path class="cls-4" d="M674.45,266.91c.21,1.44,8.69,61.82-68.08,122.79-71.29,56.6-103.85,84.67-86.07,199.34.52,3.32,2.96,6,6.12,7.15-28.44-9.18-26.15-18.42-27.22-70.84-1.45-70.91,38.62-106.97,107.24-161.71,67.79-54.08,68.03-95.7,68.01-96.72Z"/>
+      </g>
+      <path class="cls-4" d="M676.97,567.1s-15.39,47.28-85.34,61.77l-129.27,14.39h152.2s49.58-8.7,62.41-76.16Z"/>
+    </g>
+    <text class="cls-5" transform="translate(457.93 695.5)"><tspan x="0" y="0">LEEN ELITE</tspan></text>
+  </g>
+</svg>

@@ -66,22 +66,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Intro logo fade-out.  If an element with id="intro-logo" exists
-  // (present on the home page), wait for a short delay then fade it
-  // away and remove it from the DOM.  This creates a brief branded
-  // introduction on page load.
-  const intro = document.getElementById('intro-logo');
-  if (intro) {
-    // Allow the logo to display for 2 seconds before starting fade
-    setTimeout(() => {
-      intro.classList.add('hide');
-      // Remove element after transition completes to avoid tab order issues
+  // -----------------------------------------------------------------
+  // Intro overlay fade-out
+  //
+  // A branded splash screen plays once per session on the home page.
+  // The overlay container (#intro-overlay) is inserted into index pages
+  // and contains an SVG animation.  If the visitor has already
+  // watched the animation during this session, the overlay is
+  // removed immediately.  Otherwise, it fades out after a short
+  // delay and then is removed from the DOM.  The presence of
+  // sessionStorage ensures the animation does not replay on page
+  // reloads within the same tab.
+  const introOverlay = document.getElementById('intro-overlay');
+  if (introOverlay) {
+    if (sessionStorage.getItem('introSeen')) {
+      // User has already seen the intro this session; remove overlay
+      introOverlay.parentNode.removeChild(introOverlay);
+    } else {
+      // After the animation has completed (approx 6.5s), fade and remove
       setTimeout(() => {
-        if (intro && intro.parentNode) {
-          intro.parentNode.removeChild(intro);
-        }
-      }, 1500);
-    }, 2000);
+        introOverlay.classList.add('fade-out');
+        setTimeout(() => {
+          if (introOverlay.parentNode) {
+            introOverlay.parentNode.removeChild(introOverlay);
+          }
+        }, 1200);
+      }, 6500);
+      sessionStorage.setItem('introSeen', 'true');
+    }
   }
 
     // Accessibility and usability: do not interfere with users’ ability to
@@ -132,3 +144,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// --- Light content protection ---
+// Disable default context menu and basic copy shortcuts outside of
+// inputs to deter casual copying.  Text selection itself is not
+// prevented (handled in CSS) to maintain accessibility.
+window.addEventListener('contextmenu', e => {
+  e.preventDefault();
+});
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  // Prevent Ctrl/Cmd+C and Ctrl/Cmd+X (copy/cut) when not typing in inputs
+  if ((e.ctrlKey || e.metaKey) && ['c','x'].includes(k)) {
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+      e.preventDefault();
+    }
+  }
+});
+
+// Prevent dragging of images (already set via CSS) to avoid easy
+// downloading but allow other drag events.
+document.querySelectorAll('img').forEach(img => {
+  img.setAttribute('draggable','false');
+});
+
+// Note: service worker registration removed to avoid issues when
+// hosting the site locally or on platforms that block SW on file://.

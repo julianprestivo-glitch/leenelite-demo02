@@ -174,6 +174,24 @@ a {
   overflow: visible;
 }
 
+/* Hero typography adjustments to mimic the bold look of Semark.  The
+   heading scales responsively with the viewport width using the
+   clamp() function, ensuring that it remains legible on both small
+   mobile screens and large desktop displays.  Subtitles are
+   slightly reduced in opacity for a refined hierarchy. */
+.hero-heading {
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.6rem);
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
 /* Provide a visible focus style for interactive elements.  WCAG recommends
    that keyboard focus be clearly indicated so users navigating with a
    keyboard can see which element is active【2†L1-L3】. */
@@ -181,6 +199,109 @@ a:focus, button:focus, input:focus, textarea:focus {
   outline: 2px dashed var(--colour-gold);
   outline-offset: 2px;
 }
+
+/* -----------------------------------------------------------------
+ * Intro splash overlay
+ *
+ * To match the premium feel of sites like Semark while preserving
+ * Leen Elite’s identity, the home page displays a short logo
+ * animation before revealing the site.  The overlay covers the
+ * viewport with a black background, then plays a fly‑in animation of
+ * the Leen Elite logo.  After the animation completes, it fades
+ * away.  This animation is inserted into the index pages via the
+ * HTML.  The fade‑out is controlled via a JS timeout in script.js.
+ *
+ * These styles mirror those found in the provided opening file and
+ * have been adapted to work alongside the existing stylesheet.  All
+ * measurements and animation timing originate from that file.
+ * ----------------------------------------------------------------- */
+
+/* Overlay container occupying the full viewport.  Positioned above
+   all site content via a high z‑index.  It fades out via the
+   `.fade-out` modifier applied through JS. */
+#intro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  z-index: 2000;
+  pointer-events: all;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+/* When the fade‑out class is added, the overlay becomes invisible
+   and pointer events are disabled. */
+#intro-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Container used to center the logo within the viewport. */
+#intro-overlay #animation-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Logo wrapper – sets the starting scale and origin and defines
+   the fly‑in animation.  The logo itself contains the SVG.
+ */
+#intro-overlay #logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1136.43px;
+  height: 975.6px;
+  transform-origin: center;
+  transform: translate(-50%, -50%) scale(0.3);
+  opacity: 0;
+  animation: logoFlyIn 6s ease-in-out forwards;
+}
+
+/* Ensure the SVG fills the wrapper. */
+#intro-overlay #logo svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Animation definitions from the provided splash file.  The logo
+   flies in from above, scaling into place and fading in. */
+@keyframes logoFlyIn {
+  0%   { transform: translate(-50%, -150%) scale(0.5) rotate(-20deg); opacity: 0; }
+  20%  { transform: translate(-50%, -70%)  scale(0.4) rotate(10deg);  opacity: 0.5; }
+  50%  { transform: translate(-50%, -50%) scale(0.35) rotate(-5deg); opacity: 0.8; }
+  80%  { transform: translate(-50%, -50%) scale(0.3)  rotate(0deg);  opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.3)  rotate(0deg);  opacity: 1; }
+}
+
+/* Feather fly‑in animation for individual wing segments.  Each
+   feather fades in and slides down slightly after the main logo
+   animation begins. */
+@keyframes featherFlyIn {
+  from { opacity: 0; transform: translateY(-30%) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0)     scale(1);   }
+}
+
+/* Simple fade in used for the text label. */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Apply sequential animation to feathers.  These classes mirror
+   those defined in the SVG markup; delays control the order. */
+#intro-overlay #logo .feather1 { opacity: 0; animation: featherFlyIn 0.5s ease-out forwards; animation-delay: 4.5s; }
+#intro-overlay #logo .feather2 { opacity: 0; animation: featherFlyIn 0.5s ease-out forwards; animation-delay: 4.9s; }
+#intro-overlay #logo .feather3 { opacity: 0; animation: featherFlyIn 0.5s ease-out forwards; animation-delay: 5.3s; }
+#intro-overlay #logo .feather4 { opacity: 0; animation: featherFlyIn 0.5s ease-out forwards; animation-delay: 5.7s; }
+
+/* Fade in the text at the end of the sequence. */
+#intro-overlay #logo .cls-8 { opacity: 0; animation: fadeIn 0.7s ease-out forwards; animation-delay: 6s; }
 
 /* Top navigation bar.  Fixed to the top with a translucent
    background.  Contains the logo on the left, navigation links,
@@ -211,8 +332,9 @@ a:focus, button:focus, input:focus, textarea:focus {
 }
 
 .top-nav .logo img {
-  width: 40px;
-  height: 40px;
+  /* Increase the logo size for better legibility at small nav bar heights. */
+  width: auto;
+  height: 48px;
 }
 
 .top-nav nav {
@@ -247,7 +369,8 @@ a:focus, button:focus, input:focus, textarea:focus {
 .side-nav {
   position: fixed;
   top: 50%;
-  left: 30px;
+  right: 30px;
+  left: auto;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -738,3 +861,132 @@ p {
   width: clamp(150px, 20vw, 300px);
   height: auto;
 }
+
+
+/* === LEEN ELITE additions === */
+/* Content protection (relaxed):
+   Allow text selection to improve accessibility while still
+   preventing images from being dragged.  Copy and context
+   menu restrictions are handled via JavaScript. */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* Navbar logo sizing */
+.top-nav .logo img {
+  /* Override earlier rule: enlarge the logo and maintain aspect ratio. */
+  height: 48px;
+  width: auto;
+  margin-right: 10px;
+  vertical-align: middle;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/*
+ * Display the LEEN ELITE logo via a CSS background instead of an inline img.
+ * The original SVG contains significant whitespace around the feather graphic,
+ * which causes it to render too small when scaled down in a nav bar.  By
+ * hiding the <img> and injecting the logo as a pseudo‑element, we can
+ * precisely control its size and alignment without modifying the SVG.
+ */
+.top-nav .logo {
+  position: relative;
+  /* Reset left padding since the logo now appears as an inline <img> */
+  padding-left: 0;
+}
+.top-nav .logo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translateY(-50%);
+  background: url('../images/leenelite-logo-white.svg') no-repeat center/contain;
+}
+.top-nav .logo img {
+  display: none;
+}
+
+/* Footer brand: mirror the nav logo behaviour */
+.site-footer .brand {
+  position: relative;
+  /* Remove left padding as the logo is displayed inline */
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--colour-gold);
+  font-weight: bold;
+}
+.site-footer .brand::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translateY(-50%);
+  background: url('../images/leenelite-logo-white.svg') no-repeat center/contain;
+}
+.site-footer .brand img {
+  display: none;
+}
+
+/*
+ * Override the background-logo injection for the nav and footer.  Now that
+ * we are using a cropped SVG in the markup itself, we hide the pseudo
+ * elements and re-enable the inline <img> tags.  This ensures the logo
+ * image displays as expected without extra positioning rules.
+ */
+.top-nav .logo::before,
+.site-footer .brand::before {
+  display: none;
+}
+.top-nav .logo img,
+.site-footer .brand img {
+  display: inline-block;
+}
+
+/* Social icons (header & footer) */
+.social-icons {
+  display: flex; gap: 12px; align-items: center;
+}
+.social-icons a {
+  display: inline-flex; width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  align-items: center; justify-content: center;
+  transition: transform .2s ease, background .2s ease;
+}
+.top-nav .social-icons a img, .site-footer .social-icons a img {
+  width: 16px; height: 16px;
+  filter: invert(89%) sepia(16%) saturate(574%) hue-rotate(6deg) brightness(96%) contrast(92%);
+}
+.social-icons a:hover { transform: translateY(-2px); background: rgba(255,255,255,0.18); }
+
+/* Hero floating shapes inspired by premium event sites */
+.hero-shapes { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.hero-shapes .blob {
+  position:absolute; width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(234,189,99,.9), rgba(211,180,78,.55) 50%, rgba(255,255,255,0) 60%);
+  filter: blur(10px);
+  animation: floatY 12s ease-in-out infinite alternate, floatX 18s ease-in-out infinite alternate;
+}
+.hero-shapes .blob.b1 { top: 10%; left: -6%; }
+.hero-shapes .blob.b2 { bottom: -6%; right: -4%; animation-delay: -3s; }
+@keyframes floatY { from { transform: translateY(-10px); } to { transform: translateY(20px); } }
+@keyframes floatX { from { margin-left: 0; } to { margin-left: 18px; } }
+
+/* Footer */
+.site-footer { background:#000; color:#fff; padding:40px 20px; border-top:1px solid rgba(255,255,255,0.08); }
+.site-footer .footer-inner { max-width: var(--max-width); margin: 0 auto; display:grid; grid-template-columns: 1.2fr 1fr auto; gap: 24px; align-items:center; }
+.site-footer .brand { display:flex; align-items:center; gap:12px; }
+.site-footer .brand img { height:40px; }
+.site-footer .links a { color:#fff; opacity:.85; text-decoration:none; margin-right:16px; }
+.site-footer .links a:hover { opacity:1; color: var(--colour-gold); }
+.site-footer .legal { font-size:12px; opacity:.6; margin-top:12px; grid-column:1/-1; text-align:center; }
+
+/* Scroll reveal animation hook already present; ensure initial state */
+.section-fade { opacity:0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+.section-fade.visible { opacity:1; transform: none; }

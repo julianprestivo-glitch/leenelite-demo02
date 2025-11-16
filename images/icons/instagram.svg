@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!--
+    Simplified Instagram icon that scales crisply at small sizes.  The outer
+    rounded square and inner ring are drawn with strokes so that the lens
+    remains hollow.  All elements use currentColor so the colour can be
+    controlled via CSS filters (e.g. the site’s gold filter).  The small
+    circle in the corner represents the flash.  Increasing the stroke
+    thickness improves legibility at 16–18 px.
+  -->
+  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <circle cx="18" cy="6" r="1.5" fill="currentColor"/>
+</svg>
