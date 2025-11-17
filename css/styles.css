@@ -182,7 +182,9 @@ a {
 .hero-heading {
   font-size: clamp(2.5rem, 6vw, 6rem);
   letter-spacing: 1.2px;
-  font-weight: 700;
+  /* Use the heaviest available weight in the Candara family to
+     approximate the “black” style recommended in the brand guide. */
+  font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
@@ -449,6 +451,8 @@ section .content {
 
 /* Headings and paragraphs */
 h1, h2, h3 {
+  /* Base headings use bold by default; specific elements below override
+     this weight to match the Candara family weights. */
   font-weight: 700;
   margin-bottom: 20px;
 }
@@ -456,15 +460,18 @@ h1, h2, h3 {
 h1 {
   font-size: 3.5rem;
   letter-spacing: 1px;
+  font-weight: 900;
 }
 
 h2 {
   font-size: 2.6rem;
+  font-weight: 700;
 }
 
 h3 {
   font-size: 1.4rem;
   color: var(--colour-gold);
+  font-weight: 600;
 }
 
 p {
@@ -951,19 +958,47 @@ img {
 
 /* Social icons (header & footer) */
 .social-icons {
-  display: flex; gap: 12px; align-items: center;
+  /* Arrange the social icons in a row with consistent spacing.
+     The icons are larger and have a visible border as per the brand
+     guidelines. */
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .social-icons a {
-  display: inline-flex; width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  align-items: center; justify-content: center;
-  transition: transform .2s ease, background .2s ease;
+  /* Each icon sits inside a circular button.  Increase the size slightly
+     and add a 1px gold border so the shape stands out on dark
+     backgrounds.  Use a semi‑transparent background by default so the
+     border defines the shape. */
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--colour-gold);
+  background: rgba(255, 255, 255, 0.05);
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s ease, background .2s ease, filter .2s ease;
 }
 .top-nav .social-icons a img, .site-footer .social-icons a img {
-  width: 16px; height: 16px;
-  filter: invert(89%) sepia(16%) saturate(574%) hue-rotate(6deg) brightness(96%) contrast(92%);
+  /* Increase the SVG icon size and tint it gold using an SVG filter.
+     The filter converts the black SVG into the desired golden tone.
+     When the parent anchor is hovered, a separate rule will invert the
+     icon colour for contrast. */
+  width: 18px;
+  height: 18px;
+  filter: invert(72%) sepia(40%) saturate(500%) hue-rotate(6deg) brightness(90%) contrast(90%);
 }
-.social-icons a:hover { transform: translateY(-2px); background: rgba(255,255,255,0.18); }
+/* Hover state for social icons: lift slightly and fill with the brand gold. */
+.social-icons a:hover {
+  transform: translateY(-2px);
+  background: var(--colour-gold);
+}
+
+/* When the parent anchor is hovered, invert the SVG colour to black for contrast. */
+.social-icons a:hover img {
+  filter: brightness(0);
+}
 
 /* Hero floating shapes inspired by premium event sites */
 .hero-shapes { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
