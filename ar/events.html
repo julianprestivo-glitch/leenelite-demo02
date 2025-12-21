@@ -1,127 +1,87 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl" data-disable-contextmenu="true">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- تحسين محركات البحث: وصف وكلمات مفتاحية -->
-    <meta name="description" content="تعرف على خدمات لين إيليت المتكاملة لإدارة الفعاليات والمؤتمرات والقمم، من التخطيط إلى التنفيذ الميداني." />
-    <meta name="keywords" content="فعاليات، مؤتمرات، إدارة فعاليات، تخطيط فعاليات، لين إيليت" />
+    <!-- Web fonts (EN + AR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="إدارة شاملة للفعاليات رفيعة المستوى، بدءًا من المؤتمرات والقمم الكبرى وصولًا إلى التجمعات المؤسسية الحصرية وإطلاق المنتجات، مع التركيز على الدقة اللوجستية وتجربة استثنائية للحضور." />
+    <meta name="keywords" content="لين إيليت، الفعاليات والمؤتمرات" />
     <meta name="robots" content="index, follow" />
-    <!-- معلومات المشاركة في الشبكات الاجتماعية -->
-    <meta property="og:title" content="الفعاليات – لين إيليت" />
-    <meta property="og:description" content="لين إيليت تتولى جميع تفاصيل الفعاليات من المؤتمرات الكبرى إلى الإطلاقات الخاصة، لتقدم تجارب استثنائية." />
+    <meta property="og:title" content="الفعاليات والمؤتمرات – لين إيليت" />
+    <meta property="og:description" content="إدارة شاملة للفعاليات والمؤتمرات مع التركيز على الدقة اللوجستية وتجربة استثنائية للحضور." />
     <meta property="og:image" content="../images/leenelite-logo-white.svg" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ar_SA" />
-    <meta property="og:url" content="https://example.com/ar/events.html" />
-    <link rel="canonical" href="https://example.com/ar/events.html" />
+    <meta property="og:url" content="https://www.leenelite.com/ar/events.html" />
+    <link rel="canonical" href="https://www.leenelite.com/ar/events.html" />
     <link rel="icon" href="../images/leenelite-logo-white.svg" type="image/png" />
-    <title>الفعاليات – لين إيليت</title>
-    <link rel="stylesheet" href="../css/styles.min.css" />
-    <script defer src="../js/script.min.js"></script>
-      <link rel="manifest" href="../manifest.webmanifest">
-</head>
+    <title>الفعاليات والمؤتمرات – لين إيليت</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script defer src="../js/script.js"></script>
+    <link rel="manifest" href="../manifest.webmanifest" />
+  </head>
+
   <body class="rtl">
-    <!-- وصلة تخطي لتسهيل الوصول إلى محتوى الصفحة مباشرة باستخدام لوحة المفاتيح -->
     <a href="#maincontent" class="skip-link">تخطى إلى المحتوى الرئيسي</a>
+
     <div class="top-nav">
       <div class="logo">
-        <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="شعار لين إيليت" /> لين&nbsp;إيليت
+        <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="شعار لين إيليت" />
+        لين&nbsp;إيليت
       </div>
       <nav>
         <a href="index.html">الرئيسية</a>
-        <a href="#" class="active">الفعاليات</a>
+        <a href="events.html" class="active">الفعاليات والمؤتمرات</a>
         <a href="exhibitions.html">المعارض</a>
         <a href="marketing.html">التسويق</a>
-        <a href="stand.html">الأجنحة</a>
         <a href="giveaways.html">الهدايا والدروع</a>
       </nav>
       <div class="social-icons">
-        <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram">
-          <img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" />
-        </a>
-        <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X">
-          <img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" />
-        </a>
-        <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat">
-          <img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" />
-        </a>
-        <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok">
-          <img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" />
-        </a>
-        <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook">
-          <img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" />
-        </a>
+        <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
+        <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
+        <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat"><img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" /></a>
+        <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
+        <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
       </div>
       <div class="lang-switch"><a href="../en/events.html">English</a></div>
     </div>
-    <main id="maincontent" tabindex="-1"><div class="page-container">
-      <div class="left-col section-fade">
-        <h1>الفعاليات</h1>
-        <p>الفعاليات والمؤتمرات</p>
-        <p>من اللقاءات الرسمية إلى المهرجانات الثقافية، نصمم تجارب لا تُنسى تلبي رؤيتك.</p>
-        <div class="cta"><a href="index.html#contact">تواصل معنا</a></div>
-      </div>
-      <div class="right-col section-fade">
-        <h2>إدارة متكاملة للفعاليات</h2>
-        <p>من المؤتمرات الكبرى والقمم إلى الإطلاقات الخاصة والملتقيات الحصرية، نتولى جميع التفاصيل.  يركز فريقنا على الدقة اللوجستية ويقدم تجارب استثنائية تحقق أهدافكم وتبهر الحضور.</p>
-        <h3>تخطيط الفعاليات</h3>
-        <p>نطور مفاهيم إبداعية وجداول زمنية دقيقة ولوجستيات قوية للمؤتمرات والقمم والإطلاقات والاحتفالات.  نخطط لكل عنصر من اختيار الموقع وتدفق البرنامج إلى إدارة الضيوف بحيث يعكس رؤيتكم.</p>
-        <h3>إدارة ميدانية</h3>
-        <p>في يوم الحدث، نشرف على جميع الجوانب التشغيلية مثل التسجيل، إعداد المسرح، الإنتاج السمعي البصري، الضيافة والتنسيق مع الموردين.  منهجنا العملي يضمن تنفيذاً سلساً وتجربة لا تُنسى للحضور.</p>
-        <h3>فعاليات مختارة</h3>
-        <div class="card-grid">
-          <div class="card">
-            <img draggable="false" src="../images/world.webp" alt="صورة من معرض سلامة مطار الملك خالد" loading="lazy" decoding="async" />
-            <div class="card-content">
-              <h4>معرض سلامة مطار الملك خالد</h4>
-              <div class="meta">2024، الرياض</div>
-              <p>معرض ومؤتمر مخصص لأنظمة السلامة والأمن في مطار الملك خالد الدولي.</p>
-            </div>
-          </div>
-          <div class="card">
-            <img draggable="false" src="../images/map.webp" alt="صورة من حفل تدشين نيوم" loading="lazy" decoding="async" />
-            <div class="card-content">
-              <h4>حفل&nbsp;تدشين&nbsp;نيوم</h4>
-              <div class="meta">2023، تبوك</div>
-              <p>احتفالية بدء مشروع نيوم مع عروض مبهرة وإنتاج عالمي المستوى.</p>
-            </div>
-          </div>
-          <div class="card">
-            <img draggable="false" src="../images/wave.webp" alt="صورة من حفل تخرج مسك" loading="lazy" decoding="async" />
-            <div class="card-content">
-              <h4>حفل&nbsp;تخرج&nbsp;مسك</h4>
-              <div class="meta">2022، الرياض</div>
-              <p>احتفال راقٍ يكرم خريجي مدارس مسك في أجواء ملهمة.</p>
-            </div>
-          </div>
-          <div class="card">
-            <img draggable="false" src="../images/diamond.webp" alt="صورة من إطلاق أبراج الأفنيوز" loading="lazy" decoding="async" />
-            <div class="card-content">
-              <h4>إطلاق&nbsp;أبراج&nbsp;الأفنيوز</h4>
-              <div class="meta">2021، الكويت والرياض</div>
-              <p>فعالية رفيعة المستوى لإطلاق مجمعات سكنية وتجارية فاخرة مع برامج ترفيهية ومراسم رسمية.</p>
-            </div>
-          </div>
+
+    <main id="maincontent" tabindex="-1">
+      <div class="page-container">
+        <div class="left-col section-fade">
+          <h1>الفعاليات والمؤتمرات</h1>
+          <p>إدارة شاملة للفعاليات رفيعة المستوى.</p>
+          <p>من المؤتمرات والقمم الكبرى إلى التجمعات المؤسسية الحصرية وإطلاق المنتجات.</p>
+          <div class="cta"><a href="index.html#contact">تواصل معنا</a></div>
+        </div>
+
+        <div class="right-col section-fade">
+          <h2>الفعاليات والمؤتمرات</h2>
+          <p>في «لين إيليت»، نقدم مجموعة متكاملة من الخدمات المصممة لترجمة رؤيتكم إلى واقع ملموس. نحن ندير كل التفاصيل، من المفهوم الأولي وحتى التنفيذ النهائي.</p>
+        <p>إدارة شاملة للفعاليات رفيعة المستوى، بدءًا من المؤتمرات والقمم الكبرى وصولًا إلى التجمعات المؤسسية الحصرية وإطلاق المنتجات، مع التركيز على الدقة اللوجستية وتجربة استثنائية للحضور.</p>
         </div>
       </div>
-    </div></main>
-  
+    </main>
+
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="brand">
           <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="LEEN ELITE" />
           <strong>LEEN&nbsp;ELITE</strong>
         </div>
-        
-          <div class="links">
-            <a href="#hero">الرئيسية</a>
-            <a href="#about">من نحن</a>
-            <a href="#have">لماذا نحن</a>
-            <a href="#projects">المشاريع</a>
-            <a href="#offer">الخدمات</a>
-            <a href="#contact">اتصل</a>
-          </div>
+
+        <div class="links">
+          <a href="index.html#hero">الرئيسية</a>
+          <a href="index.html#about">من نحن</a>
+          <a href="index.html#have">لماذا نحن</a>
+          <a href="index.html#projects">المشاريع</a>
+          <a href="index.html#offer">الخدمات</a>
+          <a href="index.html#contact">اتصل</a>
+        </div>
+
         <div class="social-icons">
           <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
           <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
@@ -129,9 +89,9 @@
           <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
           <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
         </div>
+
         <div class="legal">© 2025 Leen Elite. All rights reserved.</div>
       </div>
     </footer>
-        
-</body>
+  </body>
 </html>

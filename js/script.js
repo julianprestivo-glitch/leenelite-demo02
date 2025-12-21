@@ -1,173 +1,229 @@
 /*
- * Basic interactivity for the Leen Elite website.  Handles the
- * navigation highlighting on scroll, optional hero slider cycling
- * through slides, and contact form submission feedback.
+ * Leen Elite – Front-end UX Enhancements
+ *
+ * This script is intentionally lightweight and defensive.
+ * It avoids assumptions about page structure and gracefully degrades.
+ *
+ * Features:
+ * - Sync CSS --header-h to the real header height to prevent overlaps.
+ * - Optional right-click protection (toggle via data-disable-contextmenu).
+ * - Side-nav section highlighting (home).
+ * - Optional hero slider via #hero[data-slides].
+ * - Contact form friendly inline feedback (static site placeholder).
+ * - Intro overlay plays once per session (with click-to-skip).
+ * - Section reveal animation (IntersectionObserver).
  */
 
-// Highlight the active side navigation button based on scroll position.
 document.addEventListener('DOMContentLoaded', () => {
-  const navLinks = document.querySelectorAll('.side-nav a');
-  const sections = document.querySelectorAll('section');
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function onScroll() {
-    const scrollPosition = window.scrollY + window.innerHeight / 2;
-    sections.forEach((section, index) => {
+  // ---------------------------------------------------------------------------
+  // 1) Header height sync (prevents fixed header overlap on all pages)
+  // ---------------------------------------------------------------------------
+  const header = document.querySelector('.top-nav');
+  const setHeaderHeightVar = () => {
+    if (!header) return;
+    const h = Math.ceil(header.getBoundingClientRect().height);
+    if (h > 0) {
+      document.documentElement.style.setProperty('--header-h', `${h}px`);
+    }
+  };
+
+  // Tiny debounce to avoid doing layout reads too often.
+  const debounce = (fn, wait = 120) => {
+    let t;
+    return (...args) => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => fn(...args), wait);
+    };
+  };
+
+  setHeaderHeightVar();
+  window.addEventListener('resize', debounce(setHeaderHeightVar, 150), { passive: true });
+  // Fonts/icons can slightly change layout after first paint; re-sync shortly after.
+  window.setTimeout(setHeaderHeightVar, 200);
+
+  // ---------------------------------------------------------------------------
+  // 2) Right-click protection (toggleable)
+  // ---------------------------------------------------------------------------
+  // To disable on any page: set <html data-disable-contextmenu="false"> ...
+  const contextMenuFlag = (document.documentElement.getAttribute('data-disable-contextmenu') || 'true')
+    .toLowerCase()
+    .trim();
+  const disableContextMenu = !(contextMenuFlag === 'false' || contextMenuFlag === '0' || contextMenuFlag === 'off');
+
+  if (disableContextMenu) {
+    document.addEventListener(
+      'contextmenu',
+      (e) => {
+        // Keep UX sane: allow right-click on inputs/textareas/contenteditable.
+        const allow = e.target && e.target.closest('input, textarea, [contenteditable="true"]');
+        if (!allow) e.preventDefault();
+      },
+      { capture: true }
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 3) Side navigation highlighting (home only)
+  // ---------------------------------------------------------------------------
+  const navLinks = document.querySelectorAll('.side-nav a');
+  const sections = document.querySelectorAll('main section[id]');
+  const onScroll = () => {
+    if (!navLinks.length || !sections.length) return;
+
+    const scrollPosition = window.scrollY + window.innerHeight * 0.5;
+    for (let i = 0; i < sections.length; i += 1) {
+      const section = sections[i];
       const top = section.offsetTop;
       const bottom = top + section.offsetHeight;
       if (scrollPosition >= top && scrollPosition < bottom) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        if (navLinks[index]) navLinks[index].classList.add('active');
+        navLinks.forEach((link) => link.classList.remove('active'));
+        if (navLinks[i]) navLinks[i].classList.add('active');
+        break;
       }
-    });
-  }
-  window.addEventListener('scroll', onScroll);
-  onScroll();
+    }
+  };
 
-  // Optional hero slider: if #hero element contains data‑slides attribute
+  if (navLinks.length) {
+    window.addEventListener('scroll', debounce(onScroll, 50), { passive: true });
+    onScroll();
+  }
+
+  // ---------------------------------------------------------------------------
+  // 4) Optional hero slider (home only)
+  // ---------------------------------------------------------------------------
   const hero = document.querySelector('#hero');
-  if (hero) {
-    const slidesData = hero.dataset.slides;
-    if (slidesData) {
-      try {
-        const slides = JSON.parse(slidesData);
+  if (!prefersReducedMotion && hero && hero.dataset && hero.dataset.slides) {
+    try {
+      const slides = JSON.parse(hero.dataset.slides);
+      if (Array.isArray(slides) && slides.length > 1) {
         let current = 0;
         const headingEl = hero.querySelector('.hero-heading');
         const subtitleEl = hero.querySelector('.hero-subtitle');
-        // Announce slide changes politely for screen readers.  Setting
-        // aria-live ensures that updates to the heading and subtitle are
-        // conveyed without forcing focus changes【2†L1-L3】.
-        if (headingEl) headingEl.setAttribute('aria-live', 'polite');
-        if (subtitleEl) subtitleEl.setAttribute('aria-live', 'polite');
 
-        function updateSlide() {
-          const slide = slides[current];
-          hero.style.backgroundImage = `url('${slide.image}')`;
-          if (headingEl) headingEl.textContent = slide.title;
-          if (subtitleEl) subtitleEl.textContent = slide.subtitle;
-        }
-        updateSlide();
-        setInterval(() => {
+        const applySlide = () => {
+          const slide = slides[current] || {};
+          if (slide.image) hero.style.backgroundImage = `url('${slide.image}')`;
+          if (headingEl) headingEl.textContent = slide.title || '';
+          if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
+        };
+
+        applySlide();
+        window.setInterval(() => {
           current = (current + 1) % slides.length;
-          updateSlide();
+          applySlide();
         }, 6000);
-      } catch (err) {
-        console.error('Failed to parse hero slides:', err);
       }
+    } catch {
+      // Fail silently in production.
     }
   }
 
-  // Contact form feedback
+  // ---------------------------------------------------------------------------
+  // 5) Contact form feedback (static site placeholder)
+  // ---------------------------------------------------------------------------
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
-    contactForm.addEventListener('submit', event => {
+    const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+    const getMessage = () =>
+      lang.startsWith('ar')
+        ? 'شكرًا لك! تم استلام رسالتك وسنقوم بالتواصل معك قريبًا.'
+        : 'Thank you! Your message has been received. We will contact you soon.';
+
+    const ensureStatusEl = () => {
+      let el = contactForm.querySelector('.form-status');
+      if (!el) {
+        el = document.createElement('div');
+        el.className = 'form-status';
+        el.setAttribute('role', 'status');
+        el.setAttribute('aria-live', 'polite');
+        contactForm.appendChild(el);
+      }
+      return el;
+    };
+
+    contactForm.addEventListener('submit', (event) => {
       event.preventDefault();
-      alert('Thank you! We will be in touch soon.');
+
+      const statusEl = ensureStatusEl();
+      statusEl.textContent = getMessage();
+      statusEl.classList.add('is-success');
+
       contactForm.reset();
     });
   }
 
-  // -----------------------------------------------------------------
-  // Intro overlay fade-out
-  //
-  // A branded splash screen plays once per session on the home page.
-  // The overlay container (#intro-overlay) is inserted into index pages
-  // and contains an SVG animation.  If the visitor has already
-  // watched the animation during this session, the overlay is
-  // removed immediately.  Otherwise, it fades out after a short
-  // delay and then is removed from the DOM.  The presence of
-  // sessionStorage ensures the animation does not replay on page
-  // reloads within the same tab.
+  // ---------------------------------------------------------------------------
+  // 6) Intro overlay (home only): short + once per session + click-to-skip
+  // ---------------------------------------------------------------------------
   const introOverlay = document.getElementById('intro-overlay');
   if (introOverlay) {
-    if (sessionStorage.getItem('introSeen')) {
-      // User has already seen the intro this session; remove overlay
-      introOverlay.parentNode.removeChild(introOverlay);
+    const hideOverlay = () => {
+      introOverlay.classList.add('fade-out');
+      window.setTimeout(() => introOverlay.remove(), 650);
+    };
+
+    let seen = false;
+    try {
+      seen = window.sessionStorage && window.sessionStorage.getItem('introSeen') === 'true';
+    } catch {
+      // sessionStorage may be blocked; treat as seen to avoid trapping the user.
+      seen = true;
+    }
+
+    if (seen || prefersReducedMotion) {
+      introOverlay.remove();
     } else {
-      // After the animation has completed (approx 6.5s), fade and remove
-      setTimeout(() => {
-        introOverlay.classList.add('fade-out');
-        setTimeout(() => {
-          if (introOverlay.parentNode) {
-            introOverlay.parentNode.removeChild(introOverlay);
-          }
-        }, 1200);
-      }, 6500);
-      sessionStorage.setItem('introSeen', 'true');
-    }
-  }
+      // Allow user to skip immediately
+      introOverlay.addEventListener('click', hideOverlay, { once: true });
+      window.addEventListener(
+        'keydown',
+        (e) => {
+          if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') hideOverlay();
+        },
+        { once: true }
+      );
 
-    // Accessibility and usability: do not interfere with users’ ability to
-    // open context menus or developer tools.  Blocking right–click and
-    // keyboard shortcuts can hinder assistive technologies and harms the
-    // user experience.  Previously the site attempted to block context
-    // menus and DevTools shortcuts; this code has been removed in favour
-    // of open access【3†L1-L3】.
+      // Auto-hide quickly for better UX
+      window.setTimeout(hideOverlay, 1400);
 
-  /* -----------------------------------------------------------------
-   * Section Fade‑In Observer
-   *
-   * Use the IntersectionObserver API to reveal sections smoothly when
-   * they enter the viewport.  Each element with the .section-fade
-   * class starts at opacity 0 and translates down.  When the
-   * observer fires, the 'visible' class is added once, triggering
-   * CSS transitions defined in styles.css.  Unobserving after
-   * revealing improves performance.
-   */
-  const fadeSections = document.querySelectorAll('.section-fade');
-  const sectionObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        sectionObserver.unobserve(entry.target);
+      try {
+        window.sessionStorage && window.sessionStorage.setItem('introSeen', 'true');
+      } catch {
+        // ignore
       }
-    });
-  }, { threshold: 0.1 });
-  fadeSections.forEach(sec => sectionObserver.observe(sec));
-
-  /* -----------------------------------------------------------------
-   * Disable Context Menu and Developer Shortcuts
-   *
-   * To provide a basic protection layer, intercept context menu
-   * invocation and certain keyboard shortcuts (F12, Ctrl+Shift+I,
-   * Ctrl+U) that open developer tools or view the page source.  This
-   * code intentionally prevents those actions from happening.
-   */
-  document.addEventListener('contextmenu', event => {
-    event.preventDefault();
-  });
-  document.addEventListener('keydown', event => {
-    const key = event.key.toLowerCase();
-    if (key === 'f12' || (event.ctrlKey && event.shiftKey && key === 'i') ||
-        (event.ctrlKey && key === 'u')) {
-      event.preventDefault();
-      return false;
-    }
-  });
-});
-
-// --- Light content protection ---
-// Disable default context menu and basic copy shortcuts outside of
-// inputs to deter casual copying.  Text selection itself is not
-// prevented (handled in CSS) to maintain accessibility.
-window.addEventListener('contextmenu', e => {
-  e.preventDefault();
-});
-document.addEventListener('keydown', e => {
-  const k = e.key.toLowerCase();
-  // Prevent Ctrl/Cmd+C and Ctrl/Cmd+X (copy/cut) when not typing in inputs
-  if ((e.ctrlKey || e.metaKey) && ['c','x'].includes(k)) {
-    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-    if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-      e.preventDefault();
     }
   }
-});
 
-// Prevent dragging of images (already set via CSS) to avoid easy
-// downloading but allow other drag events.
-document.querySelectorAll('img').forEach(img => {
-  img.setAttribute('draggable','false');
-});
+  // ---------------------------------------------------------------------------
+  // 7) Section reveal
+  // ---------------------------------------------------------------------------
+  const fadeSections = document.querySelectorAll('.section-fade');
+  if (fadeSections.length) {
+    if (prefersReducedMotion || typeof window.IntersectionObserver !== 'function') {
+      fadeSections.forEach((el) => el.classList.add('visible'));
+    } else {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      fadeSections.forEach((el) => observer.observe(el));
+    }
+  }
 
-// Note: service worker registration removed to avoid issues when
-// hosting the site locally or on platforms that block SW on file://.
+  // ---------------------------------------------------------------------------
+  // 8) Make all images non-draggable
+  // ---------------------------------------------------------------------------
+  document.querySelectorAll('img').forEach((img) => img.setAttribute('draggable', 'false'));
+});
