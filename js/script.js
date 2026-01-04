@@ -53,6 +53,65 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setTimeout(setHeaderHeightVar, 200);
 
   // ---------------------------------------------------------------------------
+  // 1b) Mobile menu toggle (hamburger)
+  // ---------------------------------------------------------------------------
+  // On small screens the top navigation turns into a dropdown panel. This
+  // toggle manages the open/close state with accessible aria-expanded updates.
+  const navToggle = document.querySelector('.nav-toggle');
+  const primaryNav = header ? header.querySelector('nav') : null;
+
+  if (header && navToggle && primaryNav) {
+    const closeMenu = () => {
+      header.classList.remove('is-open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    const openMenu = () => {
+      header.classList.add('is-open');
+      navToggle.setAttribute('aria-expanded', 'true');
+    };
+
+    const toggleMenu = () => {
+      const isOpen = header.classList.contains('is-open');
+      if (isOpen) closeMenu();
+      else openMenu();
+    };
+
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    // Close the menu when a nav item is selected (mobile)
+    primaryNav.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('a')) closeMenu();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!header.contains(e.target)) closeMenu();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // If the viewport is resized back to desktop, ensure the dropdown is closed
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        try {
+          if (window.matchMedia('(min-width: 701px)').matches) closeMenu();
+        } catch {
+          // ignore
+        }
+      }, 160),
+      { passive: true }
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // 2) Right-click protection (toggleable)
   // ---------------------------------------------------------------------------
   // To disable on any page: set <html data-disable-contextmenu="false"> ...

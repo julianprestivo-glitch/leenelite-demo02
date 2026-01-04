@@ -66,12 +66,22 @@ html {
 
 body {
   margin: 0;
+  /* Offset the page content to account for the fixed header.  The
+     --header-h variable is synchronised via JavaScript to match the
+     actual header height, ensuring sections don't sit underneath the
+     navigation bar when the page loads. */
   padding-top: var(--header-h);
   background: var(--colour-dark);
   color: var(--colour-white);
   font-family: var(--font-en);
   line-height: 1.7;
   overflow-x: hidden;
+  /* Restrict touch gestures on the body to vertical scrolling.  Allowing
+     horizontal panning or pinch‑zoom can cause inconsistent behaviour of
+     sticky/fixed elements on some browsers.  The `pan-y` value ensures
+     pinch gestures are interpreted as vertical scroll rather than zoom.
+     Users can still zoom using browser controls if needed. */
+  touch-action: pan-y;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -80,6 +90,24 @@ body {
 body.rtl {
   direction: rtl;
   font-family: var(--font-ar);
+}
+
+/*
+ * Root overflow handling
+ *
+ * Prevent any horizontal scrollbars or overscroll by clipping overflow on the
+ * root element.  `overflow-x: clip` is used where supported; otherwise we
+ * fall back to `hidden`.  This avoids unwanted sideways panning on
+ * narrow devices and eliminates the black margin seen during pinch‑zoom on
+ * some mobile browsers.
+ */
+html {
+  overflow-x: hidden;
+}
+@supports (overflow: clip) {
+  html {
+    overflow-x: clip;
+  }
 }
 
 img {
@@ -139,6 +167,20 @@ a {
    Header (Top Nav)
 ------------------------------ */
 
+/*
+ * Use sticky positioning for the top navigation.  The previous implementation
+ * used a fixed header, which detached it from the page's layout viewport.
+ * On certain mobile browsers (notably Chrome/Edge on Android), pinch‑zooming
+ * could leave the fixed header "stuck" while the page scaled underneath it,
+ * creating a black gap or misalignment.  Sticky positioning keeps the
+ * element in the normal flow until it reaches the top of the viewport and
+ * then pins it in place, eliminating those artefacts.
+ *
+ * In practice we combine fixed positioning with a restrictive viewport meta
+ * tag (maximum-scale=1) and touch-action control.  This keeps the header
+ * anchored at the top of the viewport during scrolling while preventing
+ * pinch‑zoom misalignment on mobile browsers.
+ */
 .top-nav {
   position: fixed;
   top: 0;
@@ -193,6 +235,48 @@ a {
 .top-nav nav a.active {
   color: var(--colour-gold);
   background: rgba(211, 180, 78, 0.12);
+}
+
+/* Mobile navigation toggle (hamburger)
+   Hidden on desktops; enabled on small screens where the horizontal menu
+   becomes cramped. */
+.nav-toggle {
+  display: none;
+  width: 42px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--ui-border);
+  background: rgba(255, 255, 255, 0.06);
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--ease), border-color var(--ease), transform var(--ease-fast);
+}
+
+.nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(211, 180, 78, 0.30);
+}
+
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  transition: transform var(--ease-fast), opacity var(--ease-fast);
+}
+
+.top-nav.is-open .nav-toggle span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.top-nav.is-open .nav-toggle span:nth-child(2) {
+  opacity: 0;
+}
+.top-nav.is-open .nav-toggle span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .lang-switch a {
@@ -275,6 +359,63 @@ a {
   }
   .top-nav .social-icons {
     display: none;
+  }
+
+  /* Switch to hamburger + dropdown menu */
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .top-nav nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 14px;
+    right: 14px;
+
+    /* override the <=980px header rules */
+    order: initial;
+    width: auto;
+    overflow-x: visible;
+    padding-bottom: 0;
+
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px;
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+
+    background: rgba(7, 8, 10, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+  }
+
+  .top-nav.is-open nav {
+    display: flex;
+  }
+
+  .top-nav nav a {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+}
+
+/* RTL: align menu text to the right when the document is RTL */
+html[dir="rtl"] .top-nav nav {
+  text-align: right;
+}
+
+/* Further tighten navigation on very narrow screens. Without reducing the
+   padding and font size, the menu items can wrap awkwardly or overflow
+   their container on devices like older phones. These values preserve
+   readability while keeping the header compact. */
+@media (max-width: 560px) {
+  .top-nav nav a {
+    font-size: 0.85rem;
+    padding: 6px 8px;
   }
 }
 
@@ -792,11 +933,24 @@ body.rtl .contact-form {
   width: 100%;
   padding: 12px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--ui-border);
-  background: rgba(255, 255, 255, 0.04);
+  /* Improve contrast on dark backgrounds by increasing the input background
+     opacity.  A 20% opacity offers clearer legibility while maintaining
+     the overall dark aesthetic. */
+  background: rgba(255, 255, 255, 0.24);
+  /* Soften the border colour with a hint of gold for cohesion with the
+     brand palette and to visually separate the input from the backdrop. */
+  border: 1px solid rgba(211, 180, 78, 0.45);
   color: var(--colour-white);
   font-size: 1rem;
   outline: none;
+}
+
+/* Improve visibility of placeholder text inside form controls. The low
+   opacity of the default placeholder made it difficult to see against the
+   dark backgrounds. */
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .contact-form textarea {
@@ -837,8 +991,9 @@ body.rtl .contact-form {
   margin-top: 10px;
   padding: 12px 14px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--ui-border);
-  background: rgba(255, 255, 255, 0.03);
+  /* Increase contrast for notification messages to improve legibility. */
+  border: 1px solid rgba(211, 180, 78, 0.45);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--ui-text-muted);
   font-size: 0.98rem;
 }

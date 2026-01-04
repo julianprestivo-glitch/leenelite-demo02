@@ -3,7 +3,7 @@
 <html data-disable-contextmenu="true" dir="rtl" lang="ar">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <!-- Web fonts (EN + AR) -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -80,7 +80,10 @@
 <div class="logo">
 <img alt="شعار لين إيليت" draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg"/> لين إيليت
       </div>
-<nav>
+<button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-controls="primary-nav" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<nav id="primary-nav">
 <a class="active" href="#hero">الرئيسية</a>
 <a href="#about">من نحن</a>
 <a href="#have">لماذا نحن</a>

@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr" data-disable-contextmenu="true">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <!-- Web fonts (EN + AR) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,7 +32,10 @@
         <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="Leen Elite logo" />
         LEEN&nbsp;ELITE
       </div>
-      <nav>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="primary-nav">
         <a href="index.html">Home</a>
         <a href="events.html" class="active">Events &amp; Conferences</a>
         <a href="exhibitions.html">Exhibitions</a>

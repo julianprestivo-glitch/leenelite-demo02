@@ -3,7 +3,7 @@
 <html data-disable-contextmenu="true" dir="ltr" lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <!-- Web fonts (EN + AR) -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -80,7 +80,10 @@
 <img alt="Leen Elite logo" draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg"/>
         LEEN ELITE
       </div>
-<nav>
+<button class="nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
+<nav id="primary-nav">
 <a class="active" href="#hero">Home</a>
 <a href="#about">Who We Are</a>
 <a href="#have">Why Us</a>
