@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-disable-contextmenu="true">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!-- Web fonts (EN + AR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="A preview of our upcoming exhibitions and participation schedule, with a demo space booking request form." />
+    <meta name="keywords" content="Leen Elite, Our Upcoming Exhibitions, Saudi Arabia" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Our Upcoming Exhibitions – Leen Elite" />
+    <meta property="og:description" content="A preview of our upcoming exhibitions and participation schedule, with a demo space booking request form." />
+    <meta property="og:image" content="../images/leenelite-logo-white.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://www.leenelite.com/en/upcoming-exhibitions.html" />
+    <link rel="canonical" href="https://www.leenelite.com/en/upcoming-exhibitions.html" />
+    <link rel="icon" href="../images/leenelite-logo-white.svg" type="image/png" />
+    <title>Our Upcoming Exhibitions – Leen Elite</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script defer src="../js/script.js"></script>
+    <link rel="manifest" href="../manifest.webmanifest" />
+  </head>
+
+  <body>
+    <a href="#maincontent" class="skip-link">Skip to main content</a>
+
+    <div class="top-nav">
+      <div class="logo">
+        <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="Leen Elite logo" />
+        LEEN&nbsp;ELITE
+      </div>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="events.html">Events &amp; Conferences</a>
+        <a href="exhibitions.html">Exhibitions</a>
+        <a href="upcoming-exhibitions.html" class="active">Our Upcoming Exhibitions</a>
+        <a href="giveaways.html">Gifts &amp; Trophies</a>
+      </nav>
+      <div class="social-icons">
+        <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
+        <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
+        <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat"><img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" /></a>
+        <a href="https://www.linkedin.com/in/leen-elite-263290394/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <img draggable="false" loading="lazy" src="../images/icons/linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
+        <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
+      </div>
+      <div class="lang-switch"><a href="../ar/upcoming-exhibitions.html">العربية</a></div>
+    </div>
+
+    <main id="maincontent" tabindex="-1">
+      <div class="page-container">
+        <div class="left-col section-fade">
+          <h1>Our Upcoming Exhibitions</h1>
+          <p>A preview of our upcoming exhibitions and participation schedule.</p>
+          <p>Choose your participation type, category, and size — we will contact you to confirm final allocation based on availability.</p>
+          <div class="cta"><a href="index.html#contact">Contact Us</a></div>
+        </div>
+
+        <div class="right-col section-fade">
+          <h2>Our Upcoming Exhibitions</h2>
+          
+<div class="placeholder-card">
+  <div class="ph-visual" aria-hidden="true"><img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="" /></div>
+  <p class="ph-title">Coming Soon</p>
+  <button class="reserve-btn" type="button" data-open-reserve-modal>Book Your Space Now</button>
+  <p class="ph-note">Note: Space number and exact location are confirmed after booking, subject to availability.</p>
+</div>
+</div>
+        </div>
+      </div>
+    </main>
+
+<!-- Reserve space (Demo) Modal -->
+<div class="reserve-modal" id="reserveModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="reserveTitle">
+  <div class="reserve-modal__overlay" data-close-reserve-modal></div>
+    <div class="reserve-modal__panel" role="document">
+    <div class="reserve-modal__header">
+      <button class="reserve-modal__close" type="button" aria-label="Close" data-close-reserve-modal>×</button>
+      <h3 id="reserveTitle">Space Booking Form (Demo)</h3>
+      <p class="reserve-subtitle">This example showcases the booking experience only. No data will be submitted in this version.</p>
+      <p class="reserve-legal">This request is a <strong>pre‑booking / expression of interest</strong> and is <strong>not a binding contract</strong>. We will contact you to confirm details and allocate the space based on availability.</p>
+      <p class="reserve-data-note">We use your information only to follow up on this request and share participation details/quotations when needed.</p>
+      <div class="reserve-banner" role="note">Note: Space number and exact location are confirmed after booking, subject to availability.</div>
+    </div>
+
+    <form class="reserve-form" id="reserveForm" novalidate>
+      <div class="reserve-grid">
+        <label>
+          <span>Full Name</span>
+          <input type="text" name="full_name" placeholder="e.g., Sarah Ahmed" autocomplete="name" />
+        </label>
+
+        <label>
+          <span>Company Name</span>
+          <input type="text" name="company" placeholder="Company name" autocomplete="organization" />
+        </label>
+
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" placeholder="name@company.com" autocomplete="email" />
+        </label>
+
+        <label>
+          <span>Phone</span>
+          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" />
+        </label>
+
+        
+        <label>
+          <span>City (Optional)</span>
+          <input type="text" name="city" placeholder="e.g., Riyadh" autocomplete="address-level2" />
+        </label>
+
+        <label>
+          <span>Commercial Registration (CR) (Optional)</span>
+          <input type="text" name="cr" placeholder="Optional" inputmode="numeric" />
+        </label>
+
+        <label class="span-2">
+          <span>VAT Number (Optional)</span>
+          <input type="text" name="vat" placeholder="Optional" inputmode="numeric" />
+        </label>
+<label class="span-2">
+          <span>Exhibition</span>
+          <select name="event">
+            <option value="" selected>Select an exhibition (example)</option>
+            <option>Exhibition 1 (Coming Soon)</option>
+            <option>Exhibition 2 (Coming Soon)</option>
+            <option>Exhibition 3 (Coming Soon)</option>
+          </select>
+        </label>
+
+        <fieldset class="span-2">
+          <legend>Participation Type</legend>
+          <div class="reserve-options reserve-options--type">
+            <label class="opt"><input type="radio" name="type" value="space_only" checked /> <span>Space Only</span></label>
+            <label class="opt"><input type="radio" name="type" value="furnished" /> <span>Furnished Space</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="span-2">
+          <legend>Space Category</legend>
+          <div class="reserve-options reserve-options--compact">
+            <label class="opt"><input type="radio" name="category" value="A" checked /> <span>A</span></label>
+            <label class="opt"><input type="radio" name="category" value="B" /> <span>B</span></label>
+            <label class="opt"><input type="radio" name="category" value="C" /> <span>C</span></label>
+          </div>
+        </fieldset>
+
+        <label class="span-2">
+          <span>Space Size</span>
+          <select name="size">
+            <option value="" selected>Select a size (example)</option>
+            <option>9 m²</option>
+            <option>12 m²</option>
+            <option>18 m²</option>
+            <option>24 m²</option>
+            <option>Custom size</option>
+          </select>
+        </label>
+
+        <label class="span-2">
+          <span>Notes</span>
+          <textarea name="notes" rows="3" placeholder="Any additional details (optional)"></textarea>
+        </label>
+      </div>
+
+      <div class="reserve-actions">
+        <div class="reserve-actions__meta">
+          <label class="reserve-consent">
+            <input type="checkbox" id="reservePrivacy" name="privacy_consent" required />
+            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the use of my information to contact me about my request.</span>
+          </label>
+          <p class="reserve-error" id="reserveError" role="alert" hidden>Please agree to the Privacy Policy before submitting.</p>
+          <p class="reserve-hint" id="reserveHint" hidden>This is a demo form — no data will be submitted.</p>
+        </div>
+        <button type="submit" class="reserve-submit">Submit Booking Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="brand">
+          <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="LEEN ELITE" />
+          <strong>LEEN&nbsp;ELITE</strong>
+        </div>
+
+        <div class="links">
+          <a href="index.html#hero">Home</a>
+          <a href="index.html#about">About</a>
+          <a href="index.html#have">Why Us</a>
+          <a href="index.html#projects">Projects</a>
+          <a href="index.html#offer">Services</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+
+        <div class="social-icons">
+          <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
+          <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
+          <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat"><img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" /></a>
+        <a href="https://www.linkedin.com/in/leen-elite-263290394/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <img draggable="false" loading="lazy" src="../images/icons/linkedin.svg" alt="LinkedIn" />
+        </a>
+          <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
+          <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
+        </div>
+
+        <div class="legal">© 2025 Leen Elite. All rights reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>

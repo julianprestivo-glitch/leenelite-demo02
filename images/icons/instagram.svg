@@ -1,13 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <!--
-    Simplified Instagram icon that scales crisply at small sizes.  The outer
-    rounded square and inner ring are drawn with strokes so that the lens
-    remains hollow.  All elements use currentColor so the colour can be
-    controlled via CSS filters (e.g. the site’s gold filter).  The small
-    circle in the corner represents the flash.  Increasing the stroke
-    thickness improves legibility at 16–18 px.
-  -->
-  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2"/>
-  <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
-  <circle cx="18" cy="6" r="1.5" fill="currentColor"/>
+  <path fill="currentColor" fill-rule="evenodd" d="M 17.29 21.92 L 5.78 21.82 L 4.14 21.10 L 2.85 19.81 L 2.03 17.65 L 2.03 6.24 L 2.75 4.19 L 3.83 3.00 L 5.37 2.18 L 6.50 1.98 L 17.40 1.98 L 19.66 2.70 L 21.05 3.98 L 21.87 5.93 L 21.87 17.96 L 21.36 19.40 L 20.07 20.89 L 18.84 21.61 L 17.29 21.92 Z M 17.04 20.22 L 18.22 19.97 L 19.14 19.35 L 20.22 17.45 L 20.22 6.45 L 19.50 4.91 L 18.43 4.03 L 16.99 3.62 L 6.91 3.62 L 5.16 4.24 L 4.08 5.42 L 3.67 6.65 L 3.67 17.24 L 4.29 18.79 L 5.37 19.76 L 7.01 20.28 L 17.04 20.22 Z M 17.71 7.43 L 16.99 7.32 L 16.42 6.45 L 17.09 5.47 L 17.81 5.47 L 18.48 6.14 L 18.37 6.96 L 17.71 7.43 Z M 12.46 17.09 L 10.82 16.99 L 8.76 15.96 L 7.58 14.67 L 6.86 12.62 L 6.96 10.66 L 7.89 8.81 L 9.48 7.43 L 11.43 6.81 L 13.49 7.01 L 15.24 7.94 L 16.42 9.33 L 17.14 11.59 L 16.73 13.95 L 15.80 15.39 L 14.62 16.37 L 12.46 17.09 Z M 12.41 15.39 L 13.80 14.93 L 14.78 14.06 L 15.39 12.82 L 15.50 11.69 L 14.98 10.15 L 14.00 9.07 L 12.46 8.45 L 11.54 8.45 L 10.10 8.97 L 9.02 10.05 L 8.50 11.38 L 8.50 12.51 L 8.92 13.64 L 10.00 14.83 L 11.02 15.34 L 12.41 15.39 Z"/>
 </svg>

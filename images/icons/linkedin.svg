@@ -1,6 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <rect x="2.5" y="2.5" width="19" height="19" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
-  <path d="M7.2 10.2V17.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
-  <circle cx="7.2" cy="7.4" r="1.1" fill="currentColor"/>
-  <path d="M11 17.8v-4.2c0-1.4.7-2.4 2.1-2.4 1.2 0 1.9.8 2.0 2.0 0 .2 0 .4 0 .6v4.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path fill="currentColor" fill-rule="evenodd" d="M 5.36 7.15 L 3.40 6.83 L 2.25 5.25 L 2.47 3.40 L 3.18 2.58 L 4.38 2.03 L 6.23 2.47 L 7.37 4.27 L 7.37 5.03 L 6.72 6.34 L 5.36 7.15 Z M 21.04 21.86 L 17.88 21.86 L 17.39 21.37 L 17.39 14.72 L 16.74 13.42 L 15.70 12.82 L 14.07 13.03 L 13.03 14.29 L 12.93 21.37 L 12.44 21.86 L 9.28 21.86 L 8.79 21.48 L 8.68 9.71 L 9.17 9.00 L 12.44 9.00 L 12.82 9.28 L 13.09 10.31 L 15.16 8.79 L 17.66 8.57 L 19.08 9.00 L 20.55 10.26 L 21.31 11.56 L 21.64 13.09 L 21.64 21.26 L 21.04 21.86 Z M 6.77 21.86 L 2.69 21.80 L 2.74 9.00 L 6.94 9.17 L 6.77 21.86 Z"/>
 </svg>

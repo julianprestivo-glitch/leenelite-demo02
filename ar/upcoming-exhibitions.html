@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-disable-contextmenu="true">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!-- Web fonts (EN + AR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <meta name="description" content="لمحة عن المعارض القادمة وجدول مشاركاتنا، مع إمكانية تقديم طلب حجز المساحة (نموذج استعراضي)." />
+    <meta name="keywords" content="لين إليت، معارضنا القادمة" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="معارضنا القادمة – لين إليت" />
+    <meta property="og:description" content="لمحة عن المعارض القادمة وجدول مشاركاتنا، مع إمكانية تقديم طلب حجز المساحة (نموذج استعراضي)." />
+    <meta property="og:image" content="../images/leenelite-logo-white.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:url" content="https://www.leenelite.com/ar/upcoming-exhibitions.html" />
+    <link rel="canonical" href="https://www.leenelite.com/ar/upcoming-exhibitions.html" />
+    <link rel="icon" href="../images/leenelite-logo-white.svg" type="image/png" />
+    <title>معارضنا القادمة – لين إليت</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script defer src="../js/script.js"></script>
+    <link rel="manifest" href="../manifest.webmanifest" />
+  </head>
+
+  <body class="rtl">
+    <a href="#maincontent" class="skip-link">تخطى إلى المحتوى الرئيسي</a>
+
+    <div class="top-nav">
+      <div class="logo">
+        <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="شعار لين إليت" />
+        لين&nbsp;إليت
+      </div>
+      <button class="nav-toggle" type="button" aria-label="فتح القائمة" aria-controls="primary-nav" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="primary-nav">
+        <a href="index.html">الرئيسية</a>
+        <a href="events.html">الفعاليات والمؤتمرات</a>
+        <a href="exhibitions.html">المعارض</a>
+        <a href="upcoming-exhibitions.html" class="active">معارضنا القادمة</a>
+        <a href="giveaways.html">الهدايا والدروع</a>
+      </nav>
+      <div class="social-icons">
+        <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
+        <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
+        <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat"><img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" /></a>
+        <a href="https://www.linkedin.com/in/leen-elite-263290394/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <img draggable="false" loading="lazy" src="../images/icons/linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
+        <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
+      </div>
+      <div class="lang-switch"><a href="../en/upcoming-exhibitions.html">English</a></div>
+    </div>
+
+    <main id="maincontent" tabindex="-1">
+      <div class="page-container">
+        <div class="left-col section-fade">
+          <h1>معارضنا القادمة</h1>
+          <p>لمحة عن المعارض القادمة وجدول مشاركاتنا.</p>
+          <p>اختر نوع المشاركة والفئة والمساحة، وسنقوم بالتواصل لتأكيد التخصيص النهائي وفقًا للتوافر.</p>
+          <div class="cta"><a href="index.html#contact">تواصل معنا</a></div>
+        </div>
+
+        <div class="right-col section-fade">
+          <h2>معارضنا القادمة</h2>
+          
+<div class="placeholder-card">
+  <div class="ph-visual" aria-hidden="true"><img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="" /></div>
+  <p class="ph-title">قريبًا</p>
+  <button class="reserve-btn" type="button" data-open-reserve-modal>احجز مساحتك الأن</button>
+  <p class="ph-note">ملحوظة: تخصيص رقم وموقع المساحة يتم بعد تأكيد الحجز وفقًا للتوافر.</p>
+</div>
+</div>
+        </div>
+      </div>
+    </main>
+
+<!-- Reserve space (Demo) Modal -->
+<div class="reserve-modal" id="reserveModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="reserveTitle">
+  <div class="reserve-modal__overlay" data-close-reserve-modal></div>
+    <div class="reserve-modal__panel" role="document">
+    <div class="reserve-modal__header">
+      <button class="reserve-modal__close" type="button" aria-label="إغلاق" data-close-reserve-modal>×</button>
+      <h3 id="reserveTitle">نموذج حجز المساحة (عرض تجريبي)</h3>
+      <p class="reserve-subtitle">هذا المثال يوضح شكل تجربة الحجز فقط. لا يتم إرسال أي بيانات في هذه النسخة.</p>
+      <p class="reserve-legal">هذا الطلب يعبّر عن <strong>طلب اهتمام/حجز مبدئي</strong> وهو <strong>ليس عقدًا ملزمًا</strong>. سيتم التواصل لتأكيد التفاصيل وتخصيص المساحة وفقًا للتوافر.</p>
+      <p class="reserve-data-note">نستخدم بياناتك فقط للتواصل بشأن هذا الطلب وإرسال عرض/تفاصيل المشاركة عند الحاجة.</p>
+      <div class="reserve-banner" role="note">ملحوظة: تخصيص رقم وموقع المساحة يتم بعد التأكيد وفقًا للتوافر.</div>
+    </div>
+
+    <form class="reserve-form" id="reserveForm" novalidate>
+      <div class="reserve-grid">
+        <label>
+          <span>الاسم الكامل</span>
+          <input type="text" name="full_name" placeholder="مثال: أحمد محمد" autocomplete="name" />
+        </label>
+
+        <label>
+          <span>اسم الشركة</span>
+          <input type="text" name="company" placeholder="اسم الشركة" autocomplete="organization" />
+        </label>
+
+        <label>
+          <span>البريد الإلكتروني</span>
+          <input type="email" name="email" placeholder="name@company.com" autocomplete="email" />
+        </label>
+
+        <label>
+          <span>رقم الجوال</span>
+          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" />
+        </label>
+
+        
+        <label>
+          <span>المدينة (اختياري)</span>
+          <input type="text" name="city" placeholder="مثال: الرياض" autocomplete="address-level2" />
+        </label>
+
+        <label>
+          <span>السجل التجاري CR (اختياري)</span>
+          <input type="text" name="cr" placeholder="اختياري" inputmode="numeric" />
+        </label>
+
+        <label class="span-2">
+          <span>الرقم الضريبي VAT (اختياري)</span>
+          <input type="text" name="vat" placeholder="اختياري" inputmode="numeric" />
+        </label>
+<label class="span-2">
+          <span>المعرض</span>
+          <select name="event">
+            <option value="" selected>اختر المعرض (مثال)</option>
+            <option>معرض 1 (قريبًا)</option>
+            <option>معرض 2 (قريبًا)</option>
+            <option>معرض 3 (قريبًا)</option>
+          </select>
+        </label>
+
+        <fieldset class="span-2">
+          <legend>نوع المشاركة</legend>
+          <div class="reserve-options reserve-options--type">
+            <label class="opt"><input type="radio" name="type" value="space_only" checked /> <span>مساحة فقط</span></label>
+            <label class="opt"><input type="radio" name="type" value="furnished" /> <span>مساحة مجهزة</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="span-2">
+          <legend>فئة المساحة</legend>
+          <div class="reserve-options reserve-options--compact">
+            <label class="opt"><input type="radio" name="category" value="A" checked /> <span>A</span></label>
+            <label class="opt"><input type="radio" name="category" value="B" /> <span>B</span></label>
+            <label class="opt"><input type="radio" name="category" value="C" /> <span>C</span></label>
+          </div>
+        </fieldset>
+
+        <label class="span-2">
+          <span>حجم المساحة</span>
+          <select name="size">
+            <option value="" selected>اختر الحجم (مثال)</option>
+            <option>9 م²</option>
+            <option>12 م²</option>
+            <option>18 م²</option>
+            <option>24 م²</option>
+            <option>مساحة مخصصة</option>
+          </select>
+        </label>
+
+        <label class="span-2">
+          <span>ملاحظات</span>
+          <textarea name="notes" rows="3" placeholder="أي تفاصيل إضافية (اختياري)"></textarea>
+        </label>
+      </div>
+
+      <div class="reserve-actions">
+        <div class="reserve-actions__meta">
+          <label class="reserve-consent">
+            <input type="checkbox" id="reservePrivacy" name="privacy_consent" required />
+            <span>أوافق على <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> وعلى استخدام بياناتي للتواصل بشأن طلبي.</span>
+          </label>
+          <p class="reserve-error" id="reserveError" role="alert" hidden>يرجى الموافقة على سياسة الخصوصية قبل الإرسال.</p>
+          <p class="reserve-hint" id="reserveHint" hidden>هذا نموذج استعراضي فقط — لن يتم إرسال أي بيانات.</p>
+        </div>
+        <button type="submit" class="reserve-submit">إرسال طلب الحجز</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="brand">
+          <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="LEEN ELITE" />
+          <strong>LEEN&nbsp;ELITE</strong>
+        </div>
+
+        <div class="links">
+          <a href="index.html#hero">الرئيسية</a>
+          <a href="index.html#about">من نحن</a>
+          <a href="index.html#have">لماذا نحن</a>
+          <a href="index.html#projects">المشاريع</a>
+          <a href="index.html#offer">الخدمات</a>
+          <a href="index.html#contact">تواصل معنا</a>
+        </div>
+
+        <div class="social-icons">
+          <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
+          <a href="https://x.com/LeenElite" target="_blank" rel="noopener" aria-label="X"><img draggable="false" loading="lazy" src="../images/icons/x.svg" alt="X (Twitter)" /></a>
+          <a href="https://www.snapchat.com/@leenelite" target="_blank" rel="noopener" aria-label="Snapchat"><img draggable="false" loading="lazy" src="../images/icons/snapchat.svg" alt="Snapchat" /></a>
+        <a href="https://www.linkedin.com/in/leen-elite-263290394/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <img draggable="false" loading="lazy" src="../images/icons/linkedin.svg" alt="LinkedIn" />
+        </a>
+          <a href="https://www.tiktok.com/@leen.elite" target="_blank" rel="noopener" aria-label="TikTok"><img draggable="false" loading="lazy" src="../images/icons/tiktok.svg" alt="TikTok" /></a>
+          <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
+        </div>
+
+        <div class="legal">© 2025 Leen Elite. All rights reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>

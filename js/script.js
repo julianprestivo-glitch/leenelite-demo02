@@ -574,3 +574,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/* -----------------------------------------------------------------------------
+   Reserve Space (Demo) – Modal + Placeholder Form (no backend)
+----------------------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('reserveModal');
+  const openButtons = document.querySelectorAll('[data-open-reserve-modal]');
+  if (!modal || !openButtons.length) return;
+
+  const closeButtons = modal.querySelectorAll('[data-close-reserve-modal]');
+  const form = modal.querySelector('#reserveForm');
+  const hint = modal.querySelector('#reserveHint');
+  const privacy = modal.querySelector('#reservePrivacy');
+  const error = modal.querySelector('#reserveError');
+
+  const openModal = () => {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+
+    const focusTarget = modal.querySelector('.reserve-form input, .reserve-form select, .reserve-form textarea');
+    if (focusTarget) focusTarget.focus();
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    if (hint) hint.hidden = true;
+    if (error) error.hidden = true;
+    if (form) form.reset();
+  };
+
+  openButtons.forEach((btn) => btn.addEventListener('click', openModal));
+  closeButtons.forEach((btn) => btn.addEventListener('click', closeModal));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+
+  if (privacy) {
+    privacy.addEventListener('change', () => {
+      if (error) error.hidden = true;
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Require privacy consent (demo logic)
+      if (privacy && !privacy.checked) {
+        if (error) error.hidden = false;
+        if (hint) hint.hidden = true;
+        privacy.focus();
+        return;
+      }
+
+      if (error) error.hidden = true;
+      if (hint) hint.hidden = false;
+    });
+  }
+});
