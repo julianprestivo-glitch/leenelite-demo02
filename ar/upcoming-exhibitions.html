@@ -61,6 +61,12 @@
           <h1>معارضنا القادمة</h1>
           <p>لمحة عن المعارض القادمة وجدول مشاركاتنا.</p>
           <p>اختر نوع المشاركة والفئة والمساحة، وسنقوم بالتواصل لتأكيد التخصيص النهائي وفقًا للتوافر.</p>
+
+          <!-- Side visual (AR) – appears on the right side in RTL layout -->
+          <figure class="page-side-media page-side-media--start" aria-hidden="true">
+            <img draggable="false" loading="lazy" src="../images/411.png" alt="" />
+          </figure>
+
           <div class="cta"><a href="index.html#contact">تواصل معنا</a></div>
         </div>
 
@@ -120,8 +126,9 @@
         </label>
 
         <label>
-          <span>السجل التجاري CR (اختياري)</span>
-          <input type="text" name="cr" placeholder="اختياري" inputmode="numeric" />
+          <span>السجل التجاري (CR) <span class="req">*</span></span>
+          <input type="text" name="cr" placeholder="10 أرقام (يبدأ بـ 1 أو 2 أو 7)" inputmode="numeric" maxlength="10" required />
+          <p class="reserve-field-error" data-error-for="cr" role="alert" hidden></p>
         </label>
 
         <label class="span-2">
@@ -148,23 +155,46 @@
 
         <fieldset class="span-2">
           <legend>فئة المساحة</legend>
-          <div class="reserve-options reserve-options--compact">
-            <label class="opt"><input type="radio" name="category" value="A" checked /> <span>A</span></label>
-            <label class="opt"><input type="radio" name="category" value="B" /> <span>B</span></label>
-            <label class="opt"><input type="radio" name="category" value="C" /> <span>C</span></label>
+          <div class="reserve-category">
+            <label class="cat-opt" style="--dot:#D3B44E">
+              <input type="radio" name="category" value="sponsors" checked />
+              <span class="cat-name">الرعاة</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#EE7E9C">
+              <input type="radio" name="category" value="local_beauty" />
+              <span class="cat-name">شركات داخلية - كل ما يخص عالم التجميل والعناية</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#90CFB2">
+              <input type="radio" name="category" value="global_beauty" />
+              <span class="cat-name">شركات عالمية - كل ما يخص عالم التجميل والعناية</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#42C2D1">
+              <input type="radio" name="category" value="salons_spa" />
+              <span class="cat-name">صالونات التجميل والسبا</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#E2C3DC">
+              <input type="radio" name="category" value="coffee_snacks" />
+              <span class="cat-name">كوفي - سناك</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#F1EF96">
+              <input type="radio" name="category" value="beauty_plaza" />
+              <span class="cat-name">ساحة الجمال</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
           </div>
         </fieldset>
 
         <label class="span-2">
           <span>حجم المساحة</span>
-          <select name="size">
-            <option value="" selected>اختر الحجم (مثال)</option>
-            <option>9 م²</option>
-            <option>12 م²</option>
-            <option>18 م²</option>
-            <option>24 م²</option>
-            <option>مساحة مخصصة</option>
-          </select>
+          <div class="reserve-unit-input">
+            <input type="number" name="size" placeholder="مثال: 12" inputmode="decimal" min="0" step="any" />
+            <span class="reserve-unit">متر مربع</span>
+          </div>
         </label>
 
         <label class="span-2">

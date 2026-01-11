@@ -61,12 +61,16 @@
           <h1>Our Upcoming Exhibitions</h1>
           <p>A preview of our upcoming exhibitions and participation schedule.</p>
           <p>Choose your participation type, category, and size — we will contact you to confirm final allocation based on availability.</p>
+          <!-- Side visual (EN) -->
+          <figure class="page-side-media page-side-media--start" aria-hidden="true">
+            <img draggable="false" loading="lazy" src="../images/105.png" alt="" />
+          </figure>
+
           <div class="cta"><a href="index.html#contact">Contact Us</a></div>
         </div>
 
         <div class="right-col section-fade">
           <h2>Our Upcoming Exhibitions</h2>
-          
 <div class="placeholder-card">
   <div class="ph-visual" aria-hidden="true"><img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="" /></div>
   <p class="ph-title">Coming Soon</p>
@@ -120,8 +124,9 @@
         </label>
 
         <label>
-          <span>Commercial Registration (CR) (Optional)</span>
-          <input type="text" name="cr" placeholder="Optional" inputmode="numeric" />
+          <span>Commercial Registration (CR) <span class="req">*</span></span>
+          <input type="text" name="cr" placeholder="10 digits (starts with 1, 2, or 7)" inputmode="numeric" maxlength="10" required />
+          <p class="reserve-field-error" data-error-for="cr" role="alert" hidden></p>
         </label>
 
         <label class="span-2">
@@ -148,23 +153,46 @@
 
         <fieldset class="span-2">
           <legend>Space Category</legend>
-          <div class="reserve-options reserve-options--compact">
-            <label class="opt"><input type="radio" name="category" value="A" checked /> <span>A</span></label>
-            <label class="opt"><input type="radio" name="category" value="B" /> <span>B</span></label>
-            <label class="opt"><input type="radio" name="category" value="C" /> <span>C</span></label>
+          <div class="reserve-category">
+            <label class="cat-opt" style="--dot:#D3B44E">
+              <input type="radio" name="category" value="sponsors" checked />
+              <span class="cat-name">Sponsors</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#EE7E9C">
+              <input type="radio" name="category" value="local_beauty" />
+              <span class="cat-name">Local Companies – Beauty &amp; Care</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#90CFB2">
+              <input type="radio" name="category" value="global_beauty" />
+              <span class="cat-name">International Companies – Beauty &amp; Care</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#42C2D1">
+              <input type="radio" name="category" value="salons_spa" />
+              <span class="cat-name">Beauty Salons &amp; Spa</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#E2C3DC">
+              <input type="radio" name="category" value="coffee_snacks" />
+              <span class="cat-name">Coffee – Snacks</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
+            <label class="cat-opt" style="--dot:#F1EF96">
+              <input type="radio" name="category" value="beauty_plaza" />
+              <span class="cat-name">Beauty Plaza</span>
+              <span class="cat-dot" aria-hidden="true"></span>
+            </label>
           </div>
         </fieldset>
 
         <label class="span-2">
           <span>Space Size</span>
-          <select name="size">
-            <option value="" selected>Select a size (example)</option>
-            <option>9 m²</option>
-            <option>12 m²</option>
-            <option>18 m²</option>
-            <option>24 m²</option>
-            <option>Custom size</option>
-          </select>
+          <div class="reserve-unit-input">
+            <input type="number" name="size" placeholder="e.g., 12" inputmode="decimal" min="0" step="any" />
+            <span class="reserve-unit">m²</span>
+          </div>
         </label>
 
         <label class="span-2">

@@ -167,6 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const slides = JSON.parse(hero.dataset.slides);
       if (Array.isArray(slides) && slides.length > 1) {
         let current = 0;
+        let timerId = null;
+        const DEFAULT_SLIDE_MS = 6000;
         const headingEl = hero.querySelector('.hero-heading');
         const subtitleEl = hero.querySelector('.hero-subtitle');
 
@@ -179,15 +181,33 @@ document.addEventListener('DOMContentLoaded', () => {
             hero.style.setProperty('--hero-bg-image', imgUrl);
           }
           hero.classList.toggle('hero-fit-contain', slide.fit === 'contain');
+          hero.classList.toggle('hero-ambition', !!slide.wings);
           if (headingEl) headingEl.textContent = slide.title || '';
           if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
         };
 
         applySlide();
-        window.setInterval(() => {
-          current = (current + 1) % slides.length;
-          applySlide();
-        }, 6000);
+
+        const getDuration = () => {
+          const slide = slides[current] || {};
+          const ms = Number(slide.duration);
+          // Keep things sane even if duration is malformed.
+          if (Number.isFinite(ms) && ms > 1000) return ms;
+          return DEFAULT_SLIDE_MS;
+        };
+
+        const scheduleNext = () => {
+          // Clear any pending timers (defensive).
+          if (timerId) window.clearTimeout(timerId);
+
+          timerId = window.setTimeout(() => {
+            current = (current + 1) % slides.length;
+            applySlide();
+            scheduleNext();
+          }, getDuration());
+        };
+
+        scheduleNext();
       }
     } catch {
       // Fail silently in production.
@@ -589,6 +609,105 @@ document.addEventListener('DOMContentLoaded', () => {
   const privacy = modal.querySelector('#reservePrivacy');
   const error = modal.querySelector('#reserveError');
 
+  const crInput = modal.querySelector('input[name="cr"]');
+  const crError = modal.querySelector('[data-error-for="cr"]');
+  const isArabic = (document.documentElement.lang || '').toLowerCase().startsWith('ar');
+  const CR_RULE = /^[127]\d{9}$/;
+
+  const normalizeDigits = (value) => {
+    // Convert Arabic-Indic and Eastern Arabic-Indic digits to Latin digits
+    const map = {
+      '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+      '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4', '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
+    };
+    return String(value || '').replace(/[٠-٩۰-۹]/g, (d) => map[d] || d);
+  };
+
+  const setCrError = (message) => {
+    if (!crError) return;
+    if (!message) {
+      crError.hidden = true;
+      crError.textContent = '';
+      if (crInput) crInput.classList.remove('is-invalid');
+      return;
+    }
+    crError.textContent = message;
+    crError.hidden = false;
+    if (crInput) crInput.classList.add('is-invalid');
+  };
+
+  const sanitizeCRInput = () => {
+    if (!crInput) return;
+
+    const raw = normalizeDigits(crInput.value);
+    let digitsOnly = raw.replace(/\D/g, '');
+
+    // Reject any value that doesn't start with 1/2/7
+    while (digitsOnly.length && !/^[127]/.test(digitsOnly)) {
+      digitsOnly = digitsOnly.slice(1);
+    }
+
+    // Limit to 10 digits
+    if (digitsOnly.length > 10) digitsOnly = digitsOnly.slice(0, 10);
+
+    if (digitsOnly !== crInput.value) crInput.value = digitsOnly;
+  };
+
+  const validateCR = (showMessage = true) => {
+    if (!crInput) return true;
+
+    sanitizeCRInput();
+
+    const value = normalizeDigits(crInput.value).replace(/\D/g, '');
+    const messages = {
+      required: isArabic ? 'السجل التجاري مطلوب.' : 'Commercial Registration is required.',
+      length: isArabic ? 'السجل التجاري يجب أن يتكون من 10 أرقام.' : 'Commercial Registration must be exactly 10 digits.',
+      start: isArabic ? 'يجب أن يبدأ السجل التجاري بـ 1 أو 2 أو 7.' : 'Commercial Registration must start with 1, 2, or 7.',
+      invalid: isArabic ? 'صيغة السجل التجاري غير صحيحة.' : 'Commercial Registration format is invalid.'
+    };
+
+    if (!value) {
+      if (showMessage) setCrError(messages.required);
+      return false;
+    }
+
+    if (value.length !== 10) {
+      if (showMessage) setCrError(messages.length);
+      return false;
+    }
+
+    if (!/^[127]/.test(value)) {
+      if (showMessage) setCrError(messages.start);
+      return false;
+    }
+
+    if (!CR_RULE.test(value)) {
+      if (showMessage) setCrError(messages.invalid);
+      return false;
+    }
+
+    setCrError('');
+    return true;
+  };
+
+  if (crInput) {
+    crInput.addEventListener('input', () => {
+      const before = crInput.value;
+      sanitizeCRInput();
+
+      // If the user attempted an invalid character/start, show a clear warning.
+      if (crInput.value !== before) {
+        const msg = isArabic ? 'يُسمح بـ 10 أرقام فقط ويجب أن يبدأ بـ 1 أو 2 أو 7.' : 'Only 10 digits are allowed and it must start with 1, 2, or 7.';
+        setCrError(msg);
+      } else if (crError && !crError.hidden) {
+        validateCR(true);
+      }
+    });
+
+    crInput.addEventListener('blur', () => validateCR(true));
+  }
+
+
   const openModal = () => {
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
@@ -605,6 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hint) hint.hidden = true;
     if (error) error.hidden = true;
     if (form) form.reset();
+    setCrError('');
   };
 
   openButtons.forEach((btn) => btn.addEventListener('click', openModal));
@@ -623,6 +743,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      // Validate Commercial Registration (required)
+      if (!validateCR(true)) {
+        if (hint) hint.hidden = true;
+        if (crInput) crInput.focus();
+        return;
+      }
 
       // Require privacy consent (demo logic)
       if (privacy && !privacy.checked) {
