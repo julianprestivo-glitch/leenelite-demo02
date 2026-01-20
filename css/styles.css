@@ -2674,6 +2674,86 @@ body.modal-open{ overflow: hidden; }
   #hero .hero-beam::before{ animation: none !important; }
 }
 
+/* -------------------------------------------------------------------------
+ * Leenelite Pro: Override hero wing positioning for mobile and tablet sizes
+ *
+ * The definitions below supersede earlier media queries to ensure the
+ * decorative wings do not collide or crowd the headline on smaller screens.
+ * These values mirror the settings used previously (January 2026 fix).
+ */
+
+/* Phones and small tablets up to 680px: adjust size and placement so the
+   wings are fully visible.  We decrease their height and bring them
+   closer to the centre (less negative offset) while raising them
+   slightly.  These settings keep the wings within the viewport on
+   typical smartphones and small tablets. */
+@media (max-width: 680px){
+  #hero .hero-wing{
+    height: 60%;
+    top: 60%;
+    max-height: 380px;
+    opacity: 0.88;
+  }
+  /* Further separate the wings on phones: push them farther out so they don't crowd
+     each other.  We increase the negative offsets so the left wing sits farther
+     to the left and the right wing sits farther to the right.  These values
+     were tuned so the full wings remain visible while adding breathing room. */
+  #hero .hero-wing--left{
+    left: -12vw;
+    transform-origin: 20% 70%;
+  }
+  #hero .hero-wing--right{
+    right: -12vw;
+    transform-origin: 80% 70%;
+  }
+}
+
+/* Very small screens up to 480px: shrink wings further and nearly
+   eliminate negative offsets.  The entire wingspan remains visible,
+   preserving the decorative feel without crowding the headline. */
+@media (max-width: 480px){
+  #hero .hero-wing{
+    height: 48%;
+    top: 62%;
+    max-height: 320px;
+    opacity: 0.86;
+  }
+  /* On very small phones, reduce the size and still push wings apart further.
+     Increasing the negative offsets from -3vw to -8vw helps ensure there is
+     adequate spacing between the two wings while maintaining full visibility. */
+  #hero .hero-wing--left{
+    left: -8vw;
+    transform-origin: 20% 70%;
+  }
+  #hero .hero-wing--right{
+    right: -8vw;
+    transform-origin: 80% 70%;
+  }
+}
+
+/* Mid-size tablets (681px–1024px): keep wings elegant on iPad-size
+   devices.  They are slightly larger than on phones but still pulled
+   sufficiently outward so their edges remain visible. */
+@media (min-width: 681px) and (max-width: 1024px){
+  #hero .hero-wing{
+    height: 68%;
+    top: 56%;
+    max-height: 480px;
+    opacity: 0.90;
+  }
+  /* On medium tablets (iPad size), push the wings even further out than on phones.
+     Increasing the negative offsets from -8vw to -14vw gives more room between
+     the wings and the centre.  The transform origins remain the same. */
+  #hero .hero-wing--left{
+    left: -14vw;
+    transform-origin: 18% 72%;
+  }
+  #hero .hero-wing--right{
+    right: -14vw;
+    transform-origin: 82% 72%;
+  }
+}
+
 
 /* Hero manual slider: single left arrow (premium + gold pulse) */
 .hero-slide-next{
@@ -2970,6 +3050,48 @@ body.pf-body .pf-counter{
 @media print {
   body.pf-body {
     display: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+ * Company Profile Viewer – mobile layout adjustments
+ *
+ * On narrow screens (up to 640px), the default layout of the profile viewer
+ * places the control toolbar above the image stage.  On mobile devices
+ * this causes the stage to collapse and the images never appear.  To fix
+ * this, we convert the viewer into a column flex container with the
+ * image stage displayed first.  We give the stage a minimum height and
+ * remove its max-height so the image can expand fully.  Controls follow
+ * underneath and adopt a static position to avoid overlapping the stage.
+ */
+@media (max-width: 640px){
+  body.pf-body .pf-viewer{
+    display: flex;
+    flex-direction: column;
+    /* On narrow screens ensure the viewer spans the full width of the viewport. */
+    max-width: none;
+    width: 100%;
+    /* Remove the auto margin that centers the viewer on desktop */
+    margin: 0;
+    /* Apply small horizontal padding only */
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  body.pf-body .pf-stage{
+    order: 0;
+    /* Let the stage height grow naturally based on its contents */
+    height: auto;
+    max-height: none;
+    min-height: auto;
+    padding: 12px;
+    /* Ensure the stage itself uses the full available width */
+    width: 100%;
+  }
+  body.pf-body .pf-viewer__controls{
+    order: 1;
+    margin-top: 14px;
+    /* Remove sticky positioning on mobile to prevent collapsing */
+    position: static;
   }
 }
 
@@ -3401,29 +3523,41 @@ body.rtl .right-col {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* Mobile-specific adjustments to keep hero wings visible but not overlapping on very small screens */
+/*
+ * Refined mobile wing flapping: on small screens we reduce the rotation
+ * amplitude so the tips of the wings never move out of view.  The wings
+ * still gently flutter, but their swing is limited to a few degrees.  By
+ * limiting rotation to ±3° the wings remain within the viewport even
+ * during the peak of the animation.
+ */
 @keyframes heroWingFlapL_mobile{
-  0%, 100%{ transform: translateY(-50%) rotate(-2deg); }
-  50%{ transform: translateY(-50%) rotate(5deg); }
+  0%, 100%{ transform: translateY(-50%) rotate(-1deg); }
+  50%{ transform: translateY(-50%) rotate(3deg); }
 }
 @keyframes heroWingFlapR_mobile{
-  0%, 100%{ transform: translateY(-50%) rotate(2deg); }
-  50%{ transform: translateY(-50%) rotate(-5deg); }
+  0%, 100%{ transform: translateY(-50%) rotate(1deg); }
+  50%{ transform: translateY(-50%) rotate(-3deg); }
 }
 
 @media (max-width: 480px){
   #hero .hero-wing{
-    height: 46%;
+    /* Slightly larger than the 46% defined previously, with explicit
+       max-height so the wings stay within the screen height on very
+       small devices.  Adjust opacity to subtly match other breakpoints. */
+    height: 48%;
     top: 62%;
-    opacity: 0.80;
+    max-height: 320px;
+    opacity: 0.86;
   }
   #hero .hero-wing--left{
-    left: -24vw;
+    /* Bring the left wing closer to the content so its tip is fully
+       visible, and maintain the gentle mobile flap animation. */
+    left: -3vw;
     transform-origin: 20% 70%;
     animation: heroWingFlapL_mobile 6s ease-in-out infinite;
   }
   #hero .hero-wing--right{
-    right: -24vw;
+    right: -3vw;
     transform-origin: 80% 70%;
     animation: heroWingFlapR_mobile 6s ease-in-out infinite;
   }
