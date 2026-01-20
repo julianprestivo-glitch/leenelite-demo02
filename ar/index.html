@@ -14,7 +14,7 @@
 <meta content="index, follow" name="robots"/>
 <!-- معلومات المشاركة على الشبكات الاجتماعية -->
 <meta content="لين إليت – طموح يعانق السماء" property="og:title"/>
-<meta content="شركة سعودية بخبرة منذ 2009 تقدم حلولاً متكاملة للفعاليات والمؤتمرات والمعارض والتسويق والهدايا والدروع التذكارية." property="og:description"/>
+<meta content="شركة سعودية بخبرة منذ 2009 تقدم حلولاً متكاملة للفعاليات والمؤتمرات والمعارض والمعارض القادمة والهدايا والدروع التذكارية." property="og:description"/>
 <meta content="../images/leenelite-logo-white.svg" property="og:image"/>
 <meta content="website" property="og:type"/>
 <meta content="ar_SA" property="og:locale"/>
@@ -23,8 +23,43 @@
 <link href="../images/leenelite-logo-white.svg" rel="icon" type="image/png"/>
 <title>لين إليت | حلول متكاملة للفعاليات</title>
 <link href="../css/styles.css" rel="stylesheet"/>
+<link rel="preload" as="image" href="../images/ambition-building.webp" fetchpriority="high"/>
 <script defer="" src="../js/script.js"></script>
 <link href="../manifest.webmanifest" rel="manifest"/>
+<link rel="alternate" hreflang="en" href="https://www.leenelite.com/en/index.html" />
+<link rel="alternate" hreflang="ar" href="https://www.leenelite.com/ar/index.html" />
+<link rel="alternate" hreflang="x-default" href="https://www.leenelite.com/en/index.html" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Leen Elite",
+  "url": "https://www.leenelite.com",
+  "logo": "https://www.leenelite.com/images/leenelite-logo.svg",
+  "email": "info@leenelite.com",
+  "sameAs": [
+    "https://www.instagram.com/leen.elite",
+    "https://x.com/LeenElite",
+    "https://www.snapchat.com/@leenelite",
+    "https://www.linkedin.com/in/leen-elite-263290394/",
+    "https://www.tiktok.com/@leen.elite",
+    "https://www.facebook.com/profile.php?id=61582702317436"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "info@leenelite.com",
+      "availableLanguage": [
+        "en",
+        "ar"
+      ]
+    }
+  ]
+}
+</script>
+
 </head>
 <body class="rtl">
 <!-- وصلة التخطي للوصول إلى المحتوى الرئيسي مباشرة -->
@@ -88,7 +123,16 @@
 <a href="#about">من نحن</a>
 <a href="#have">لماذا نحن</a>
 <a href="#projects">مشاريعنا</a>
-<a href="#offer">خدماتنا</a>
+<div class="nav-submenu">
+  <a class="nav-submenu__trigger" href="#offer">خدماتنا</a>
+  <div class="nav-submenu__panel" aria-label="الخدمات">
+    <a href="events.html">الفعاليات والمؤتمرات</a>
+    <a href="exhibitions.html">المعارض</a>
+    <a href="upcoming-exhibitions.html">معارضنا القادمة</a>
+    <a href="giveaways.html">الهدايا والدروع</a>
+  </div>
+</div>
+<a href="company-profile.html" target="_blank" rel="noopener">بروفايل الشركة</a>
 <a href="#contact">تواصل معنا</a>
 </nav>
 <div class="social-icons">
@@ -155,6 +199,11 @@
   <img class="hero-wing hero-wing--left" src="../images/wing-left.webp" alt="" />
   <img class="hero-wing hero-wing--right" src="../images/wing-right.webp" alt="" />
 </div>
+<button class="hero-slide-next" type="button" aria-label="الصورة التالية" data-hero-next>
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
 <div class="content">
 <h1 aria-live="polite" class="hero-heading">طموح يعانق السماء...</h1>
 <p aria-live="polite" class="hero-subtitle">برؤية عالمية.</p>
@@ -338,7 +387,7 @@
 <a aria-label="TikTok" href="https://www.tiktok.com/@leen.elite" rel="noopener" target="_blank"><img alt="TikTok" draggable="false" loading="lazy" src="../images/icons/tiktok.svg"/></a>
 <a aria-label="Facebook" href="https://www.facebook.com/profile.php?id=61582702317436" rel="noopener" target="_blank"><img alt="Facebook" draggable="false" loading="lazy" src="../images/icons/facebook.svg"/></a>
 </div>
-<div class="legal">© 2025 Leen Elite. All rights reserved.</div>
+<div class="legal">© 2026 Leen Elite. All rights reserved.</div>
 </div>
 </footer>
 </body>

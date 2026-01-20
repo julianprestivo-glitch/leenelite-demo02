@@ -1,15 +1,54 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "index.html", "use": "@vercel/static" },
-    { "src": "css/**", "use": "@vercel/static" },
-    { "src": "js/**", "use": "@vercel/static" },
-    { "src": "images/**", "use": "@vercel/static" },
-    { "src": "en/**", "use": "@vercel/static" },
-    { "src": "ar/**", "use": "@vercel/static" }
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/en/index.html",
+      "permanent": true
+    }
   ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "headers": [
+    {
+      "source": "/(en|ar)/company-profile.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noarchive, nosnippet"
+        }
+      ]
+    },
+    {
+      "source": "/images/pf/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, noarchive, nosnippet"
+        }
+      ]
+    }
   ]
 }

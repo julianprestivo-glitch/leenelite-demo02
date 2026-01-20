@@ -1,0 +1,21 @@
+# Leen Elite – Apache / cPanel (SiteGround) portability
+# - 301 redirect from / to the default language (EN)
+# - No-cache + noindex headers for Company Profile viewer & images (deterrence)
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Default language: EN
+  RewriteRule ^$ en/index.html [R=301,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Apply no-store + noindex headers only for protected Company Profile content
+  SetEnvIf Request_URI "^/images/pf/" NO_CACHE_PROFILE=1
+  SetEnvIf Request_URI "^/en/company-profile\.html$" NO_CACHE_PROFILE=1
+  SetEnvIf Request_URI "^/ar/company-profile\.html$" NO_CACHE_PROFILE=1
+
+  Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0" env=NO_CACHE_PROFILE
+  Header set Pragma "no-cache" env=NO_CACHE_PROFILE
+  Header set Expires "0" env=NO_CACHE_PROFILE
+  Header set X-Robots-Tag "noindex, noarchive, nosnippet" env=NO_CACHE_PROFILE
+</IfModule>

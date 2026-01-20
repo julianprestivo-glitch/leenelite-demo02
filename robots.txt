@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /images/pf/
+Disallow: /assets/pf/
+Disallow: /en/company-profile.html
+Disallow: /ar/company-profile.html
+
+Sitemap: https://www.leenelite.com/sitemap.xml

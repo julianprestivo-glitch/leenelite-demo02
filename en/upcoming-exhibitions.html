@@ -22,9 +22,43 @@
     <link rel="stylesheet" href="../css/styles.css" />
     <script defer src="../js/script.js"></script>
     <link rel="manifest" href="../manifest.webmanifest" />
-  </head>
+  <link rel="alternate" hreflang="en" href="https://www.leenelite.com/en/upcoming-exhibitions.html" />
+<link rel="alternate" hreflang="ar" href="https://www.leenelite.com/ar/upcoming-exhibitions.html" />
+<link rel="alternate" hreflang="x-default" href="https://www.leenelite.com/en/upcoming-exhibitions.html" />
 
-  <body>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Leen Elite",
+  "url": "https://www.leenelite.com",
+  "logo": "https://www.leenelite.com/images/leenelite-logo.svg",
+  "email": "info@leenelite.com",
+  "sameAs": [
+    "https://www.instagram.com/leen.elite",
+    "https://x.com/LeenElite",
+    "https://www.snapchat.com/@leenelite",
+    "https://www.linkedin.com/in/leen-elite-263290394/",
+    "https://www.tiktok.com/@leen.elite",
+    "https://www.facebook.com/profile.php?id=61582702317436"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "info@leenelite.com",
+      "availableLanguage": [
+        "en",
+        "ar"
+      ]
+    }
+  ]
+}
+</script>
+
+</head>
+
+  <body class="service-detail">
     <a href="#maincontent" class="skip-link">Skip to main content</a>
 
     <div class="top-nav">
@@ -41,6 +75,7 @@
         <a href="exhibitions.html">Exhibitions</a>
         <a href="upcoming-exhibitions.html" class="active">Our Upcoming Exhibitions</a>
         <a href="giveaways.html">Gifts &amp; Trophies</a>
+              <a href="company-profile.html" target="_blank" rel="noopener">Company Profile</a>
       </nav>
       <div class="social-icons">
         <a href="https://www.instagram.com/leen.elite" target="_blank" rel="noopener" aria-label="Instagram"><img draggable="false" loading="lazy" src="../images/icons/instagram.svg" alt="Instagram" /></a>
@@ -56,28 +91,34 @@
     </div>
 
     <main id="maincontent" tabindex="-1">
-      <div class="page-container">
+      <div class="page-container page-container--no-swap">
         <div class="left-col section-fade">
           <h1>Our Upcoming Exhibitions</h1>
-          <p>A preview of our upcoming exhibitions and participation schedule.</p>
-          <p>Choose your participation type, category, and size — we will contact you to confirm final allocation based on availability.</p>
-          <!-- Side visual (EN) -->
+
+
+
+          <!-- Calendar (left) -->
           <figure class="page-side-media page-side-media--start" aria-hidden="true">
-            <img draggable="false" loading="lazy" src="../images/105.png" alt="" />
+            <img draggable="false" loading="lazy" src="../images/105.webp" alt="Upcoming exhibitions calendar" width="2048" height="1365" />
           </figure>
 
+
+          <p>A preview of our upcoming exhibitions and participation schedule.</p>
+          <p>Choose your participation type, category, and size. We will contact you to confirm the final allocation based on availability.</p>
           <div class="cta"><a href="index.html#contact">Contact Us</a></div>
+
         </div>
 
         <div class="right-col section-fade">
-          <h2>Our Upcoming Exhibitions</h2>
-<div class="placeholder-card">
-  <div class="ph-visual" aria-hidden="true"><img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="" /></div>
-  <p class="ph-title">Coming Soon</p>
-  <button class="reserve-btn" type="button" data-open-reserve-modal>Book Your Space Now</button>
-  <p class="ph-note">Note: Space number and exact location are confirmed after booking, subject to availability.</p>
-</div>
-</div>
+          <!-- Leen World (right) -->
+          <div class="placeholder-card">
+            <div class="ph-visual ph-visual--contain" aria-hidden="true">
+              <img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="Leen World" />
+            </div>
+            <p class="ph-title">Coming Soon</p>
+            <button class="reserve-btn" type="button" data-open-reserve-modal>Book Your Space Now</button>
+            <p class="ph-note">Note: Space number and exact location are confirmed after booking, subject to availability.</p>
+          </div>
         </div>
       </div>
     </main>
@@ -244,7 +285,7 @@
           <a href="https://www.facebook.com/profile.php?id=61582702317436" target="_blank" rel="noopener" aria-label="Facebook"><img draggable="false" loading="lazy" src="../images/icons/facebook.svg" alt="Facebook" /></a>
         </div>
 
-        <div class="legal">© 2025 Leen Elite. All rights reserved.</div>
+        <div class="legal">© 2026 Leen Elite. All rights reserved.</div>
       </div>
     </footer>
   </body>

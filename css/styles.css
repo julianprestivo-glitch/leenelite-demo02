@@ -216,6 +216,15 @@ a {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.top-nav nav::-webkit-scrollbar {
+  height: 0;
 }
 
 .top-nav nav a {
@@ -249,6 +258,8 @@ a {
   background: rgba(255, 255, 255, 0.06);
   align-items: center;
   justify-content: center;
+  /* IMPORTANT: keep the 3 lines stacked (not side-by-side) */
+  flex-direction: column;
   gap: 4px;
   cursor: pointer;
   flex-shrink: 0;
@@ -267,6 +278,15 @@ a {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.86);
   transition: transform var(--ease-fast), opacity var(--ease-fast);
+}
+
+/* A subtle brand touch: the middle bar is slightly shorter,
+   and the hover state uses the brand gold. */
+.nav-toggle span:nth-child(2){
+  width: 12px;
+}
+.nav-toggle:hover span{
+  background: rgba(211, 180, 78, 0.95);
 }
 
 .top-nav.is-open .nav-toggle span:nth-child(1) {
@@ -435,8 +455,8 @@ html[dir="rtl"] .top-nav nav {
 }
 
 body.rtl .side-nav {
-  right: auto;
-  left: 24px;
+  left: auto;
+  right: 24px;
 }
 
 .side-nav a {
@@ -934,12 +954,12 @@ body.rtl .contact-form {
   padding: 12px 14px;
   border-radius: var(--radius-sm);
   /* Improve contrast on dark backgrounds by increasing the input background
-     opacity.  A 20% opacity offers clearer legibility while maintaining
+     opacity.  A 32% opacity offers clearer legibility while maintaining
      the overall dark aesthetic. */
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.32);
   /* Soften the border colour with a hint of gold for cohesion with the
      brand palette and to visually separate the input from the backdrop. */
-  border: 1px solid rgba(211, 180, 78, 0.45);
+  border: 1px solid rgba(211, 180, 78, 0.55);
   color: var(--colour-white);
   font-size: 1rem;
   outline: none;
@@ -1184,6 +1204,29 @@ body.rtl .contact-info {
   .clients-marquee-viewport::after { display: none; }
 }
 
+/* Tablet: stop marquee animation and use horizontal scroll + scroll-snap */
+.clients-marquee--snap .clients-marquee-track{
+  animation: none !important;
+}
+
+.clients-marquee--snap .clients-marquee-row{
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.clients-marquee--snap .client-tile{
+  scroll-snap-align: start;
+}
+
+.clients-marquee--snap .clients-marquee-viewport::before,
+.clients-marquee--snap .clients-marquee-viewport::after{
+  display: none;
+}
+
+
 /* Priority Clients Carousel */
 .clients-carousel {
   width: 100%;
@@ -1382,55 +1425,99 @@ body.rtl .left-col {
   padding: 56px 36px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  /* align items to the top for a balanced layout across service pages */
+  gap: 20px; /* consistent vertical spacing between elements */
 }
 
 .right-col h2 {
   color: var(--colour-gold);
-  margin-bottom: 12px;
+  margin-top: 0;
+  margin-bottom: 16px;
 }
 
 .right-col p {
   font-size: 1.02rem;
+  /* add bottom margin for separation between paragraphs */
+  margin: 0 0 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   Service detail pages (Events / Exhibitions / Upcoming Exhibitions / Gifts)
+   After removing the redundant “Service Overview / نظرة عامة” heading, we
+   slightly tighten the top padding so visuals sit a bit higher and feel
+   better aligned.
+--------------------------------------------------------------------------- */
+body.service-detail .right-col{
+  padding-top: 48px;
+}
+
+/* Upcoming Exhibitions placeholder: remove extra top offset once the heading is removed */
+body.service-detail .placeholder-card{
+  margin-top: 0;
+}
+
+@media (max-width: 900px){
+  body.service-detail .right-col{
+    padding-top: 40px;
+  }
 }
 
 
 /* Service page visual (used in Gifts & Trophies) */
 .service-visual{
+  /* Make visuals fill their allotted space without “frame” styling */
   width: 100%;
-  margin-top: 22px;
-  display: flex;
-  justify-content: center;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .service-visual img{
   width: 100%;
-  max-width: 460px;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--ui-border);
-  box-shadow: var(--shadow-card);
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border: 0;
+  box-shadow: none;
+  background: none;
 }
 
 /* Side image blocks for page sections (Upcoming Exhibitions / Exhibitions)
    Keeps visuals polished without changing existing images. */
 .page-side-media{
-  margin: 18px 0 18px;
+  /* No framed look: let images fill the slot uniformly */
+  margin: 0;
   width: 100%;
-  max-width: 460px;
+  max-width: none;
   aspect-ratio: 16 / 9;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.02);
-  box-shadow: 0 18px 52px rgba(0,0,0,0.55);
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 .page-side-media img{
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Specific polish for the “Leen World” style image (EN): keep it premium and readable */
+.page-side-media--logo{
+  background: rgba(255,255,255,0.92);
+  border-color: rgba(211, 180, 78, 0.25);
+  padding: 18px;
+  border: 1px solid rgba(211, 180, 78, 0.25);
+}
+
+.page-side-media--logo img{
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: transparent;
 }
 /* Align to visual right side based on language direction */
 .page-side-media--end{ margin-inline-start: auto; }
@@ -1832,27 +1919,35 @@ body.rtl #intro-overlay .intro-sub {
   background: rgba(255,255,255,0.03);
 }
 .placeholder-card .ph-visual{
-  height: 160px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.06);
+  /* No inner frame: the image should fill the visual area */
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: none;
+  border: 0;
+  box-shadow: none;
   margin-bottom: 12px;
 }
 .placeholder-card .ph-visual img{
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
-  padding: 10px;
+  object-fit: cover;
+  padding: 0;
   filter: none;
 }
+
+/* Use contain for logo-like visuals (Leen World) so it doesn't crop */
+.ph-visual--contain img{ object-fit: contain; }
 
 
 .placeholder-card .ph-title{
   margin: 6px 0 12px;
   font-weight: 800;
   color: var(--colour-gold);
-  font-size: 1.05rem;
+  /* Slightly larger heading for better hierarchy within the placeholder card */
+  font-size: 1.2rem;
 }
 .placeholder-card .ph-note{
   margin: 12px 0 0;
@@ -2025,8 +2120,9 @@ body.rtl #intro-overlay .intro-sub {
   width: 100%;
   padding: 12px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.04);
+  /* Increase background opacity for better contrast against dark modals */
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
   color: var(--ui-text);
   outline: none;
   transition: border-color var(--ease-fast), box-shadow var(--ease-fast), background var(--ease-fast);
@@ -2343,10 +2439,16 @@ body.modal-open{ overflow: hidden; }
 
 /* Events page feature image */
 .feature-image{
-  margin: 14px 0 18px;
-  border-radius: 14px;
+  /* No framed look: let the image fill the slot uniformly */
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  margin: 0;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 0;
+  background: none;
+  box-shadow: none;
 }
 .feature-image img{
   width: 100%;
@@ -2508,12 +2610,56 @@ body.modal-open{ overflow: hidden; }
   50%{ transform: translateY(-50%) rotate(-7deg); }
 }
 
+/* Tablet tuning (iPad / small tablets): keep wings elegant and away from the headline */
+@keyframes heroWingFlapL_tablet{
+  0%, 100%{ transform: translateY(-50%) rotate(-1.5deg); }
+  50%{ transform: translateY(-50%) rotate(4deg); }
+}
+
+@keyframes heroWingFlapR_tablet{
+  0%, 100%{ transform: translateY(-50%) rotate(1.5deg); }
+  50%{ transform: translateY(-50%) rotate(-4deg); }
+}
+
+@media (max-width: 1024px){
+  #hero .hero-wing{
+    height: 62%;
+    top: 56%;
+    opacity: 0.88;
+    max-height: 480px;
+  }
+  #hero .hero-wing--left{
+    left: -10vw;
+    transform-origin: 18% 72%;
+    animation: heroWingFlapL_tablet 6.5s ease-in-out infinite;
+  }
+  #hero .hero-wing--right{
+    right: -10vw;
+    transform-origin: 82% 72%;
+    animation: heroWingFlapR_tablet 6.5s ease-in-out infinite;
+    animation-delay: 0.18s;
+  }
+}
+
 /* Mobile tuning */
 @media (max-width: 680px){
   #hero .hero-wing{
-    height: 68%;
-    top: 56%;
-    opacity: 0.85;
+    height: 58%;
+    top: 58%;
+    opacity: 0.84;
+    max-height: 420px;
+  }
+  /* Keep wings visible but prevent them from colliding on phones */
+  #hero .hero-wing--left{
+    left: -18vw;
+    transform-origin: 20% 70%;
+    animation: heroWingFlapL_mobile 6s ease-in-out infinite;
+  }
+  #hero .hero-wing--right{
+    right: -18vw;
+    transform-origin: 80% 70%;
+    animation: heroWingFlapR_mobile 6s ease-in-out infinite;
+    animation-delay: 0.18s;
   }
   #hero .hero-beam::before{
     width: min(60vw, 520px);
@@ -2526,4 +2672,768 @@ body.modal-open{ overflow: hidden; }
 @media (prefers-reduced-motion: reduce){
   #hero .hero-wing{ animation: none !important; }
   #hero .hero-beam::before{ animation: none !important; }
+}
+
+
+/* Hero manual slider: single left arrow (premium + gold pulse) */
+.hero-slide-next{
+  position: absolute;
+  left: clamp(12px, 2.2vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 1px solid rgba(211, 180, 78, 0.55);
+  background: rgba(0, 0, 0, 0.34);
+  color: var(--colour-gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.42),
+    0 0 26px rgba(211, 180, 78, 0.10);
+  transition:
+    transform var(--ease-fast),
+    background var(--ease-fast),
+    border-color var(--ease-fast),
+    box-shadow var(--ease-fast);
+}
+
+.hero-slide-next svg{
+  width: 22px;
+  height: 22px;
+}
+
+.hero-slide-next:hover{
+  transform: translateY(-50%) scale(1.03);
+  background: rgba(0, 0, 0, 0.44);
+  border-color: rgba(211, 180, 78, 0.75);
+  box-shadow:
+    0 22px 52px rgba(0, 0, 0, 0.50),
+    0 0 30px rgba(211, 180, 78, 0.16);
+}
+
+.hero-slide-next:active{
+  transform: translateY(-50%) scale(0.98);
+}
+
+.hero-slide-next:focus-visible{
+  outline: 2px solid rgba(211, 180, 78, 0.75);
+  outline-offset: 4px;
+}
+
+/* Subtle pulse by default */
+.hero-slide-next{
+  animation: heroNextSoftPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes heroNextSoftPulse{
+  0%, 100%{ box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42), 0 0 24px rgba(211, 180, 78, 0.10); }
+  50%{ box-shadow: 0 20px 50px rgba(0, 0, 0, 0.48), 0 0 30px rgba(211, 180, 78, 0.16); }
+}
+
+/* Stronger attention after 8s on the wings slide */
+.hero-slide-next.is-attn{
+  animation: heroNextAttention 1.45s ease-in-out infinite;
+}
+
+@keyframes heroNextAttention{
+  0%, 100%{
+    box-shadow:
+      0 22px 54px rgba(0, 0, 0, 0.52),
+      0 0 0 0 rgba(211, 180, 78, 0.28),
+      0 0 32px rgba(211, 180, 78, 0.22);
+  }
+  50%{
+    box-shadow:
+      0 26px 60px rgba(0, 0, 0, 0.58),
+      0 0 0 14px rgba(211, 180, 78, 0.00),
+      0 0 38px rgba(211, 180, 78, 0.30);
+  }
+}
+
+@media (max-width: 680px){
+  .hero-slide-next{
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   Company Profile Viewer (EN/AR) – images-only + deterrence controls
+----------------------------------------------------------------------------- */
+.pf-viewer{
+  max-width: min(92vw, 1400px);
+  margin: 0 auto;
+  padding: 28px var(--section-px) 56px;
+}
+
+.pf-viewer__header{
+  margin-bottom: 14px;
+}
+
+.pf-viewer__header h1{
+  margin: 0 0 6px;
+  color: var(--colour-gold);
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  letter-spacing: 0.2px;
+}
+
+.pf-viewer__header p{
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: 0.98rem;
+}
+
+.pf-viewer__controls{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid var(--ui-border-2);
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  padding: 12px 12px;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.45);
+  margin: 16px 0 14px;
+}
+
+/* Profile Viewer toolbar refinement (more professional + brand-consistent)
+   - Remove the extra top gap once the redundant title is removed.
+   - Keep controls visible while scrolling via sticky positioning.
+   - Add a subtle glass effect that matches the site header style. */
+body.pf-body .pf-viewer__controls{
+  margin-top: 0;
+  position: sticky;
+  top: calc(var(--header-h) + 12px);
+  z-index: 1500;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border-color: rgba(255,255,255,0.10);
+}
+
+body.pf-body .pf-viewer{
+  padding-top: 20px;
+}
+
+body.pf-body .pf-actions,
+body.pf-body .pf-zoom{
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.18);
+}
+
+body.pf-body .pf-counter{
+  border-radius: 999px;
+  border: 1px solid rgba(211, 180, 78, 0.22);
+  background: rgba(211, 180, 78, 0.08);
+  padding: 6px 10px;
+}
+
+.pf-actions{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pf-counter{
+  font-weight: 800;
+  color: rgba(255,255,255,0.86);
+  letter-spacing: 0.3px;
+  padding: 0 6px;
+}
+
+.pf-btn{
+  appearance: none;
+  border: 1px solid rgba(211, 180, 78, 0.45);
+  background: rgba(211, 180, 78, 0.12);
+  color: var(--colour-gold);
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform var(--ease-fast), background var(--ease-fast), border-color var(--ease-fast);
+  min-width: 92px;
+}
+
+.pf-btn:hover{
+  background: rgba(211, 180, 78, 0.18);
+  border-color: rgba(211, 180, 78, 0.70);
+  transform: translateY(-1px);
+}
+
+.pf-btn:active{
+  transform: translateY(0);
+}
+
+.pf-btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pf-zoom{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pf-zoom .pf-btn{
+  min-width: 54px;
+  padding: 10px 0;
+}
+
+.pf-stage{
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.65);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.60);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Allow horizontal + vertical panning inside the profile viewer,
+     even though the body restricts gestures to pan-y. */
+  touch-action: pan-x pan-y;
+  overscroll-behavior: contain;
+  padding: 18px;
+  max-height: min(72vh, 860px);
+}
+
+/* Desktop feel: click-and-drag to pan when zoomed */
+.pf-stage[data-can-pan="true"]{ cursor: grab; }
+.pf-stage.is-dragging{ cursor: grabbing; }
+
+.pf-stage img{
+  width: 100%;
+  max-width: none;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  /* Zoom is handled by changing width in JS so panning works */
+  transition: width 120ms ease;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.pf-stage img.is-loading{
+  opacity: 0.85;
+  filter: blur(0.2px);
+}
+
+.pf-hint{
+  margin-top: 12px;
+  color: var(--ui-text-muted-2);
+  font-size: 0.92rem;
+}
+
+.pf-toast{
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%) translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5000;
+  background: rgba(0,0,0,0.86);
+  border: 1px solid rgba(211, 180, 78, 0.55);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.92);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  transition: opacity 220ms ease, transform 220ms ease;
+  max-width: calc(100vw - 28px);
+  text-align: center;
+}
+
+.pf-toast.is-show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 640px){
+  .pf-viewer{ padding-top: 18px; }
+  .pf-stage{ padding: 12px; max-height: 70vh; }
+  .pf-btn{ min-width: 84px; padding: 10px 10px; }
+}
+
+/* Disable print for profile viewer pages only */
+@media print {
+  body.pf-body {
+    display: none !important;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   Newsletter popup (EN/AR) – premium + non-intrusive (mobile: bottom sheet)
+----------------------------------------------------------------------------- */
+.nl-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 4600;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.nl-modal.is-open{
+  display: flex;
+}
+
+.nl-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.70);
+}
+
+.nl-card{
+  position: relative;
+  z-index: 1;
+  width: min(540px, calc(100vw - 32px));
+  border-radius: 18px;
+  border: 1px solid rgba(211, 180, 78, 0.40);
+  background: rgba(0, 0, 0, 0.86);
+  box-shadow: 0 26px 70px rgba(0,0,0,0.62);
+  padding: 20px 18px 18px;
+  backdrop-filter: blur(12px);
+}
+
+.nl-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  transition: background var(--ease-fast), border-color var(--ease-fast), transform var(--ease-fast);
+}
+
+body.rtl .nl-close{
+  right: auto;
+  left: 10px;
+}
+
+.nl-close:hover{
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(211, 180, 78, 0.35);
+  transform: translateY(-1px);
+}
+
+.nl-title{
+  margin: 2px 0 8px;
+  color: var(--colour-gold);
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  font-size: 1.25rem;
+}
+
+.nl-subtitle{
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.nl-form{
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.nl-field{
+  flex: 1;
+}
+
+.nl-input{
+  width: 100%;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  padding: 0 14px;
+  outline: none;
+  transition: border-color var(--ease-fast), background var(--ease-fast);
+}
+
+.nl-input:focus{
+  border-color: rgba(211, 180, 78, 0.55);
+  background: rgba(255,255,255,0.08);
+}
+
+.nl-submit{
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(211, 180, 78, 0.65);
+  background: var(--colour-gold);
+  color: #111;
+  font-weight: 900;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: transform var(--ease-fast), filter var(--ease-fast);
+  white-space: nowrap;
+}
+
+.nl-submit:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.nl-submit.is-loading{
+  opacity: 0.75;
+}
+
+.nl-small{
+  margin: 12px 0 0;
+  color: var(--ui-text-muted-2);
+  font-size: 0.9rem;
+}
+
+.nl-privacy{
+  margin: 10px 0 0;
+  color: var(--ui-text-muted-2);
+  font-size: 0.9rem;
+}
+
+.nl-privacy a{
+  color: rgba(211, 180, 78, 0.95);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(211, 180, 78, 0.35);
+}
+
+.nl-privacy a:hover{
+  border-bottom-color: rgba(211, 180, 78, 0.70);
+}
+
+.nl-error{
+  margin: 12px 0 0;
+  color: rgba(255, 170, 170, 0.95);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.nl-success{
+  margin: 12px 0 0;
+  color: rgba(211, 180, 78, 0.95);
+  font-weight: 900;
+  font-size: 0.98rem;
+}
+
+.nl-sr{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Lock background scroll on desktop modal only */
+body.nl-lock{
+  overflow: hidden;
+}
+
+/* Mobile: bottom sheet (no full-screen intrusive interstitial) */
+@media (max-width: 680px){
+  .nl-modal{
+    align-items: flex-end;
+    padding: 0;
+  }
+  .nl-backdrop{
+    display: none;
+  }
+  .nl-card{
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+    padding: 16px 14px 14px;
+    box-shadow: 0 -24px 70px rgba(0,0,0,0.70);
+  }
+  .nl-form{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .nl-submit{
+    width: 100%;
+  }
+}
+
+
+/* ------------------------------
+   Nav submenu (Home)
+------------------------------ */
+.top-nav nav .nav-submenu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.top-nav nav .nav-submenu__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-start: 0;
+  min-width: 250px;
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(7, 8, 10, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+  z-index: 2500;
+}
+
+.top-nav nav .nav-submenu:hover .nav-submenu__panel,
+.top-nav nav .nav-submenu:focus-within .nav-submenu__panel {
+  display: flex;
+}
+
+.top-nav nav .nav-submenu__panel a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+}
+
+/* Mobile: keep submenu links visible inside the dropdown menu */
+@media (max-width: 700px) {
+  .top-nav nav .nav-submenu {
+    display: block;
+  }
+  .top-nav nav .nav-submenu__panel {
+    position: static;
+    display: flex;
+    padding: 0;
+    margin-top: 4px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  .top-nav nav .nav-submenu__panel a {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+}
+
+/* ------------------------------
+   Side-nav tooltip labels (Home)
+------------------------------ */
+.side-nav a {
+  position: relative;
+}
+
+.side-nav a::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 12px);
+  transform: translateY(-50%) translateX(6px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(211, 180, 78, 0.25);
+  background: rgba(0, 0, 0, 0.75);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.85rem;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  transition: opacity var(--ease-fast), transform var(--ease-fast);
+}
+
+.side-nav a::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 4px);
+  transform: translateY(-50%) translateX(6px);
+  opacity: 0;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid rgba(0, 0, 0, 0.75);
+  transition: opacity var(--ease-fast), transform var(--ease-fast);
+}
+
+.side-nav a:hover::after,
+.side-nav a:focus-visible::after,
+.side-nav a:hover::before,
+.side-nav a:focus-visible::before {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ------------------------------
+   RTL: swap service page columns on desktop
+------------------------------ */
+body.rtl .page-container {
+  flex-direction: row-reverse;
+}
+
+/* Upcoming exhibitions: keep physical layout (calendar on LEFT, Leen World on RIGHT) in both EN/AR */
+body.rtl .page-container.page-container--no-swap{
+  flex-direction: row;
+}
+
+/* When we disable the RTL swap, restore the divider to the correct edge */
+body.rtl .page-container.page-container--no-swap .left-col{
+  border-left: none;
+  border-right: 1px solid var(--ui-border-2);
+}
+
+body.rtl .right-col {
+  text-align: right;
+}
+
+/* ------------------------------
+   Branded language landing (root /index.html)
+------------------------------ */
+.lang-landing {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 34px 16px;
+  background: radial-gradient(1200px 600px at 50% 0%, rgba(211, 180, 78, 0.12), transparent 60%),
+              radial-gradient(900px 500px at 20% 70%, rgba(234, 189, 99, 0.10), transparent 55%),
+              #000;
+}
+
+.lang-landing__card {
+  width: min(560px, 94vw);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.60);
+  padding: 30px 22px;
+  text-align: center;
+}
+
+.lang-landing__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.lang-landing__brand img {
+  width: 56px;
+  height: auto;
+}
+
+.lang-landing__title {
+  margin: 0;
+  font-size: 1.55rem;
+  letter-spacing: 0.6px;
+  color: var(--colour-white);
+}
+
+.lang-landing__subtitle {
+  margin: 10px 0 18px;
+  color: var(--ui-text-muted);
+}
+
+.lang-landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  border: 1px solid rgba(211, 180, 78, 0.35);
+  background: rgba(211, 180, 78, 0.12);
+  color: var(--colour-gold);
+  transition: background var(--ease-fast), border-color var(--ease-fast), transform var(--ease-fast);
+}
+
+.lang-btn:hover {
+  background: rgba(211, 180, 78, 0.18);
+  border-color: rgba(211, 180, 78, 0.55);
+  transform: translateY(-1px);
+}
+
+.lang-btn--primary {
+  background: var(--colour-gold);
+  border-color: var(--colour-gold);
+  color: #111;
+}
+
+.lang-btn--primary:hover {
+  background: var(--colour-gold-light);
+  border-color: var(--colour-gold-light);
+}
+
+.lang-landing__hint {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Mobile-specific adjustments to keep hero wings visible but not overlapping on very small screens */
+@keyframes heroWingFlapL_mobile{
+  0%, 100%{ transform: translateY(-50%) rotate(-2deg); }
+  50%{ transform: translateY(-50%) rotate(5deg); }
+}
+@keyframes heroWingFlapR_mobile{
+  0%, 100%{ transform: translateY(-50%) rotate(2deg); }
+  50%{ transform: translateY(-50%) rotate(-5deg); }
+}
+
+@media (max-width: 480px){
+  #hero .hero-wing{
+    height: 46%;
+    top: 62%;
+    opacity: 0.80;
+  }
+  #hero .hero-wing--left{
+    left: -24vw;
+    transform-origin: 20% 70%;
+    animation: heroWingFlapL_mobile 6s ease-in-out infinite;
+  }
+  #hero .hero-wing--right{
+    right: -24vw;
+    transform-origin: 80% 70%;
+    animation: heroWingFlapR_mobile 6s ease-in-out infinite;
+  }
+}
+
+/* Upcoming Exhibitions - Leen World: show full image (no crop) */
+.ph-visual--contain img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
 }

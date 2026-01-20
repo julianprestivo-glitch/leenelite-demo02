@@ -13,7 +13,7 @@
 <meta content="Leen Elite, events, conferences, summits, exhibitions, booth design, marketing services, corporate gifts, trophies, Saudi Arabia" name="keywords"/>
 <meta content="index, follow" name="robots"/>
 <meta content="Leen Elite – An Ambition That Reaches the Sky" property="og:title"/>
-<meta content="An integrated suite of services for Events &amp; Conferences, Exhibitions, Marketing, and Corporate Gifts &amp; Trophies — delivered with an invaluable legacy of experience since 2009." property="og:description"/>
+<meta content="An integrated suite of services for Events &amp; Conferences, Exhibitions, and Corporate Gifts &amp; Trophies — delivered with an invaluable legacy of experience since 2009." property="og:description"/>
 <meta content="../images/leenelite-logo-white.svg" property="og:image"/>
 <meta content="website" property="og:type"/>
 <meta content="en_US" property="og:locale"/>
@@ -22,8 +22,43 @@
 <link href="../images/leenelite-logo-white.svg" rel="icon" type="image/png"/>
 <title>Leen Elite | Integrated Event Services</title>
 <link href="../css/styles.css" rel="stylesheet"/>
+<link rel="preload" as="image" href="../images/ambition-building.webp" fetchpriority="high"/>
 <script defer="" src="../js/script.js"></script>
 <link href="../manifest.webmanifest" rel="manifest"/>
+<link rel="alternate" hreflang="en" href="https://www.leenelite.com/en/index.html" />
+<link rel="alternate" hreflang="ar" href="https://www.leenelite.com/ar/index.html" />
+<link rel="alternate" hreflang="x-default" href="https://www.leenelite.com/en/index.html" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Leen Elite",
+  "url": "https://www.leenelite.com",
+  "logo": "https://www.leenelite.com/images/leenelite-logo.svg",
+  "email": "info@leenelite.com",
+  "sameAs": [
+    "https://www.instagram.com/leen.elite",
+    "https://x.com/LeenElite",
+    "https://www.snapchat.com/@leenelite",
+    "https://www.linkedin.com/in/leen-elite-263290394/",
+    "https://www.tiktok.com/@leen.elite",
+    "https://www.facebook.com/profile.php?id=61582702317436"
+  ],
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "email": "info@leenelite.com",
+      "availableLanguage": [
+        "en",
+        "ar"
+      ]
+    }
+  ]
+}
+</script>
+
 </head>
 <body>
 <!-- Skip link for keyboard navigation -->
@@ -88,7 +123,16 @@
 <a href="#about">Who We Are</a>
 <a href="#have">Why Us</a>
 <a href="#projects">Our Projects</a>
-<a href="#offer">What We Offer</a>
+<div class="nav-submenu">
+  <a class="nav-submenu__trigger" href="#offer">What We Offer</a>
+  <div class="nav-submenu__panel" aria-label="Services">
+    <a href="events.html">Events &amp; Conferences</a>
+    <a href="exhibitions.html">Exhibitions</a>
+    <a href="upcoming-exhibitions.html">Our Upcoming Exhibitions</a>
+    <a href="giveaways.html">Gifts &amp; Trophies</a>
+  </div>
+</div>
+<a href="company-profile.html" target="_blank" rel="noopener">Company Profile</a>
 <a href="#contact">Contact</a>
 </nav>
 <div class="social-icons">
@@ -155,6 +199,11 @@
   <img class="hero-wing hero-wing--left" src="../images/wing-left.webp" alt="" />
   <img class="hero-wing hero-wing--right" src="../images/wing-right.webp" alt="" />
 </div>
+<button class="hero-slide-next" type="button" aria-label="Next slide" data-hero-next>
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
 <div class="content">
 <h1 aria-live="polite" class="hero-heading">AN AMBITION THAT REACHES THE SKY...</h1>
 <p aria-live="polite" class="hero-subtitle">WITH A GLOBAL VISION.</p>
@@ -338,7 +387,7 @@
 <a aria-label="TikTok" href="https://www.tiktok.com/@leen.elite" rel="noopener" target="_blank"><img alt="TikTok" draggable="false" loading="lazy" src="../images/icons/tiktok.svg"/></a>
 <a aria-label="Facebook" href="https://www.facebook.com/profile.php?id=61582702317436" rel="noopener" target="_blank"><img alt="Facebook" draggable="false" loading="lazy" src="../images/icons/facebook.svg"/></a>
 </div>
-<div class="legal">© 2025 Leen Elite. All rights reserved.</div>
+<div class="legal">© 2026 Leen Elite. All rights reserved.</div>
 </div>
 </footer>
 </body>

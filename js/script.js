@@ -26,6 +26,33 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (el.parentNode) el.parentNode.removeChild(el);
   };
 
+  // Conversion tracking placeholders (Google Ads / GA4 ready)
+  // You can connect these to GTM/GA4 by listening for:
+  // - dataLayer events (leenelite_*), or
+  // - the CustomEvent 'leenelite:conversion'.
+  const trackConversion = (name, payload = {}) => {
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: `leenelite_${name}`, ...payload });
+    } catch {
+      // ignore
+    }
+
+    try {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', name, payload);
+      }
+    } catch {
+      // ignore
+    }
+
+    try {
+      window.dispatchEvent(new CustomEvent('leenelite:conversion', { detail: { name, ...payload } }));
+    } catch {
+      // ignore
+    }
+  };
+
   // ---------------------------------------------------------------------------
   // 1) Header height sync (prevents fixed header overlap on all pages)
   // ---------------------------------------------------------------------------
@@ -161,16 +188,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------------------------------------------------------------------------
   // 4) Optional hero slider (home only)
   // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // 4) Hero slider (home): manual only + single left arrow + swipe
+  // ---------------------------------------------------------------------------
   const hero = document.querySelector('#hero');
-  if (!prefersReducedMotion && hero && hero.dataset && hero.dataset.slides) {
+  if (hero && hero.dataset && hero.dataset.slides) {
     try {
       const slides = JSON.parse(hero.dataset.slides);
       if (Array.isArray(slides) && slides.length > 1) {
-        let current = 0;
-        let timerId = null;
-        const DEFAULT_SLIDE_MS = 6000;
         const headingEl = hero.querySelector('.hero-heading');
         const subtitleEl = hero.querySelector('.hero-subtitle');
+        const nextBtn = hero.querySelector('[data-hero-next]');
+
+        const wingsIndexRaw = slides.findIndex((s) => s && s.wings);
+        const wingsIndex = wingsIndexRaw >= 0 ? wingsIndexRaw : 0;
+
+        let current = wingsIndex;
+        let interacted = false;
+
+        let startX = null;
+        let startY = null;
 
         const applySlide = () => {
           const slide = slides[current] || {};
@@ -186,33 +223,63 @@ document.addEventListener('DOMContentLoaded', () => {
           if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
         };
 
+        const goNext = () => {
+          interacted = true;
+          if (nextBtn) nextBtn.classList.remove('is-attn');
+          current = (current + 1) % slides.length;
+          applySlide();
+        };
+
         applySlide();
 
-        const getDuration = () => {
-          const slide = slides[current] || {};
-          const ms = Number(slide.duration);
-          // Keep things sane even if duration is malformed.
-          if (Number.isFinite(ms) && ms > 1000) return ms;
-          return DEFAULT_SLIDE_MS;
-        };
+        // Attention pulse after ~8s on the wings slide (if user didn't interact).
+        window.setTimeout(() => {
+          if (!nextBtn) return;
+          if (interacted) return;
+          if (current !== wingsIndex) return;
+          nextBtn.classList.add('is-attn');
+        }, 8000);
 
-        const scheduleNext = () => {
-          // Clear any pending timers (defensive).
-          if (timerId) window.clearTimeout(timerId);
+        if (nextBtn) {
+          nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            goNext();
+          });
+        }
 
-          timerId = window.setTimeout(() => {
-            current = (current + 1) % slides.length;
-            applySlide();
-            scheduleNext();
-          }, getDuration());
-        };
+        // Swipe support (mobile/tablet)
+        hero.addEventListener('pointerdown', (e) => {
+          // Ignore swipe if user starts on a link/button inside hero.
+          const interactive = e.target && e.target.closest('a, button');
+          if (interactive) return;
+          startX = e.clientX;
+          startY = e.clientY;
+        });
 
-        scheduleNext();
+        hero.addEventListener('pointerup', (e) => {
+          if (startX == null || startY == null) return;
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+          startX = null;
+          startY = null;
+
+          // Only treat as swipe if horizontal intent is clear.
+          if (Math.abs(dx) < 45) return;
+          if (Math.abs(dy) > 60) return;
+
+          goNext();
+        });
+
+        hero.addEventListener('pointercancel', () => {
+          startX = null;
+          startY = null;
+        });
       }
     } catch {
       // Fail silently in production.
     }
   }
+
 
   // ---------------------------------------------------------------------------
   // 5) Contact form feedback (static site placeholder)
@@ -243,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const statusEl = ensureStatusEl();
       statusEl.textContent = getMessage();
       statusEl.classList.add('is-success');
+
+      trackConversion('contact_submit', { lang: lang.startsWith('ar') ? 'ar' : 'en', page: String(window.location.pathname || '') });
 
       contactForm.reset();
     });
@@ -289,6 +358,225 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+
+  // ---------------------------------------------------------------------------
+  // 6a) Newsletter / Updates popup (EN/AR) – non-intrusive + 7-day frequency
+  // ---------------------------------------------------------------------------
+  const initNewsletterPopup = () => {
+    // Don't show inside the Company Profile viewer pages.
+    try {
+      if (window.location && String(window.location.pathname || '').includes('company-profile')) return;
+    } catch {
+      // ignore
+    }
+
+    const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+    const isArabic = lang.startsWith('ar');
+
+    const copy = isArabic
+      ? {
+          title: 'اشترك في تحديثات لين إليت',
+          subtitle: 'كن أول من يعرف عن معارضنا القادمة، أبرز فعالياتنا، والعروض الخاصة.',
+          placeholder: 'اكتب بريدك الإلكتروني',
+          button: 'اشترك',
+          privacyNote: 'نحترم خصوصيتك — بدون رسائل مزعجة، فقط تحديثات مهمة.',
+          success: 'شكرًا لك! تم الاشتراك بنجاح.',
+          invalid: 'يرجى إدخال بريد إلكتروني صحيح.',
+          failed: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+          privacyPrefix: 'بالاشتراك، أنت توافق على',
+          privacyLink: 'سياسة الخصوصية',
+          closeLabel: 'إغلاق'
+        }
+      : {
+          title: 'Subscribe to Leen Elite Updates',
+          subtitle: 'Be the first to hear about upcoming exhibitions, event highlights, and special offers.',
+          placeholder: 'Enter your email address',
+          button: 'Subscribe',
+          privacyNote: 'We respect your privacy. No spam — only relevant updates.',
+          success: 'Thank you! You’re subscribed successfully.',
+          invalid: 'Please enter a valid email address.',
+          failed: 'Something went wrong. Please try again.',
+          privacyPrefix: 'By subscribing, you agree to our',
+          privacyLink: 'Privacy Policy',
+          closeLabel: 'Close'
+        };
+
+    const isMobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 680px)').matches;
+    const scrollThreshold = isMobile ? 0.45 : 0.35;
+
+    // Use absolute paths (works from any /en or /ar page)
+    const privacyHref = (() => {
+      // Use relative paths so it works on both hosted sites (https://...) and local file testing (file://...).
+      const p = String((window.location && window.location.pathname) || '');
+      // If we're already inside /en/ or /ar/ folders, a simple relative link is best.
+      if (p.includes('/ar/')) return 'privacy.html';
+      if (p.includes('/en/')) return 'privacy.html';
+      // Fallback (root language chooser or other edge cases)
+      return isArabic ? 'ar/privacy.html' : 'en/privacy.html';
+    })();
+
+    const modal = document.createElement('div');
+    modal.className = `nl-modal${isMobile ? ' is-mobile' : ''}`;
+    modal.setAttribute('aria-hidden', 'true');
+
+    modal.innerHTML = `
+      <div class="nl-backdrop" data-nl-close></div>
+      <div class="nl-card" role="dialog" aria-modal="true" aria-labelledby="nlTitle">
+        <button class="nl-close" type="button" aria-label="${copy.closeLabel}" data-nl-close>×</button>
+        <h3 class="nl-title" id="nlTitle">${copy.title}</h3>
+        <p class="nl-subtitle">${copy.subtitle}</p>
+
+        <form class="nl-form" novalidate>
+          <label class="nl-field">
+            <span class="nl-sr">${copy.placeholder}</span>
+            <input class="nl-input" type="email" name="email" placeholder="${copy.placeholder}" autocomplete="email" inputmode="email" required />
+          </label>
+          <button class="nl-submit" type="submit">${copy.button}</button>
+        </form>
+
+        <p class="nl-small">${copy.privacyNote}</p>
+        <p class="nl-privacy">${copy.privacyPrefix} <a href="${privacyHref}" target="_blank" rel="noopener">${copy.privacyLink}</a>.</p>
+
+        <p class="nl-error" role="alert" hidden></p>
+        <p class="nl-success" role="status" aria-live="polite" hidden></p>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const card = modal.querySelector('.nl-card');
+    const form = modal.querySelector('.nl-form');
+    const input = modal.querySelector('.nl-input');
+    const submitBtn = modal.querySelector('.nl-submit');
+    const errorEl = modal.querySelector('.nl-error');
+    const successEl = modal.querySelector('.nl-success');
+
+    const showError = (msg) => {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    };
+
+    const clearError = () => {
+      if (!errorEl) return;
+      errorEl.textContent = '';
+      errorEl.hidden = true;
+    };
+
+    const showSuccess = (msg) => {
+      if (!successEl) return;
+      successEl.textContent = msg;
+      successEl.hidden = false;
+    };
+
+    const open = () => {
+      if (modal.classList.contains('is-open')) return;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+
+      // Don't lock scroll on mobile (bottom sheet).
+      if (!isMobile) document.body.classList.add('nl-lock');
+
+      window.setTimeout(() => {
+        try {
+          input && input.focus && input.focus();
+        } catch {
+          // ignore
+        }
+      }, 50);
+    };
+
+    const close = (persist = true) => {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('nl-lock');
+          };
+
+    modal.querySelectorAll('[data-nl-close]').forEach((btn) => {
+      btn.addEventListener('click', () => close(true));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('is-open')) return;
+      if (e.key === 'Escape') close(true);
+    });
+
+    // Show logic: always open after 5 seconds (all devices)
+    let opened = false;
+    const openOnce = () => {
+      if (opened) return;
+      opened = true;
+      open();
+    };
+
+    window.setTimeout(openOnce, 5000);
+
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearError();
+
+        const email = (input && input.value ? input.value.trim() : '').toLowerCase();
+
+        // Basic validation
+        const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+        if (!valid) {
+          showError(copy.invalid);
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('is-loading');
+        }
+
+        const isVercelDemo =
+          typeof window.location === 'object' &&
+          (String(window.location.hostname || '').includes('vercel.app') ||
+            String(window.location.hostname || '') === 'localhost' ||
+            String(window.location.hostname || '') === '127.0.0.1');
+
+        const endpoint = isVercelDemo ? '/api/subscribe' : '/subscribe.php';
+
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              lang: isArabic ? 'ar' : 'en',
+              page: String(window.location.pathname || '')
+            })
+          });
+
+          if (!res.ok) throw new Error('request_failed');
+
+          // Success UI
+          if (form) form.style.display = 'none';
+          showSuccess(copy.success);
+
+          trackConversion('newsletter_subscribe', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
+
+                  } catch {
+          showError(copy.failed);
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('is-loading');
+          }
+        }
+      });
+    }
+
+    // If user clicks the card itself (not inputs/buttons), don't close.
+    if (card) {
+      card.addEventListener('click', (e) => e.stopPropagation());
+    }
+  };
+
+  initNewsletterPopup();
 
     // ---------------------------------------------------------------------------
   // 6b) Priority clients carousel (home)
@@ -464,6 +752,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = Number(root.getAttribute('data-total') || '25');
     const count = Math.max(1, total);
 
+    const isTablet = typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 768px) and (max-width: 1024px)').matches;
+
     const logos = Array.from({ length: count }, (_, i) => {
       const n = String(i + 1).padStart(2, '0');
       return { src: `../images/clients/client-${n}.png`, alt: `Client logo ${i + 1}` };
@@ -471,6 +761,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const rows = Array.from(root.querySelectorAll('.clients-marquee-row'));
     if (!rows.length) return;
+
+    if (isTablet) root.classList.add('clients-marquee--snap');
 
     const rotate = (arr, by) => {
       const n = arr.length;
@@ -484,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
       track.innerHTML = '';
 
       // Duplicate the sequence once to allow a seamless -50% translate loop in CSS.
-      const sequence = prefersReducedMotion ? items : items.concat(items);
+      const sequence = (prefersReducedMotion || isTablet) ? items : items.concat(items);
 
       sequence.forEach((l) => {
         const tile = document.createElement('div');
@@ -520,8 +812,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const list = rows.length >= 2 ? (rowIndex === 1 ? bottomList : topLogos) : logos;
       buildTrack(track, list);
 
-      // If reduced motion: allow horizontal scroll and keep content single-sequence.
-      if (prefersReducedMotion) {
+      // If reduced motion or tablet: allow horizontal scroll and keep content single-sequence.
+      if (prefersReducedMotion || isTablet) {
         row.style.overflowX = 'auto';
         row.style.webkitOverflowScrolling = 'touch';
       }
@@ -763,4 +1055,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (hint) hint.hidden = false;
     });
   }
+
+
+  // ---------------------------------------------------------------------------
+  // Click tracking placeholders (phone / WhatsApp)
+  // ---------------------------------------------------------------------------
+  document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackConversion('phone_click', { href: link.getAttribute('href'), page: String(window.location.pathname || '') });
+    });
+  });
+
+  document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackConversion('whatsapp_click', { href: link.getAttribute('href'), page: String(window.location.pathname || '') });
+    });
+  });
+
 });
