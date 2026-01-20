@@ -3411,21 +3411,29 @@ body.nl-lock{
 }
 
 /* ------------------------------
-   RTL: swap service page columns on desktop
+   RTL: swap service page columns on DESKTOP only
+   
+   IMPORTANT:
+   On mobile we stack the columns (left-col then right-col) via the
+   max-width:900px rule earlier in this file. If we keep the RTL swap
+   active on mobile it forces a 2-column layout, causes horizontal overflow,
+   and the media column (images) can end up off-screen.
 ------------------------------ */
-body.rtl .page-container {
-  flex-direction: row-reverse;
-}
+@media (min-width: 901px){
+  body.rtl .page-container {
+    flex-direction: row-reverse;
+  }
 
-/* Upcoming exhibitions: keep physical layout (calendar on LEFT, Leen World on RIGHT) in both EN/AR */
-body.rtl .page-container.page-container--no-swap{
-  flex-direction: row;
-}
+  /* Upcoming exhibitions: keep physical layout (calendar on LEFT, Leen World on RIGHT) in both EN/AR */
+  body.rtl .page-container.page-container--no-swap{
+    flex-direction: row;
+  }
 
-/* When we disable the RTL swap, restore the divider to the correct edge */
-body.rtl .page-container.page-container--no-swap .left-col{
-  border-left: none;
-  border-right: 1px solid var(--ui-border-2);
+  /* When we disable the RTL swap, restore the divider to the correct edge */
+  body.rtl .page-container.page-container--no-swap .left-col{
+    border-left: none;
+    border-right: 1px solid var(--ui-border-2);
+  }
 }
 
 body.rtl .right-col {
