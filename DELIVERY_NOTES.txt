@@ -1,0 +1,104 @@
+Leen Elite – Front-end + UX/UI updates (EN/AR)
+==================================================
+
+This build is based ONLY on the provided ZIP:
+10-1-2026leenelite-de_patch24_HeroB_SYNC_BEAMFIX_8s.zip
+
+Key changes (paths)
+-------------------
+
+1) Hero slider (Home) – manual only + single left arrow + swipe
+- Files:
+  - en/index.html + ar/index.html: added a single left-side arrow button (data-hero-next)
+  - js/script.js: hero slider logic changed to MANUAL ONLY (no autoplay at all) + swipe support
+  - css/styles.css: styles for .hero-slide-next + stronger pulse after 8 seconds on wings slide
+- Acceptance:
+  - No automatic transitions on desktop or mobile.
+  - Slide changes only by clicking the arrow or swiping.
+
+2) Navbar – add “Company Profile” link (EN/AR)
+- Files:
+  - All pages under /en/*.html and /ar/*.html
+- Behavior:
+  - EN label: Company Profile
+  - AR label: بروفايل الشركة
+  - Opens in a NEW TAB to:
+    - /en/company-profile.html
+    - /ar/company-profile.html
+
+3) Company Profile Viewer (images-only) + deterrence (no PDF exposure)
+- Files:
+  - en/company-profile.html
+  - ar/company-profile.html
+  - js/profile-viewer.js
+  - css/styles.css (viewer UI + toast + print disable for pf pages)
+  - images/pf/en_x7k3/  (obfuscated folder)
+  - images/pf/ar_q9m2/  (obfuscated folder)
+- IMPORTANT:
+  - The PDFs were NOT present in this environment, so I created the viewer and folder structure.
+  - You must place the converted pages as:
+    - images/pf/en_x7k3/page-001.webp, page-002.webp, ...
+    - images/pf/ar_q9m2/page-001.webp, page-002.webp, ...
+  - Recommended conversion quality: 160–200 DPI (WebP, quality ~80–90).
+- Deterrence implemented:
+  - Disable right click in viewer + toast:
+    - EN: “Protected by leenelite”
+    - AR: “محمي بواسطة لين إليت”
+  - Disable Ctrl+S / Ctrl+P + toast
+  - Disable image drag/drop
+  - Disable selection inside viewer area
+  - Disable printing (CSS @media print) for viewer pages only
+
+4) No-cache + noindex (Vercel + SiteGround portability)
+- Files:
+  - vercel.json (headers + 301 redirect / -> /en/index.html)
+  - .htaccess (same headers + 301 redirect / -> /en/index.html)
+  - robots.txt (disallow /images/pf/ + company profile pages)
+- Headers applied to:
+  - /en/company-profile.html
+  - /ar/company-profile.html
+  - /images/pf/*
+
+5) Newsletter popup “Subscribe to Leen Elite Updates” (SEO-friendly + Google Ads friendly)
+- File:
+  - js/script.js (injects popup HTML + logic)
+  - css/styles.css (popup styling)
+- Rules:
+  - Desktop: shows after 5–8 seconds OR after 35% scroll
+  - Mobile: shows as bottom-sheet banner (not full-screen intrusive)
+  - Frequency: once every 7 days (localStorage)
+- Submission:
+  - Vercel demo: POST /api/subscribe (stub returns success)
+  - SiteGround: POST /subscribe.php (sends email to info@leenelite.com via PHP mail)
+  - Success/validation/fail states implemented as requested.
+
+6) “Our Priority Clients / Partners” marquee – Tablet clean mode
+- File:
+  - js/script.js: on tablets (768–1024px), stops marquee animation and enables horizontal scroll
+  - css/styles.css: scroll-snap styling for tablet mode
+- Desktop keeps animation (clean), tablet switches to scroll-snap.
+
+7) Upcoming Exhibitions page – “Leen World” image container + performance
+- Files:
+  - en/upcoming-exhibitions.html: added .page-side-media--logo for the “Leen World” image + switched 105.png -> 105.webp
+  - ar/upcoming-exhibitions.html: switched 411.png -> 411.webp
+  - css/styles.css: styling for .page-side-media--logo (white soft container)
+- Added width/height attributes on the main images to reduce CLS.
+
+8) SEO essentials
+- Added:
+  - robots.txt
+  - sitemap.xml (EN + AR pages, excludes company profile)
+- Added hreflang + Organization schema JSON-LD to all EN/AR pages (head).
+
+9) Image optimization report (largest before/after)
+- Converted:
+  - images/105.png -> images/105.webp   (1593008B -> 217536B)
+  - images/411.png -> images/411.webp   (1639841B -> 207610B)
+  - images/528.png -> images/528.webp   (1702305B -> 190850B)
+
+Notes
+-----
+- Default language is EN via 301 redirect (Vercel + .htaccess). Root index.html was changed to remove meta refresh and provide fallback links.
+- The Company Profile viewer is deterrence, not “absolute protection” (screenshots are still possible).
+

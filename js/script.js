@@ -361,60 +361,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   // ---------------------------------------------------------------------------
-  // 6a) Newsletter / Updates popup (EN/AR) – non-intrusive + 7-day frequency
+    // ---------------------------------------------------------------------------
+  // 6a) Leen Elite VIP popup (EN/AR) – home only + premium minimal (2-line)
   // ---------------------------------------------------------------------------
   const initNewsletterPopup = () => {
-    // Don't show inside the Company Profile viewer pages.
-    try {
-      if (window.location && String(window.location.pathname || '').includes('company-profile')) return;
-    } catch {
-      // ignore
-    }
+    // Home only (English + Arabic):
+    // - /en/index.html  (or /en/)
+    // - /ar/index.html  (or /ar/)
+    const pathname = (() => {
+      try {
+        return String((window.location && window.location.pathname) || '')
+          .replace(/\\/g, '/')
+          .toLowerCase();
+      } catch {
+        return '';
+      }
+    })();
+
+    const isHome = /\/(en|ar)(\/index\.html)?\/?$/.test(pathname);
+    if (!isHome) return;
 
     const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
     const isArabic = lang.startsWith('ar');
 
     const copy = isArabic
       ? {
-          title: 'اشترك في تحديثات لين إليت',
-          subtitle: 'كن أول من يعرف عن معارضنا القادمة، أبرز فعالياتنا، والعروض الخاصة.',
+          title: 'قائمة لين إليت الحصرية',
+          subtitle: 'دعوات حصرية وتحديثات مختارة لأبرز فعالياتنا ومعارضنا.',
           placeholder: 'اكتب بريدك الإلكتروني',
-          button: 'اشترك',
-          privacyNote: 'نحترم خصوصيتك — بدون رسائل مزعجة، فقط تحديثات مهمة.',
-          success: 'شكرًا لك! تم الاشتراك بنجاح.',
+          button: 'انضم الآن',
+          success: 'تم الاشتراك بنجاح ✅',
           invalid: 'يرجى إدخال بريد إلكتروني صحيح.',
           failed: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
-          privacyPrefix: 'بالاشتراك، أنت توافق على',
-          privacyLink: 'سياسة الخصوصية',
           closeLabel: 'إغلاق'
         }
       : {
-          title: 'Subscribe to Leen Elite Updates',
-          subtitle: 'Be the first to hear about upcoming exhibitions, event highlights, and special offers.',
-          placeholder: 'Enter your email address',
-          button: 'Subscribe',
-          privacyNote: 'We respect your privacy. No spam — only relevant updates.',
-          success: 'Thank you! You’re subscribed successfully.',
+          title: 'Leen Elite VIP List',
+          subtitle: 'Exclusive invites & curated updates for our top events and exhibitions.',
+          placeholder: 'Enter your email',
+          button: 'Join Now',
+          success: 'Subscribed successfully ✅',
           invalid: 'Please enter a valid email address.',
           failed: 'Something went wrong. Please try again.',
-          privacyPrefix: 'By subscribing, you agree to our',
-          privacyLink: 'Privacy Policy',
           closeLabel: 'Close'
         };
 
     const isMobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 680px)').matches;
-    const scrollThreshold = isMobile ? 0.45 : 0.35;
-
-    // Use absolute paths (works from any /en or /ar page)
-    const privacyHref = (() => {
-      // Use relative paths so it works on both hosted sites (https://...) and local file testing (file://...).
-      const p = String((window.location && window.location.pathname) || '');
-      // If we're already inside /en/ or /ar/ folders, a simple relative link is best.
-      if (p.includes('/ar/')) return 'privacy.html';
-      if (p.includes('/en/')) return 'privacy.html';
-      // Fallback (root language chooser or other edge cases)
-      return isArabic ? 'ar/privacy.html' : 'en/privacy.html';
-    })();
 
     const modal = document.createElement('div');
     modal.className = `nl-modal${isMobile ? ' is-mobile' : ''}`;
@@ -434,9 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </label>
           <button class="nl-submit" type="submit">${copy.button}</button>
         </form>
-
-        <p class="nl-small">${copy.privacyNote}</p>
-        <p class="nl-privacy">${copy.privacyPrefix} <a href="${privacyHref}" target="_blank" rel="noopener">${copy.privacyLink}</a>.</p>
 
         <p class="nl-error" role="alert" hidden></p>
         <p class="nl-success" role="status" aria-live="polite" hidden></p>
@@ -475,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
 
-      // Don't lock scroll on mobile (bottom sheet).
+      // Lock scroll on desktop modal only.
       if (!isMobile) document.body.classList.add('nl-lock');
 
       window.setTimeout(() => {
@@ -487,22 +476,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 50);
     };
 
-    const close = (persist = true) => {
+    const close = () => {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('nl-lock');
-          };
+    };
 
     modal.querySelectorAll('[data-nl-close]').forEach((btn) => {
-      btn.addEventListener('click', () => close(true));
+      btn.addEventListener('click', close);
     });
 
     window.addEventListener('keydown', (e) => {
       if (!modal.classList.contains('is-open')) return;
-      if (e.key === 'Escape') close(true);
+      if (e.key === 'Escape') close();
     });
 
-    // Show logic: always open after 5 seconds (all devices)
+    // Show logic: open after 5 seconds (home only)
     let opened = false;
     const openOnce = () => {
       if (opened) return;
@@ -511,7 +500,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.setTimeout(openOnce, 5000);
-
 
     if (form) {
       form.addEventListener('submit', async (e) => {
@@ -558,8 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
           showSuccess(copy.success);
 
           trackConversion('newsletter_subscribe', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
-
-                  } catch {
+        } catch {
           showError(copy.failed);
         } finally {
           if (submitBtn) {
@@ -577,6 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   initNewsletterPopup();
+
 
     // ---------------------------------------------------------------------------
   // 6b) Priority clients carousel (home)
