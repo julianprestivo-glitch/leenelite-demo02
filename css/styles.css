@@ -1941,6 +1941,17 @@ body.rtl #intro-overlay .intro-sub {
 /* Use contain for logo-like visuals (Leen World) so it doesn't crop */
 .ph-visual--contain img{ object-fit: contain; }
 
+/* Upcoming Exhibitions: make the Leen World visual a bit smaller + centered */
+.placeholder-card .ph-visual--contain{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.placeholder-card .ph-visual--contain img{
+  width: 92%;
+  height: 92%;
+}
+
 
 .placeholder-card .ph-title{
   margin: 6px 0 12px;
@@ -1968,6 +1979,19 @@ body.rtl #intro-overlay .intro-sub {
   font-weight: 800;
   cursor: pointer;
   transition: transform var(--ease-fast), background var(--ease-fast), border-color var(--ease-fast);
+}
+
+/* Slightly larger CTA inside the Upcoming Exhibitions placeholder card */
+.placeholder-card .reserve-btn{
+  padding: 14px 24px;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 600px){
+  .placeholder-card .reserve-btn{
+    padding: 15px 26px;
+    font-size: 1.08rem;
+  }
 }
 .reserve-btn:hover{
   transform: translateY(-1px);
@@ -2238,9 +2262,28 @@ body.rtl #intro-overlay .intro-sub {
   line-height: 1.4;
 }
 
-.reserve-form input.is-invalid{
+.reserve-form input.is-invalid,
+.reserve-form select.is-invalid,
+.reserve-form textarea.is-invalid,
+.contact-form input.is-invalid,
+.contact-form textarea.is-invalid{
   border-color: rgba(255, 146, 146, 0.85);
   box-shadow: 0 0 0 4px rgba(255, 146, 146, 0.12);
+}
+
+.reserve-options.is-invalid,
+.reserve-category.is-invalid{
+  outline: 2px solid rgba(255, 146, 146, 0.75);
+  outline-offset: 2px;
+  border-radius: 14px;
+}
+
+/* Ensure required asterisk sits nicely with labels (both LTR/RTL) */
+.req{ margin-inline-start: 4px; }
+
+/* Contact form inline errors (re-uses reserve-field-error styling) */
+.contact-form .reserve-field-error{
+  margin: 8px 0 14px;
 }
 
 .reserve-unit-input{

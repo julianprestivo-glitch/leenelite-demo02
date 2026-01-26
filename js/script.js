@@ -284,36 +284,111 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------------------------------------------------------------------------
   // 5) Contact form feedback (static site placeholder)
   // ---------------------------------------------------------------------------
-  const contactForm = document.querySelector('.contact-form');
-  if (contactForm) {
+  const contactForms = document.querySelectorAll('.contact-form');
+  if (contactForms && contactForms.length) {
     const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
-    const getMessage = () =>
-      lang.startsWith('ar')
+    const isArabic = lang.startsWith('ar');
+
+    const getSuccessMessage = () =>
+      isArabic
         ? 'شكرًا لك! تم استلام رسالتك وسنقوم بالتواصل معك قريبًا.'
         : 'Thank you! Your message has been received. We will contact you soon.';
 
-    const ensureStatusEl = () => {
-      let el = contactForm.querySelector('.form-status');
+    const getFieldLabel = (form, input) => {
+      const id = input && input.id;
+      if (!id) return '';
+      const label = form.querySelector(`label[for="${id}"]`);
+      const raw = (label ? label.textContent : '').replace(/\*/g, '').trim();
+      return raw || (input.name || 'This field');
+    };
+
+    const ensureStatusEl = (form) => {
+      let el = form.querySelector('.form-status');
       if (!el) {
         el = document.createElement('div');
         el.className = 'form-status';
         el.setAttribute('role', 'status');
         el.setAttribute('aria-live', 'polite');
-        contactForm.appendChild(el);
+        form.appendChild(el);
       }
       return el;
     };
 
-    contactForm.addEventListener('submit', (event) => {
-      event.preventDefault();
+    const ensureErrorEl = (input) => {
+      let el = input && input.nextElementSibling;
+      if (el && el.classList && el.classList.contains('contact-field-error')) return el;
+      el = document.createElement('p');
+      el.className = 'reserve-field-error contact-field-error';
+      el.setAttribute('role', 'alert');
+      el.hidden = true;
+      input.insertAdjacentElement('afterend', el);
+      return el;
+    };
 
-      const statusEl = ensureStatusEl();
-      statusEl.textContent = getMessage();
-      statusEl.classList.add('is-success');
+    const setInputError = (form, input, message) => {
+      const err = ensureErrorEl(input);
+      if (!message) {
+        err.textContent = '';
+        err.hidden = true;
+        input.classList.remove('is-invalid');
+        return;
+      }
+      err.textContent = message;
+      err.hidden = false;
+      input.classList.add('is-invalid');
+    };
 
-      trackConversion('contact_submit', { lang: lang.startsWith('ar') ? 'ar' : 'en', page: String(window.location.pathname || '') });
+    contactForms.forEach((form) => {
+      const inputs = Array.from(form.querySelectorAll('input[required], textarea[required], select[required]'));
 
-      contactForm.reset();
+      inputs.forEach((input) => {
+        const clear = () => setInputError(form, input, '');
+        input.addEventListener('input', clear);
+        input.addEventListener('change', clear);
+        input.addEventListener('blur', clear);
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        // Clear previous
+        inputs.forEach((input) => setInputError(form, input, ''));
+
+        let firstInvalid = null;
+
+        inputs.forEach((input) => {
+          const value = String(input.value || '').trim();
+          const label = getFieldLabel(form, input);
+
+          // Required
+          if (!value) {
+            const msg = isArabic ? `${label} مطلوب.` : `${label} is required.`;
+            setInputError(form, input, msg);
+            if (!firstInvalid) firstInvalid = input;
+            return;
+          }
+
+          // Format checks
+          if (input.type === 'email' && !input.checkValidity()) {
+            const msg = isArabic ? 'البريد الإلكتروني غير صحيح.' : 'Email address is invalid.';
+            setInputError(form, input, msg);
+            if (!firstInvalid) firstInvalid = input;
+          }
+        });
+
+        if (firstInvalid) {
+          firstInvalid.focus();
+          return;
+        }
+
+        const statusEl = ensureStatusEl(form);
+        statusEl.textContent = getSuccessMessage();
+        statusEl.classList.add('is-success');
+
+        trackConversion('contact_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || '') });
+
+        form.reset();
+      });
     });
   }
 
@@ -894,6 +969,46 @@ document.addEventListener('DOMContentLoaded', () => {
   const isArabic = (document.documentElement.lang || '').toLowerCase().startsWith('ar');
   const CR_RULE = /^[127]\d{9}$/;
 
+  // Field labels for consistent inline messages
+  const fieldLabels = {
+    full_name: isArabic ? 'الاسم الكامل' : 'Full Name',
+    company: isArabic ? 'اسم الشركة' : 'Company Name',
+    email: isArabic ? 'البريد الإلكتروني' : 'Email',
+    phone: isArabic ? 'رقم الجوال' : 'Phone',
+    city: isArabic ? 'المدينة' : 'City',
+    vat: isArabic ? 'الرقم الضريبي' : 'VAT Number',
+    size: isArabic ? 'حجم المساحة' : 'Space Size',
+    type: isArabic ? 'نوع المشاركة' : 'Participation Type',
+    category: isArabic ? 'فئة المساحة' : 'Space Category'
+  };
+
+  const getLabel = (name) => fieldLabels[name] || name;
+
+  const setFieldError = (name, message, targetEl) => {
+    const el = modal.querySelector(`[data-error-for="${name}"]`);
+    if (el) {
+      el.textContent = message || '';
+      el.hidden = !message;
+    }
+    if (targetEl) {
+      if (message) targetEl.classList.add('is-invalid');
+      else targetEl.classList.remove('is-invalid');
+    }
+  };
+
+  const clearReserveErrors = () => {
+    modal.querySelectorAll('.reserve-field-error').forEach((p) => {
+      p.textContent = '';
+      p.hidden = true;
+    });
+    modal.querySelectorAll('.reserve-form input.is-invalid, .reserve-form select.is-invalid, .reserve-form textarea.is-invalid').forEach((el) => {
+      el.classList.remove('is-invalid');
+    });
+    modal.querySelectorAll('.reserve-options.is-invalid, .reserve-category.is-invalid').forEach((el) => {
+      el.classList.remove('is-invalid');
+    });
+  };
+
   const normalizeDigits = (value) => {
     // Convert Arabic-Indic and Eastern Arabic-Indic digits to Latin digits
     const map = {
@@ -1004,6 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hint) hint.hidden = true;
     if (error) error.hidden = true;
     if (form) form.reset();
+    clearReserveErrors();
     setCrError('');
   };
 
@@ -1017,29 +1133,96 @@ document.addEventListener('DOMContentLoaded', () => {
   if (privacy) {
     privacy.addEventListener('change', () => {
       if (error) error.hidden = true;
+      privacy.classList.remove('is-invalid');
     });
   }
 
   if (form) {
+    // Live-clear inline errors when the user edits fields
+    const simpleFieldNames = ['full_name', 'company', 'email', 'phone', 'city', 'vat', 'size'];
+    simpleFieldNames.forEach((name) => {
+      const input = form.querySelector(`[name="${name}"]`);
+      if (!input) return;
+      const clear = () => setFieldError(name, '', input);
+      input.addEventListener('input', clear);
+      input.addEventListener('change', clear);
+    });
+
+    const clearGroupError = (name, containerSelector) => {
+      const container = form.querySelector(containerSelector);
+      setFieldError(name, '', container);
+      if (container) container.classList.remove('is-invalid');
+    };
+
+    form.querySelectorAll('input[name="type"]').forEach((el) => el.addEventListener('change', () => clearGroupError('type', '.reserve-options--type')));
+    form.querySelectorAll('input[name="category"]').forEach((el) => el.addEventListener('change', () => clearGroupError('category', '.reserve-category')));
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
 
+      if (hint) hint.hidden = true;
+      if (error) error.hidden = true;
+      clearReserveErrors();
+
       // Validate Commercial Registration (required)
       if (!validateCR(true)) {
-        if (hint) hint.hidden = true;
         if (crInput) crInput.focus();
         return;
       }
 
+      let firstInvalid = null;
+
+      // Validate required simple fields (all except notes)
+      simpleFieldNames.forEach((name) => {
+        const input = form.querySelector(`[name="${name}"]`);
+        if (!input) return;
+        const value = String(input.value || '').trim();
+
+        if (!value) {
+          const msg = isArabic ? `${getLabel(name)} مطلوب.` : `${getLabel(name)} is required.`;
+          setFieldError(name, msg, input);
+          if (!firstInvalid) firstInvalid = input;
+          return;
+        }
+
+        if (name === 'email' && !input.checkValidity()) {
+          const msg = isArabic ? 'البريد الإلكتروني غير صحيح.' : 'Email address is invalid.';
+          setFieldError(name, msg, input);
+          if (!firstInvalid) firstInvalid = input;
+        }
+      });
+
+      // Validate radio groups (defensive)
+      const validateRadioGroup = (name, containerSelector) => {
+        const radios = Array.from(form.querySelectorAll(`input[name="${name}"]`));
+        if (!radios.length) return;
+        const ok = radios.some((r) => r.checked);
+        if (ok) {
+          clearGroupError(name, containerSelector);
+          return;
+        }
+        const container = form.querySelector(containerSelector);
+        if (container) container.classList.add('is-invalid');
+        const msg = isArabic ? `${getLabel(name)} مطلوب.` : `${getLabel(name)} is required.`;
+        setFieldError(name, msg, container);
+        if (!firstInvalid) firstInvalid = radios[0];
+      };
+
+      validateRadioGroup('type', '.reserve-options--type');
+      validateRadioGroup('category', '.reserve-category');
+
       // Require privacy consent (demo logic)
       if (privacy && !privacy.checked) {
         if (error) error.hidden = false;
-        if (hint) hint.hidden = true;
-        privacy.focus();
+        privacy.classList.add('is-invalid');
+        if (!firstInvalid) firstInvalid = privacy;
+      }
+
+      if (firstInvalid) {
+        firstInvalid.focus();
         return;
       }
 
-      if (error) error.hidden = true;
       if (hint) hint.hidden = false;
     });
   }

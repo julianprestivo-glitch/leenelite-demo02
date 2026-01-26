@@ -327,13 +327,13 @@
 <p>للاستفسارات، راسلنا على <a href="mailto:info@leenelite.com">info@leenelite.com</a> أو استخدم النموذج التالي.</p>
 <form aria-labelledby="contactFormHeading" class="contact-form">
 <div class="visually-hidden" id="contactFormHeading">نموذج التواصل</div>
-<label for="contact-name">الاسم</label>
+<label for="contact-name">الاسم <span class="req">*</span></label>
 <input id="contact-name" name="name" required="" type="text"/>
-<label for="contact-email">البريد الإلكتروني</label>
+<label for="contact-email">البريد الإلكتروني <span class="req">*</span></label>
 <input id="contact-email" name="email" required="" type="email"/>
-<label for="contact-phone">الهاتف</label>
-<input id="contact-phone" name="phone" type="tel"/>
-<label for="contact-message">رسالتك</label>
+<label for="contact-phone">الهاتف <span class="req">*</span></label>
+<input id="contact-phone" name="phone" required="" type="tel"/>
+<label for="contact-message">رسالتك <span class="req">*</span></label>
 <textarea id="contact-message" name="message" required=""></textarea>
 <button type="submit">إرسال الرسالة</button>
 </form>

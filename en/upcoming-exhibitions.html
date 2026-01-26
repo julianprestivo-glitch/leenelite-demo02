@@ -139,29 +139,34 @@
     <form class="reserve-form" id="reserveForm" novalidate>
       <div class="reserve-grid">
         <label>
-          <span>Full Name</span>
-          <input type="text" name="full_name" placeholder="e.g., Sarah Ahmed" autocomplete="name" />
+          <span>Full Name <span class="req">*</span></span>
+          <input type="text" name="full_name" placeholder="e.g., Sarah Ahmed" autocomplete="name" required />
+          <p class="reserve-field-error" data-error-for="full_name" role="alert" hidden></p>
         </label>
 
         <label>
-          <span>Company Name</span>
-          <input type="text" name="company" placeholder="Company name" autocomplete="organization" />
+          <span>Company Name <span class="req">*</span></span>
+          <input type="text" name="company" placeholder="Company name" autocomplete="organization" required />
+          <p class="reserve-field-error" data-error-for="company" role="alert" hidden></p>
         </label>
 
         <label>
-          <span>Email</span>
-          <input type="email" name="email" placeholder="name@company.com" autocomplete="email" />
+          <span>Email <span class="req">*</span></span>
+          <input type="email" name="email" placeholder="name@company.com" autocomplete="email" required />
+          <p class="reserve-field-error" data-error-for="email" role="alert" hidden></p>
         </label>
 
         <label>
-          <span>Phone</span>
-          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" />
+          <span>Phone <span class="req">*</span></span>
+          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" required />
+          <p class="reserve-field-error" data-error-for="phone" role="alert" hidden></p>
         </label>
 
         
         <label>
-          <span>City (Optional)</span>
-          <input type="text" name="city" placeholder="e.g., Riyadh" autocomplete="address-level2" />
+          <span>City <span class="req">*</span></span>
+          <input type="text" name="city" placeholder="e.g., Riyadh" autocomplete="address-level2" required />
+          <p class="reserve-field-error" data-error-for="city" role="alert" hidden></p>
         </label>
 
         <label>
@@ -171,32 +176,25 @@
         </label>
 
         <label class="span-2">
-          <span>VAT Number (Optional)</span>
-          <input type="text" name="vat" placeholder="Optional" inputmode="numeric" />
-        </label>
-<label class="span-2">
-          <span>Exhibition</span>
-          <select name="event">
-            <option value="" selected>Select an exhibition (example)</option>
-            <option>Exhibition 1 (Coming Soon)</option>
-            <option>Exhibition 2 (Coming Soon)</option>
-            <option>Exhibition 3 (Coming Soon)</option>
-          </select>
+          <span>VAT Number <span class="req">*</span></span>
+          <input type="text" name="vat" placeholder="e.g., 123456789" inputmode="numeric" required />
+          <p class="reserve-field-error" data-error-for="vat" role="alert" hidden></p>
         </label>
 
         <fieldset class="span-2">
-          <legend>Participation Type</legend>
+          <legend>Participation Type <span class="req">*</span></legend>
           <div class="reserve-options reserve-options--type">
-            <label class="opt"><input type="radio" name="type" value="space_only" checked /> <span>Space Only</span></label>
+            <label class="opt"><input type="radio" name="type" value="space_only" checked required /> <span>Space Only</span></label>
             <label class="opt"><input type="radio" name="type" value="furnished" /> <span>Furnished Space</span></label>
           </div>
+          <p class="reserve-field-error" data-error-for="type" role="alert" hidden></p>
         </fieldset>
 
         <fieldset class="span-2">
-          <legend>Space Category</legend>
+          <legend>Space Category <span class="req">*</span></legend>
           <div class="reserve-category">
             <label class="cat-opt" style="--dot:#D3B44E">
-              <input type="radio" name="category" value="sponsors" checked />
+              <input type="radio" name="category" value="sponsors" checked required />
               <span class="cat-name">Sponsors</span>
               <span class="cat-dot" aria-hidden="true"></span>
             </label>
@@ -226,14 +224,16 @@
               <span class="cat-dot" aria-hidden="true"></span>
             </label>
           </div>
+          <p class="reserve-field-error" data-error-for="category" role="alert" hidden></p>
         </fieldset>
 
         <label class="span-2">
-          <span>Space Size</span>
+          <span>Space Size <span class="req">*</span></span>
           <div class="reserve-unit-input">
-            <input type="number" name="size" placeholder="e.g., 12" inputmode="decimal" min="0" step="any" />
+            <input type="number" name="size" placeholder="e.g., 12" inputmode="decimal" min="0" step="any" required />
             <span class="reserve-unit">m²</span>
           </div>
+          <p class="reserve-field-error" data-error-for="size" role="alert" hidden></p>
         </label>
 
         <label class="span-2">
@@ -246,7 +246,7 @@
         <div class="reserve-actions__meta">
           <label class="reserve-consent">
             <input type="checkbox" id="reservePrivacy" name="privacy_consent" required />
-            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the use of my information to contact me about my request.</span>
+            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the use of my information to contact me about my request. <span class="req">*</span></span>
           </label>
           <p class="reserve-error" id="reserveError" role="alert" hidden>Please agree to the Privacy Policy before submitting.</p>
           <p class="reserve-hint" id="reserveHint" hidden>This is a demo form — no data will be submitted.</p>
