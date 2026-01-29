@@ -92,25 +92,18 @@
     <main id="maincontent" tabindex="-1">
       <section class="pf-viewer" data-profile-viewer data-base="../images/pf/en_x7k3/" data-ext="webp" data-pad="3" data-download="../images/pf/leenelite-company-profile-en.pdf">
         <div class="pf-toolbar">
-          <div class="pf-actions">
-            <button class="pf-btn" id="pfPrev" type="button">Prev</button>
-            <div class="pf-counter"><span id="pfPage">1</span>/<span id="pfTotal">--</span></div>
-            <button class="pf-btn" id="pfNext" type="button">Next</button>
-          </div>
-
-          <div class="pf-zoom" aria-label="Zoom controls">
-            <button class="pf-btn" id="pfZoomOut" type="button" aria-label="Zoom out">−</button>
-            <button class="pf-btn" id="pfZoomIn" type="button" aria-label="Zoom in">+</button>
-            <button class="pf-btn" id="pfZoomReset" type="button">Reset</button>
-          </div>
-          <a class="pf-download" id="pfDownload" href="../images/pf/leenelite-company-profile-en.pdf" download>Download Profile</a>
+          <a class="pf-ctl pf-download" id="pfDownload" href="../images/pf/leenelite-company-profile-en.pdf" download title="Download PDF">Download Profile</a>
+          <button class="pf-ctl pf-fullscreen" id="pfFullscreen" type="button" title="Fullscreen">Fullscreen</button>
         </div>
 
+        <button class="pf-ctl pf-exit-fullscreen" id="pfExitFullscreen" type="button" aria-label="Exit fullscreen" title="Exit (Esc)">Exit</button>
+
         <div class="pf-stage" aria-label="Company profile viewer">
+          <div class="pf-loader" id="pfLoader" role="status" aria-live="polite">Loading…</div>
           <div id="pfPages" class="pf-pages" role="list" aria-label="Company profile pages"></div>
         </div>
 
-        <div class="pf-hint">Tip: Use the buttons to move between pages, and zoom in/out to read details.</div>
+        <div class="pf-hint">Tip: Scroll vertically to browse all pages. Use fullscreen to read details more clearly.</div>
 
         <div class="pf-toast" id="pfToast" role="status" aria-live="polite"></div>
       </section>

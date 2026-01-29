@@ -92,25 +92,18 @@
     <main id="maincontent" tabindex="-1">
       <section class="pf-viewer" data-profile-viewer data-base="../images/pf/ar_q9m2/" data-ext="webp" data-pad="3" data-download="../images/pf/leenelite-company-profile-ar.pdf">
         <div class="pf-toolbar">
-          <div class="pf-actions">
-            <button class="pf-btn" id="pfPrev" type="button">السابق</button>
-            <div class="pf-counter"><span id="pfPage">1</span>/<span id="pfTotal">--</span></div>
-            <button class="pf-btn" id="pfNext" type="button">التالي</button>
-          </div>
-
-          <div class="pf-zoom" aria-label="التحكم في التكبير">
-            <button class="pf-btn" id="pfZoomOut" type="button" aria-label="تصغير">−</button>
-            <button class="pf-btn" id="pfZoomIn" type="button" aria-label="تكبير">+</button>
-            <button class="pf-btn" id="pfZoomReset" type="button">إعادة</button>
-          </div>
-          <a class="pf-download" id="pfDownload" href="../images/pf/leenelite-company-profile-ar.pdf" download>تحميل البروفايل</a>
+          <a class="pf-ctl pf-download" id="pfDownload" href="../images/pf/leenelite-company-profile-ar.pdf" download title="تحميل نسخة PDF">تحميل البروفايل</a>
+          <button class="pf-ctl pf-fullscreen" id="pfFullscreen" type="button" title="ملء الشاشة">ملء الشاشة</button>
         </div>
 
+        <button class="pf-ctl pf-exit-fullscreen" id="pfExitFullscreen" type="button" aria-label="خروج من ملء الشاشة" title="خروج (Esc)">خروج</button>
+
         <div class="pf-stage" aria-label="عارض بروفايل الشركة">
+          <div class="pf-loader" id="pfLoader" role="status" aria-live="polite">جارٍ التحميل…</div>
           <div id="pfPages" class="pf-pages" role="list" aria-label="صفحات بروفايل الشركة"></div>
         </div>
 
-        <div class="pf-hint">ملاحظة: يمكنك استخدام الأزرار للتنقل بين الصفحات، واستخدام التكبير/التصغير لقراءة التفاصيل.</div>
+        <div class="pf-hint">ملاحظة: تصفّح البروفايل بالتمرير الرأسي لعرض جميع الصفحات. يمكنك استخدام «ملء الشاشة» لقراءة التفاصيل بشكل أوضح.</div>
 
         <div class="pf-toast" id="pfToast" role="status" aria-live="polite"></div>
       </section>
