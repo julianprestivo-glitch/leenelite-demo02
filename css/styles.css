@@ -565,6 +565,19 @@ p {
   font-size: 1.05rem;
 }
 
+/* Visually hidden (accessible) text */
+.sr-only{
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Hero specifics */
 #hero {
   min-height: calc(100svh - var(--header-h));
@@ -1948,8 +1961,8 @@ body.rtl #intro-overlay .intro-sub {
   justify-content: center;
 }
 .placeholder-card .ph-visual--contain img{
-  width: 92%;
-  height: 92%;
+  width: 88%;
+  height: 88%;
 }
 
 
@@ -1965,6 +1978,35 @@ body.rtl #intro-overlay .intro-sub {
   color: var(--ui-text-muted);
   font-size: 0.92rem;
   line-height: 1.6;
+}
+
+/* Upcoming Exhibitions (page): balance both visuals (calendar vs Leen World)
+   without breaking RTL text alignment.
+   - The calendar was appearing too small because we were shrinking the image.
+   - The Leen World visual was appearing too big because the right column is wide.
+   We fix this by keeping the calendar full-width and constraining/centering the
+   placeholder card width.
+*/
+body.upcoming-exhibitions-page .right-col{
+  align-items: center; /* center the placeholder card in the wide column */
+}
+
+body.upcoming-exhibitions-page .placeholder-card{
+  width: 100%;
+}
+
+body.upcoming-exhibitions-page .page-side-media{
+  width: 100%;
+}
+
+@media (min-width: 901px){
+  body.upcoming-exhibitions-page .placeholder-card,
+  body.upcoming-exhibitions-page .page-side-media{
+    max-width: 560px;
+    margin-inline: auto;
+  }
+  /* Slightly widen the left column on desktop so the calendar/text doesn't look cramped */
+  body.upcoming-exhibitions-page .left-col{ flex-basis: 42%; }
 }
 
 .reserve-btn{
@@ -2130,6 +2172,41 @@ body.rtl #intro-overlay .intro-sub {
   gap: 14px;
 }
 .reserve-grid .span-2{ grid-column: span 2; }
+
+/* Phone input (country code + local number) */
+.phone-combo{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.phone-combo select{
+  flex: 0 0 160px;
+  font-family: "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",Candara,system-ui,sans-serif;
+  font-variant-emoji: emoji;
+}
+
+.phone-combo select option{
+  font-family: "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",Candara,system-ui,sans-serif;
+  font-variant-emoji: emoji;
+}
+
+.phone-combo input[type="tel"]{
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.phone-combo.is-invalid{
+  outline: 2px solid rgba(255, 146, 146, 0.75);
+  outline-offset: 2px;
+  border-radius: 14px;
+  padding: 2px;
+}
+
+@media (max-width: 560px){
+  .phone-combo{ flex-direction: column; align-items: stretch; }
+  .phone-combo select{ flex-basis: auto; width: 100%; }
+}
 
 .reserve-form fieldset{
   border: 1px solid rgba(255,255,255,0.10);
@@ -2891,6 +2968,7 @@ body.modal-open{ overflow: hidden; }
    Company Profile Viewer (EN/AR) – images-only + deterrence controls
 ----------------------------------------------------------------------------- */
 .pf-viewer{
+  --pf-zoom: 1;
   max-width: min(92vw, 1400px);
   margin: 0 auto;
   padding: 28px var(--section-px) 56px;
@@ -3014,6 +3092,39 @@ body.pf-body .pf-counter{
   padding: 10px 0;
 }
 
+/* Fixed download button inside profile viewer */
+.pf-download{
+  position: fixed;
+  inset-inline-end: calc(env(safe-area-inset-right) + 18px);
+  bottom: calc(env(safe-area-inset-bottom) + 18px);
+  z-index: 4800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(211, 180, 78, 0.55);
+  background: rgba(0,0,0,0.78);
+  color: var(--colour-gold);
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.55);
+  transition: transform var(--ease-fast), background var(--ease-fast), border-color var(--ease-fast);
+}
+
+.pf-download:hover{
+  transform: translateY(-1px);
+  background: rgba(0,0,0,0.85);
+  border-color: rgba(211, 180, 78, 0.75);
+}
+
+.pf-download:active{ transform: translateY(0); }
+
+.pf-download:focus-visible{
+  outline: 2px solid rgba(211, 180, 78, 0.75);
+  outline-offset: 4px;
+}
+
 .pf-stage{
   border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.10);
@@ -3033,20 +3144,33 @@ body.pf-body .pf-counter{
 .pf-stage[data-can-pan="true"]{ cursor: grab; }
 .pf-stage.is-dragging{ cursor: grabbing; }
 
-.pf-stage img{
-  width: 100%;
+
+.pf-pages{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+
+.pf-page{
+  width: min(980px, 100%);
+  display: flex;
+  justify-content: center;
+}
+
+.pf-page img{
+  width: calc(100% * var(--pf-zoom));
   max-width: none;
   height: auto;
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.02);
-  /* Zoom is handled by changing width in JS so panning works */
   transition: width 120ms ease;
   -webkit-touch-callout: none;
   user-select: none;
 }
 
-.pf-stage img.is-loading{
+.pf-page img.is-loading{
   opacity: 0.85;
   filter: blur(0.2px);
 }
@@ -3656,9 +3780,224 @@ body.rtl .right-col {
 
 /* Upcoming Exhibitions - Leen World: show full image (no crop) */
 .ph-visual--contain img{
-  width: 100%;
-  height: 100%;
   object-fit: contain !important;
   object-position: center !important;
   transform: none !important;
+}
+
+/* -----------------------------------------------------------------------------
+   FIX (Upcoming Exhibitions): make intro text lines start from same edge
+   - Ensure text blocks take full column width so wrapped lines align.
+----------------------------------------------------------------------------- */
+.page-container.page-container--no-swap .left-col h1,
+.page-container.page-container--no-swap .left-col p{
+  width: 100%;
+  text-align: start;
+}
+
+/* Rebalance columns slightly on desktop so the two visuals feel equal */
+@media (min-width: 901px){
+  .page-container.page-container--no-swap .left-col{ flex: 0 0 42%; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   Phone country code dropdown (custom list with flag images)
+   - Avoid native <select> dropdown white UI.
+   - Guarantee coloured flags via image assets (SVG over CDN).
+----------------------------------------------------------------------------- */
+.phone-combo .country-dd{
+  position: relative;
+  flex: 0 0 170px;
+  min-width: 0;
+}
+
+.country-dd__btn{
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.90);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.country-dd__btn:focus{
+  outline: 2px solid rgba(211, 180, 78, 0.55);
+  outline-offset: 2px;
+}
+
+.country-dd__flag{
+  width: 26px;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.country-dd__flag img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.country-dd__label{
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.country-dd__chev{
+  opacity: 0.85;
+  flex: 0 0 auto;
+}
+
+.country-dd__list{
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-start: 0;
+  width: 100%;
+  max-height: 240px;
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(10,10,10,0.98);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.60);
+  padding: 8px;
+  display: none;
+  z-index: 5000; /* above modal content */
+}
+
+.country-dd.is-open .country-dd__list{ display: block; }
+
+.country-dd__option{
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.92);
+  padding: 10px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: start;
+}
+
+.country-dd__option:hover{
+  background: rgba(211, 180, 78, 0.10);
+}
+
+.country-dd__option[aria-selected="true"]{
+  background: rgba(211, 180, 78, 0.16);
+  border: 1px solid rgba(211, 180, 78, 0.22);
+}
+
+.country-dd__option .opt-flag{
+  width: 26px;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  flex: 0 0 auto;
+}
+
+.country-dd__option .opt-flag img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.country-dd__option .opt-name{
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.country-dd__option .opt-dial{
+  font-weight: 900;
+  color: var(--colour-gold);
+  flex: 0 0 auto;
+}
+
+.country-dd.is-invalid .country-dd__btn{
+  border-color: rgba(255, 146, 146, 0.75);
+  outline: 2px solid rgba(255, 146, 146, 0.55);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px){
+  .phone-combo .country-dd{ flex-basis: auto; width: 100%; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   Company profile viewer: remove the side boxed panel + move download button
+----------------------------------------------------------------------------- */
+.pf-toolbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+}
+
+/* Remove the "boxed" look entirely (only keep the buttons) */
+body.pf-body .pf-actions,
+body.pf-body .pf-zoom{
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+body.pf-body .pf-counter{
+  background: rgba(211, 180, 78, 0.08);
+  border: 1px solid rgba(211, 180, 78, 0.22);
+}
+
+.pf-download{
+  position: static;
+  inset: auto;
+  bottom: auto;
+  z-index: auto;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(211, 180, 78, 0.55);
+  background: rgba(0,0,0,0.55);
+  color: var(--colour-gold);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pf-download:hover{
+  transform: translateY(-1px);
+  background: rgba(0,0,0,0.70);
+  border-color: rgba(211, 180, 78, 0.75);
+}
+
+@media (max-width: 640px){
+  /* Keep toolbar readable on small screens */
+  .pf-toolbar{
+    justify-content: center;
+  }
 }

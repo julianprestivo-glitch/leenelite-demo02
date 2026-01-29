@@ -58,7 +58,7 @@
 
 </head>
 
-  <body class="service-detail">
+  <body class="service-detail upcoming-exhibitions-page">
     <a href="#maincontent" class="skip-link">Skip to main content</a>
 
     <div class="top-nav">
@@ -129,11 +129,7 @@
     <div class="reserve-modal__panel" role="document">
     <div class="reserve-modal__header">
       <button class="reserve-modal__close" type="button" aria-label="Close" data-close-reserve-modal>×</button>
-      <h3 id="reserveTitle">Space Booking Form (Demo)</h3>
-      <p class="reserve-subtitle">This example showcases the booking experience only. No data will be submitted in this version.</p>
-      <p class="reserve-legal">This request is a <strong>pre‑booking / expression of interest</strong> and is <strong>not a binding contract</strong>. We will contact you to confirm details and allocate the space based on availability.</p>
-      <p class="reserve-data-note">We use your information only to follow up on this request and share participation details/quotations when needed.</p>
-      <div class="reserve-banner" role="note">Note: Space number and exact location are confirmed after booking, subject to availability.</div>
+      <h3 id="reserveTitle" class="sr-only">Space Booking Form</h3>
     </div>
 
     <form class="reserve-form" id="reserveForm" novalidate>
@@ -156,9 +152,21 @@
           <p class="reserve-field-error" data-error-for="email" role="alert" hidden></p>
         </label>
 
-        <label>
+        <label class="reserve-phone">
           <span>Phone <span class="req">*</span></span>
-          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" required />
+          <div class="phone-combo" data-phone-combo>
+            <div class="country-dd" data-country-dd>
+              <button class="country-dd__btn" type="button" data-country-btn aria-haspopup="listbox" aria-expanded="false">
+                <span class="country-dd__flag" aria-hidden="true"></span>
+                <span class="country-dd__label">Select code</span>
+                <span class="country-dd__chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="country-dd__list" data-country-list role="listbox" aria-label="Country code"></div>
+              <input type="hidden" name="phone_country" id="phoneCountry" value="" />
+            </div>
+            <input type="tel" name="phone_local" id="phoneLocal" placeholder="e.g., 5XXXXXXXX" autocomplete="tel-national" inputmode="tel" required maxlength="14" pattern="\d{6,14}">
+            <input type="hidden" name="phone" id="phoneFull" />
+          </div>
           <p class="reserve-field-error" data-error-for="phone" role="alert" hidden></p>
         </label>
 
@@ -177,7 +185,7 @@
 
         <label class="span-2">
           <span>VAT Number <span class="req">*</span></span>
-          <input type="text" name="vat" placeholder="e.g., 123456789" inputmode="numeric" required />
+          <input type="text" name="vat" placeholder="e.g., 123456789012345" inputmode="numeric" required maxlength="15" pattern="\d{15}">
           <p class="reserve-field-error" data-error-for="vat" role="alert" hidden></p>
         </label>
 
@@ -249,7 +257,7 @@
             <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the use of my information to contact me about my request. <span class="req">*</span></span>
           </label>
           <p class="reserve-error" id="reserveError" role="alert" hidden>Please agree to the Privacy Policy before submitting.</p>
-          <p class="reserve-hint" id="reserveHint" hidden>This is a demo form — no data will be submitted.</p>
+          
         </div>
         <button type="submit" class="reserve-submit">Submit Booking Request</button>
       </div>

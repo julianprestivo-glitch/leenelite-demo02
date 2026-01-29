@@ -58,7 +58,7 @@
 
 </head>
 
-  <body class="rtl service-detail">
+  <body class="rtl service-detail upcoming-exhibitions-page">
     <a href="#maincontent" class="skip-link">تخطى إلى المحتوى الرئيسي</a>
 
     <div class="top-nav">
@@ -129,11 +129,7 @@
     <div class="reserve-modal__panel" role="document">
     <div class="reserve-modal__header">
       <button class="reserve-modal__close" type="button" aria-label="إغلاق" data-close-reserve-modal>×</button>
-      <h3 id="reserveTitle">نموذج حجز المساحة (عرض تجريبي)</h3>
-      <p class="reserve-subtitle">هذا المثال يوضح شكل تجربة الحجز فقط. لا يتم إرسال أي بيانات في هذه النسخة.</p>
-      <p class="reserve-legal">هذا الطلب يعبّر عن <strong>طلب اهتمام/حجز مبدئي</strong> وهو <strong>ليس عقدًا ملزمًا</strong>. سيتم التواصل لتأكيد التفاصيل وتخصيص المساحة وفقًا للتوافر.</p>
-      <p class="reserve-data-note">نستخدم بياناتك فقط للتواصل بشأن هذا الطلب وإرسال عرض/تفاصيل المشاركة عند الحاجة.</p>
-      <div class="reserve-banner" role="note">ملحوظة: تخصيص رقم وموقع المساحة يتم بعد التأكيد وفقًا للتوافر.</div>
+      <h3 id="reserveTitle" class="sr-only">نموذج حجز المساحة</h3>
     </div>
 
     <form class="reserve-form" id="reserveForm" novalidate>
@@ -156,9 +152,21 @@
           <p class="reserve-field-error" data-error-for="email" role="alert" hidden></p>
         </label>
 
-        <label>
+        <label class="reserve-phone">
           <span>رقم الجوال <span class="req">*</span></span>
-          <input type="tel" name="phone" placeholder="+966..." autocomplete="tel" required />
+          <div class="phone-combo" data-phone-combo>
+            <div class="country-dd" data-country-dd>
+              <button class="country-dd__btn" type="button" data-country-btn aria-haspopup="listbox" aria-expanded="false">
+                <span class="country-dd__flag" aria-hidden="true"></span>
+                <span class="country-dd__label">اختر الكود</span>
+                <span class="country-dd__chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="country-dd__list" data-country-list role="listbox" aria-label="كود الدولة"></div>
+              <input type="hidden" name="phone_country" id="phoneCountry" value="" />
+            </div>
+            <input type="tel" name="phone_local" id="phoneLocal" placeholder="مثال: 5XXXXXXXX" autocomplete="tel-national" inputmode="tel" required maxlength="14" pattern="\d{6,14}">
+            <input type="hidden" name="phone" id="phoneFull" />
+          </div>
           <p class="reserve-field-error" data-error-for="phone" role="alert" hidden></p>
         </label>
 
@@ -177,7 +185,7 @@
 
         <label class="span-2">
           <span>الرقم الضريبي VAT <span class="req">*</span></span>
-          <input type="text" name="vat" placeholder="مثال: 123456789" inputmode="numeric" required />
+          <input type="text" name="vat" placeholder="مثال: 123456789012345" inputmode="numeric" required maxlength="15" pattern="\d{15}">
           <p class="reserve-field-error" data-error-for="vat" role="alert" hidden></p>
         </label>
 
@@ -249,7 +257,6 @@
             <span>أوافق على <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> وعلى استخدام بياناتي للتواصل بشأن طلبي. <span class="req">*</span></span>
           </label>
           <p class="reserve-error" id="reserveError" role="alert" hidden>يرجى الموافقة على سياسة الخصوصية قبل الإرسال.</p>
-          <p class="reserve-hint" id="reserveHint" hidden>هذا نموذج استعراضي فقط — لن يتم إرسال أي بيانات.</p>
         </div>
         <button type="submit" class="reserve-submit">إرسال طلب الحجز</button>
       </div>

@@ -964,7 +964,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const privacy = modal.querySelector('#reservePrivacy');
   const error = modal.querySelector('#reserveError');
 
+  // Phone field (supports both legacy single input and split country+local inputs)
+  const phoneCountry = modal.querySelector('input[name="phone_country"]');
+  const countryDD = modal.querySelector('[data-country-dd]');
+  const countryBtn = modal.querySelector('[data-country-btn]');
+  const countryList = modal.querySelector('[data-country-list]');
+  const phoneLocal = modal.querySelector('input[name="phone_local"]');
+  const phoneFull = modal.querySelector('input[name="phone"]');
+  const phoneCombo = modal.querySelector('[data-phone-combo]');
+
   const crInput = modal.querySelector('input[name="cr"]');
+  const vatInput = modal.querySelector('input[name="vat"]');
+  const sizeInput = modal.querySelector('input[name="size"]');
   const crError = modal.querySelector('[data-error-for="cr"]');
   const isArabic = (document.documentElement.lang || '').toLowerCase().startsWith('ar');
   const CR_RULE = /^[127]\d{9}$/;
@@ -1007,6 +1018,10 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.querySelectorAll('.reserve-options.is-invalid, .reserve-category.is-invalid').forEach((el) => {
       el.classList.remove('is-invalid');
     });
+
+    modal.querySelectorAll('.phone-combo.is-invalid').forEach((el) => {
+      el.classList.remove('is-invalid');
+    });
   };
 
   const normalizeDigits = (value) => {
@@ -1016,6 +1031,170 @@ document.addEventListener('DOMContentLoaded', () => {
       '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4', '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
     };
     return String(value || '').replace(/[٠-٩۰-۹]/g, (d) => map[d] || d);
+  };
+
+    // ---------------------------------------------------------------------------
+  // Country code dropdown (Phone) – custom dropdown with FLAG IMAGES
+  // ---------------------------------------------------------------------------
+  // Native <select> dropdowns are rendered by the OS and are difficult to theme
+  // (often showing a white list). Also, coloured flag emoji are not guaranteed
+  // across all devices. To guarantee consistent UI + coloured flags, we render
+  // our own dropdown list and use SVG flag images.
+  const flagUrl = (iso) => `https://flagcdn.com/${String(iso || '').toLowerCase()}.svg`;
+
+  const COUNTRY_CODES = [
+    { iso: 'SA', dial: '+966', nameAr: 'السعودية', nameEn: 'Saudi Arabia' },
+    { iso: 'AE', dial: '+971', nameAr: 'الإمارات', nameEn: 'United Arab Emirates' },
+    { iso: 'KW', dial: '+965', nameAr: 'الكويت', nameEn: 'Kuwait' },
+    { iso: 'QA', dial: '+974', nameAr: 'قطر', nameEn: 'Qatar' },
+    { iso: 'BH', dial: '+973', nameAr: 'البحرين', nameEn: 'Bahrain' },
+    { iso: 'OM', dial: '+968', nameAr: 'عُمان', nameEn: 'Oman' },
+    { iso: 'EG', dial: '+20',  nameAr: 'مصر', nameEn: 'Egypt' },
+    { iso: 'JO', dial: '+962', nameAr: 'الأردن', nameEn: 'Jordan' },
+    { iso: 'LB', dial: '+961', nameAr: 'لبنان', nameEn: 'Lebanon' },
+    { iso: 'IQ', dial: '+964', nameAr: 'العراق', nameEn: 'Iraq' },
+    { iso: 'MA', dial: '+212', nameAr: 'المغرب', nameEn: 'Morocco' },
+    { iso: 'TR', dial: '+90',  nameAr: 'تركيا', nameEn: 'Türkiye' },
+    { iso: 'US', dial: '+1',   nameAr: 'الولايات المتحدة', nameEn: 'United States' },
+    { iso: 'GB', dial: '+44',  nameAr: 'المملكة المتحدة', nameEn: 'United Kingdom' }
+  ];
+
+  const placeholderText = isArabic ? 'اختر الكود' : 'Select code';
+
+  const closeCountryDD = () => {
+    if (!countryDD) return;
+    countryDD.classList.remove('is-open');
+    if (countryBtn) countryBtn.setAttribute('aria-expanded', 'false');
+  };
+
+  const openCountryDD = () => {
+    if (!countryDD) return;
+    countryDD.classList.add('is-open');
+    if (countryBtn) countryBtn.setAttribute('aria-expanded', 'true');
+  };
+
+  const setCountryUI = (country) => {
+    if (!countryBtn) return;
+    const flagWrap = countryBtn.querySelector('.country-dd__flag');
+    const labelEl = countryBtn.querySelector('.country-dd__label');
+
+    if (!country) {
+      if (flagWrap) flagWrap.innerHTML = '';
+      if (labelEl) labelEl.textContent = placeholderText;
+      countryBtn.removeAttribute('data-iso');
+      return;
+    }
+
+    if (flagWrap) {
+      flagWrap.innerHTML = '';
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.alt = country.iso;
+      img.src = flagUrl(country.iso);
+      flagWrap.appendChild(img);
+    }
+    if (labelEl) labelEl.textContent = country.dial;
+    countryBtn.setAttribute('data-iso', country.iso);
+  };
+
+  const setCountryValue = (dial, iso) => {
+    if (!phoneCountry) return;
+    const match = COUNTRY_CODES.find((c) => c.dial === dial || c.iso === iso);
+    phoneCountry.value = match ? match.dial : '';
+    setCountryUI(match || null);
+
+    // Notify form logic (update full phone, clear errors)
+    try {
+      phoneCountry.dispatchEvent(new Event('change', { bubbles: true }));
+    } catch (_) {}
+
+    // Mark selected option for accessibility
+    if (countryList) {
+      countryList.querySelectorAll('[role="option"]').forEach((opt) => {
+        const isSel = opt.getAttribute('data-value') === (match ? match.dial : '');
+        opt.setAttribute('aria-selected', isSel ? 'true' : 'false');
+      });
+    }
+  };
+
+  const buildCountryList = () => {
+    if (!countryList) return;
+    countryList.innerHTML = '';
+    COUNTRY_CODES.forEach((c) => {
+      const opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'country-dd__option';
+      opt.setAttribute('role', 'option');
+      opt.setAttribute('data-value', c.dial);
+      opt.setAttribute('aria-selected', 'false');
+
+      const flag = document.createElement('span');
+      flag.className = 'opt-flag';
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.alt = isArabic ? c.nameAr : c.nameEn;
+      img.src = flagUrl(c.iso);
+      flag.appendChild(img);
+
+      const name = document.createElement('span');
+      name.className = 'opt-name';
+      name.textContent = isArabic ? c.nameAr : c.nameEn;
+
+      const dialEl = document.createElement('span');
+      dialEl.className = 'opt-dial';
+      dialEl.textContent = c.dial;
+
+      opt.appendChild(flag);
+      opt.appendChild(name);
+      opt.appendChild(dialEl);
+
+      opt.addEventListener('click', () => {
+        setCountryValue(c.dial, c.iso);
+        closeCountryDD();
+      });
+
+      countryList.appendChild(opt);
+    });
+  };
+
+  const initCountryDropdown = () => {
+    if (!countryDD || !countryBtn || !phoneCountry) return;
+
+    buildCountryList();
+
+    // Init placeholder UI (or keep an existing value if any)
+    const current = String(phoneCountry.value || '').trim();
+    if (current) setCountryValue(current);
+    else setCountryUI(null);
+
+    countryBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (countryDD.classList.contains('is-open')) closeCountryDD();
+      else openCountryDD();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!countryDD.classList.contains('is-open')) return;
+      if (countryDD.contains(e.target)) return;
+      closeCountryDD();
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeCountryDD();
+    });
+  };
+
+  const resetCountryDropdown = () => {
+    if (phoneCountry) phoneCountry.value = '';
+    if (countryDD) countryDD.classList.remove('is-open');
+    if (countryBtn) countryBtn.setAttribute('aria-expanded', 'false');
+    setCountryUI(null);
+    if (countryDD) countryDD.classList.remove('is-invalid');
+    if (countryBtn) countryBtn.classList.remove('is-invalid');
   };
 
   const setCrError = (message) => {
@@ -1119,6 +1298,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hint) hint.hidden = true;
     if (error) error.hidden = true;
     if (form) form.reset();
+    // Reset the custom country dropdown UI (hidden input is reset by form.reset, UI is not)
+    resetCountryDropdown();
     clearReserveErrors();
     setCrError('');
   };
@@ -1139,7 +1320,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (form) {
     // Live-clear inline errors when the user edits fields
-    const simpleFieldNames = ['full_name', 'company', 'email', 'phone', 'city', 'vat', 'size'];
+    const hasPhoneSplit = !!(form.querySelector('[name="phone_country"]') && form.querySelector('[name="phone_local"]'));
+    const simpleFieldNames = hasPhoneSplit
+      ? ['full_name', 'company', 'email', 'city']
+      : ['full_name', 'company', 'email', 'phone', 'city'];
     simpleFieldNames.forEach((name) => {
       const input = form.querySelector(`[name="${name}"]`);
       if (!input) return;
@@ -1147,6 +1331,160 @@ document.addEventListener('DOMContentLoaded', () => {
       input.addEventListener('input', clear);
       input.addEventListener('change', clear);
     });
+
+    const updatePhoneFull = () => {
+      if (!hasPhoneSplit || !phoneFull) return;
+      const cc = String(phoneCountry?.value || '').trim();
+      const local = normalizeDigits(phoneLocal?.value || '').trim();
+      phoneFull.value = cc && local ? `${cc} ${local}`.trim() : '';
+    };
+
+    const sanitizeDigitsOnly = (el, maxLen) => {
+      if (!el) return;
+      const raw = normalizeDigits(el.value);
+      let digits = String(raw || '').replace(/\D/g, '');
+      if (typeof maxLen === 'number' && maxLen > 0 && digits.length > maxLen) digits = digits.slice(0, maxLen);
+      if (digits !== el.value) el.value = digits;
+    };
+
+    const validateVAT = (showMessage = true) => {
+      if (!vatInput) return true;
+      sanitizeDigitsOnly(vatInput, 15);
+      const value = String(vatInput.value || '').trim();
+      const msgRequired = isArabic ? 'الرقم الضريبي مطلوب.' : 'VAT number is required.';
+      const msgInvalid = isArabic ? 'الرقم الضريبي يجب أن يتكون من 15 رقمًا.' : 'VAT number must be 15 digits.';
+      if (!value) {
+        if (showMessage) setFieldError('vat', msgRequired, vatInput);
+        return false;
+      }
+      if (!/^\d{15}$/.test(value)) {
+        if (showMessage) setFieldError('vat', msgInvalid, vatInput);
+        return false;
+      }
+      setFieldError('vat', '', vatInput);
+      return true;
+    };
+
+    const validateSize = (showMessage = true) => {
+      if (!sizeInput) return true;
+      const raw = String(sizeInput.value || '').trim();
+      const msgRequired = isArabic ? 'حجم المساحة مطلوب.' : 'Space size is required.';
+      const msgInvalid = isArabic ? 'يرجى إدخال رقم أكبر من 0.' : 'Please enter a number greater than 0.';
+      if (!raw) {
+        if (showMessage) setFieldError('size', msgRequired, sizeInput);
+        return false;
+      }
+      const num = Number(raw);
+      if (!Number.isFinite(num) || num <= 0) {
+        if (showMessage) setFieldError('size', msgInvalid, sizeInput);
+        return false;
+      }
+      setFieldError('size', '', sizeInput);
+      return true;
+    };
+
+    const validatePhoneLocal = (showMessage = true) => {
+      if (!hasPhoneSplit) return true;
+      if (!phoneCountry || !phoneLocal) return true;
+
+      sanitizeDigitsOnly(phoneLocal, 14);
+      const cc = String(phoneCountry.value || '').trim();
+      const local = String(phoneLocal.value || '').trim();
+
+      const msgRequired = isArabic ? 'رقم الجوال مطلوب.' : 'Phone is required.';
+      const msgInvalid = isArabic ? 'يرجى إدخال رقم جوال صحيح.' : 'Please enter a valid phone number.';
+
+      if (!cc || !local) {
+        if (showMessage) {
+          if (!cc) {
+            if (countryDD) countryDD.classList.add('is-invalid');
+            if (countryBtn) countryBtn.classList.add('is-invalid');
+          }
+          if (!local) phoneLocal.classList.add('is-invalid');
+          if (phoneCombo) phoneCombo.classList.add('is-invalid');
+          setFieldError('phone', msgRequired, phoneCombo || phoneLocal || countryBtn || countryDD);
+        }
+        return false;
+      }
+
+      // Basic numeric length check (most countries: 6-14 digits for national number)
+      if (!/^\d{6,14}$/.test(local)) {
+        if (showMessage) {
+          phoneLocal.classList.add('is-invalid');
+          if (phoneCombo) phoneCombo.classList.add('is-invalid');
+          setFieldError('phone', msgInvalid, phoneCombo || phoneLocal);
+        }
+        return false;
+      }
+
+      // Optional KSA heuristic: mobile starts with 5 and 9 digits (5XXXXXXXX)
+      if (cc === '+966' && !/^5\d{8}$/.test(local)) {
+        if (showMessage) {
+          phoneLocal.classList.add('is-invalid');
+          if (phoneCombo) phoneCombo.classList.add('is-invalid');
+          setFieldError('phone', msgInvalid, phoneCombo || phoneLocal);
+        }
+        return false;
+      }
+
+      clearPhoneError();
+      updatePhoneFull();
+      return true;
+    };
+
+
+
+    const clearPhoneError = () => {
+      if (!hasPhoneSplit) return;
+      if (countryDD) countryDD.classList.remove('is-invalid');
+      if (countryBtn) countryBtn.classList.remove('is-invalid');
+      if (phoneLocal) phoneLocal.classList.remove('is-invalid');
+      if (phoneCombo) phoneCombo.classList.remove('is-invalid');
+      setFieldError('phone', '', phoneCombo || phoneLocal || phoneCountry);
+    };
+
+    if (hasPhoneSplit) {
+      initCountryDropdown();
+      updatePhoneFull();
+      if (phoneCountry) {
+        phoneCountry.addEventListener('change', () => {
+          updatePhoneFull();
+          clearPhoneError();
+        });
+      }
+      if (phoneLocal) {
+        phoneLocal.addEventListener('input', () => {
+          sanitizeDigitsOnly(phoneLocal, 14);
+          updatePhoneFull();
+          clearPhoneError();
+        });
+        phoneLocal.addEventListener('change', () => {
+          sanitizeDigitsOnly(phoneLocal, 14);
+          updatePhoneFull();
+          clearPhoneError();
+        });
+      }
+    }
+
+    // Live sanitize numeric-only fields
+    if (vatInput) {
+      vatInput.addEventListener('input', () => {
+        sanitizeDigitsOnly(vatInput, 15);
+        // If an error is visible, re-validate on the fly
+        const err = modal.querySelector('[data-error-for="vat"]');
+        if (err && !err.hidden) validateVAT(true);
+      });
+      vatInput.addEventListener('blur', () => validateVAT(true));
+    }
+
+    if (sizeInput) {
+      sizeInput.addEventListener('input', () => {
+        // allow decimals, but keep built-in input; just clear error as the user edits
+        const err = modal.querySelector('[data-error-for="size"]');
+        if (err && !err.hidden) validateSize(true);
+      });
+      sizeInput.addEventListener('blur', () => validateSize(true));
+    }
 
     const clearGroupError = (name, containerSelector) => {
       const container = form.querySelector(containerSelector);
@@ -1163,14 +1501,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (hint) hint.hidden = true;
       if (error) error.hidden = true;
       clearReserveErrors();
-
-      // Validate Commercial Registration (required)
-      if (!validateCR(true)) {
-        if (crInput) crInput.focus();
-        return;
-      }
-
       let firstInvalid = null;
+
+      // Validate fields (do NOT stop at the first error; highlight everything)
 
       // Validate required simple fields (all except notes)
       simpleFieldNames.forEach((name) => {
@@ -1191,6 +1524,39 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!firstInvalid) firstInvalid = input;
         }
       });
+      // Validate phone
+      if (hasPhoneSplit) {
+        const ok = validatePhoneLocal(true);
+        if (!ok && !firstInvalid) {
+          const cc = String(phoneCountry?.value || '').trim();
+          firstInvalid = !cc ? (phoneCountry || phoneLocal) : (phoneLocal || phoneCountry);
+        }
+      }
+
+      // Validate Commercial Registration (CR)
+      const crOk = validateCR(true);
+      if (!crOk && !firstInvalid && crInput) firstInvalid = crInput;
+
+      // Validate VAT format (15 digits)
+      const vatOk = validateVAT(true);
+      if (!vatOk && !firstInvalid && vatInput) firstInvalid = vatInput;
+
+      // Validate size (> 0)
+      const sizeOk = validateSize(true);
+      if (!sizeOk && !firstInvalid && sizeInput) firstInvalid = sizeInput;
+
+      // Legacy single phone field format (if present)
+      if (!hasPhoneSplit) {
+        const legacy = form.querySelector('input[name="phone"]');
+        if (legacy) {
+          const val = normalizeDigits(String(legacy.value || '')).replace(/\s+/g, '');
+          if (val && !/^\+?\d{6,16}$/.test(val)) {
+            const msg = isArabic ? 'يرجى إدخال رقم جوال صحيح.' : 'Please enter a valid phone number.';
+            setFieldError('phone', msg, legacy);
+            if (!firstInvalid) firstInvalid = legacy;
+          }
+        }
+      }
 
       // Validate radio groups (defensive)
       const validateRadioGroup = (name, containerSelector) => {

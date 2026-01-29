@@ -1,10 +1,13 @@
 /*
  * Company Profile Viewer – Leen Elite (EN/AR)
  *
- * IMPORTANT:
- * This is deterrence, not absolute protection.
- * It blocks easy actions (right click, drag, Ctrl+S/P, print) and keeps the
- * profile as images instead of a downloadable PDF.
+ * UX requirements:
+ * - Show ALL pages stacked in one scrollable viewer.
+ * - Next/Previous navigation between pages.
+ * - Zoom in/out (layout-based zoom so panning works).
+ * - Fixed download button.
+ *
+ * NOTE: Any “protection” here is deterrence only.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,28 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const base = root.getAttribute('data-base') || '';
   const ext = (root.getAttribute('data-ext') || 'webp').trim();
   const pad = Number(root.getAttribute('data-pad') || '3') || 3;
+  const downloadHref = root.getAttribute('data-download') || '';
 
-  const img = document.getElementById('pfImage');
+  const stage = root.querySelector('.pf-stage');
+  const pagesEl = document.getElementById('pfPages');
+
   const pageEl = document.getElementById('pfPage');
   const totalEl = document.getElementById('pfTotal');
   const prevBtn = document.getElementById('pfPrev');
   const nextBtn = document.getElementById('pfNext');
-
   const zoomInBtn = document.getElementById('pfZoomIn');
   const zoomOutBtn = document.getElementById('pfZoomOut');
   const zoomResetBtn = document.getElementById('pfZoomReset');
-
   const toastEl = document.getElementById('pfToast');
+  const downloadBtn = document.getElementById('pfDownload');
 
-  if (!img || !pageEl || !totalEl || !prevBtn || !nextBtn) return;
+  if (!stage || !pagesEl || !pageEl || !totalEl || !prevBtn || !nextBtn) return;
 
-  const TOAST_TEXT = isArabic ? 'محمي بواسطة لين إليت' : 'Protected by leenelite';
+  if (downloadBtn && downloadHref) downloadBtn.setAttribute('href', downloadHref);
 
-  // Stage is the scroll/pan container
-  const stage = root.querySelector('.pf-stage');
+  const TOAST_TEXT = isArabic ? 'محمي بواسطة لين إليت' : 'Protected by Leen Elite';
 
   let current = 1;
-  let total = null;
+  let total = 0;
 
   let zoom = 1;
   const ZOOM_MIN = 1;
@@ -51,121 +55,134 @@ document.addEventListener('DOMContentLoaded', () => {
   const showToast = () => {
     if (!toastEl) return;
     toastEl.textContent = TOAST_TEXT;
-    toastEl.classList.remove('is-show'); // restart animation
-    // Force reflow to restart transition (safe)
+    toastEl.classList.remove('is-show');
     void toastEl.offsetWidth;
     toastEl.classList.add('is-show');
     window.clearTimeout(showToast._t);
     showToast._t = window.setTimeout(() => toastEl.classList.remove('is-show'), 1400);
   };
 
-  // IMPORTANT:
-  // Using transform: scale() makes the image look bigger but does not increase
-  // its layout size, so the stage can't scroll/pan correctly.
-  // We zoom by increasing image width instead, so panning works everywhere.
+  const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
   const setZoom = (z) => {
-    zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+    zoom = clamp(Number(z) || 1, ZOOM_MIN, ZOOM_MAX);
+    root.style.setProperty('--pf-zoom', String(zoom));
 
-    // Disable transform-zoom and switch to width-based zoom (enables true pan)
-    img.style.transform = 'none';
-    img.style.width = `${Math.round(zoom * 100)}%`;
-
-    if (stage) {
-      stage.dataset.canPan = zoom > 1 ? 'true' : 'false';
-      // Reset scroll when going back to 1x for a clean view
-      if (zoom === 1) {
-        stage.scrollLeft = 0;
-        stage.scrollTop = 0;
-      }
-    }
+    stage.dataset.canPan = zoom > 1 ? 'true' : 'false';
+    if (zoom === 1) stage.scrollLeft = 0;
 
     root.setAttribute('data-zoom', String(zoom));
   };
 
   const updateControls = () => {
     prevBtn.disabled = current <= 1;
-    if (total != null) nextBtn.disabled = current >= total;
-    else nextBtn.disabled = false;
-
+    nextBtn.disabled = total ? current >= total : false;
     pageEl.textContent = String(current);
-    totalEl.textContent = total == null ? '--' : String(total);
+    totalEl.textContent = total ? String(total) : '--';
   };
 
-  const preloadNext = () => {
-    if (total != null) return;
-    const probeIndex = current + 1;
+  const probeImage = (src) =>
+    new Promise((resolve) => {
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => resolve(true);
+      im.onerror = () => resolve(false);
+      im.src = src;
+    });
 
-    const probe = new Image();
-    probe.decoding = 'async';
-    probe.loading = 'eager';
-    probe.src = srcFor(probeIndex);
+  const detectTotal = async () => {
+    // Safety cap to avoid infinite loops if a server returns 200 for missing images.
+    const MAX = 80;
 
-    probe.onerror = () => {
-      // If next page doesn't exist, we discovered the end.
-      if (total == null) {
-        total = current;
-        updateControls();
-      }
-    };
+    // Fast sequential probing. We keep it simple and reliable.
+    for (let n = 1; n <= MAX; n += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      const ok = await probeImage(srcFor(n));
+      if (!ok) return n - 1;
+    }
+    return MAX;
   };
 
-  const loadPage = (n) => {
-    const nextIndex = Math.max(1, Number(n) || 1);
-
-    // If we know total, clamp.
-    if (total != null) current = Math.min(nextIndex, total);
-    else current = nextIndex;
-
+  const buildPages = async () => {
+    pagesEl.innerHTML = '';
+    total = await detectTotal();
     updateControls();
 
-    img.classList.add('is-loading');
-    img.src = srcFor(current);
+    for (let n = 1; n <= total; n += 1) {
+      const page = document.createElement('div');
+      page.className = 'pf-page';
+      page.dataset.page = String(n);
+      page.setAttribute('role', 'listitem');
 
-    // If this page fails, fallback to previous/first.
-    img.onerror = () => {
-      img.classList.remove('is-loading');
-      // If total is unknown, this means we tried to go beyond the last page.
-      if (total == null && current > 1) {
-        total = current - 1;
-        current = total;
-        updateControls();
-        img.src = srcFor(current);
-        return;
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.setAttribute('draggable', 'false');
+      img.alt = isArabic ? `صفحة ${n} من بروفايل الشركة` : `Company profile page ${n}`;
+      img.src = srcFor(n);
+
+      page.appendChild(img);
+      pagesEl.appendChild(page);
+    }
+
+    // Track the most visible page inside the stage
+    const io = new IntersectionObserver(
+      (entries) => {
+        let best = null;
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry;
+        });
+        if (!best) return;
+        const n = Number(best.target.getAttribute('data-page') || '1') || 1;
+        if (n !== current) {
+          current = n;
+          updateControls();
+        }
+      },
+      {
+        root: stage,
+        threshold: [0.55, 0.7, 0.85]
       }
-      showToast();
-    };
+    );
 
-    img.onload = () => {
-      img.classList.remove('is-loading');
-      // Discover total gradually.
-      preloadNext();
-    };
+    pagesEl.querySelectorAll('.pf-page').forEach((el) => io.observe(el));
+  };
+
+  const scrollToPage = (n) => {
+    if (!total) return;
+    current = clamp(Number(n) || 1, 1, total);
+    updateControls();
+
+    const target = pagesEl.querySelector(`.pf-page[data-page="${current}"]`);
+    if (!target) return;
+    // Scroll within the stage container
+    target.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
   };
 
   // Initial
-  img.setAttribute('draggable', 'false');
   setZoom(1);
-  loadPage(1);
+  updateControls();
+  buildPages().then(() => scrollToPage(1));
 
-  prevBtn.addEventListener('click', () => loadPage(current - 1));
-  nextBtn.addEventListener('click', () => loadPage(current + 1));
+  prevBtn.addEventListener('click', () => scrollToPage(current - 1));
+  nextBtn.addEventListener('click', () => scrollToPage(current + 1));
 
-  // Keyboard arrows for navigation (nice UX)
+  // Keyboard arrows for navigation
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') loadPage(current - 1);
-    if (e.key === 'ArrowRight') loadPage(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') scrollToPage(current - 1);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') scrollToPage(current + 1);
   });
 
-  // Zoom buttons (optional)
+  // Zoom buttons
   if (zoomInBtn) zoomInBtn.addEventListener('click', () => setZoom(zoom + ZOOM_STEP));
   if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => setZoom(zoom - ZOOM_STEP));
   if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => setZoom(1));
 
   // ---------------------------------------------------------------------------
-  // Deterrence protections (viewer only)
+  // Deterrence protections (viewer area only)
   // ---------------------------------------------------------------------------
 
-  // Prevent context menu
   document.addEventListener(
     'contextmenu',
     (e) => {
@@ -176,13 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
     { capture: true }
   );
 
-  // Block Ctrl+S / Ctrl+P
   document.addEventListener(
     'keydown',
     (e) => {
       const key = (e.key || '').toLowerCase();
-      if (!e.ctrlKey && !e.metaKey) return; // ctrl on Win/Linux, meta on macOS
-
+      if (!e.ctrlKey && !e.metaKey) return;
       if (key === 's' || key === 'p') {
         e.preventDefault();
         showToast();
@@ -191,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { capture: true }
   );
 
-  // Prevent drag & drop for images
   root.addEventListener('dragstart', (e) => {
     e.preventDefault();
     showToast();
@@ -202,91 +216,48 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast();
   });
 
-  // Reduce selection in viewer area
   root.addEventListener('selectstart', (e) => {
     e.preventDefault();
   });
 
-  // Prevent long-press save image on some mobile browsers (best effort)
-  img.addEventListener('touchstart', (e) => {
-    if (e.touches && e.touches.length > 1) return;
-    // do nothing, just attach to allow CSS -webkit-touch-callout to apply
+  // Drag-to-pan for mouse when zoomed (touch devices use native scrolling)
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let startScrollLeft = 0;
+  let startScrollTop = 0;
+
+  stage.addEventListener('pointerdown', (e) => {
+    if (zoom <= 1) return;
+    if (e.pointerType !== 'mouse') return;
+    isDragging = true;
+    stage.classList.add('is-dragging');
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    startScrollLeft = stage.scrollLeft;
+    startScrollTop = stage.scrollTop;
+    try {
+      stage.setPointerCapture(e.pointerId);
+    } catch (_) {}
   });
 
-  // Optional: swipe next/prev inside viewer stage
-  // When zoomed-in, we DO NOT swipe pages (gesture should pan/scroll the image).
-  if (stage) {
-    let startX = null;
-    let startY = null;
+  stage.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    stage.scrollLeft = startScrollLeft - dx;
+    stage.scrollTop = startScrollTop - dy;
+  });
 
-    // Drag-to-pan for mouse (touch devices already scroll naturally)
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let startScrollLeft = 0;
-    let startScrollTop = 0;
+  stage.addEventListener('pointerup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    stage.classList.remove('is-dragging');
+  });
 
-    stage.addEventListener('pointerdown', (e) => {
-      // If zoomed in, allow panning
-      if (zoom > 1) {
-        // Touch: rely on native scrolling
-        if (e.pointerType !== 'mouse') return;
-        isDragging = true;
-        stage.classList.add('is-dragging');
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        startScrollLeft = stage.scrollLeft;
-        startScrollTop = stage.scrollTop;
-        try { stage.setPointerCapture(e.pointerId); } catch (_) {}
-        return;
-      }
-
-      // Not zoomed: enable swipe-to-next/prev
-      startX = e.clientX;
-      startY = e.clientY;
-    });
-
-    stage.addEventListener('pointermove', (e) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      const dx = e.clientX - dragStartX;
-      const dy = e.clientY - dragStartY;
-      stage.scrollLeft = startScrollLeft - dx;
-      stage.scrollTop = startScrollTop - dy;
-    });
-
-    stage.addEventListener('pointerup', (e) => {
-      if (isDragging) {
-        isDragging = false;
-        stage.classList.remove('is-dragging');
-        return;
-      }
-
-      // If zoomed-in, ignore swipe navigation
-      if (zoom > 1) {
-        startX = null;
-        startY = null;
-        return;
-      }
-
-      if (startX == null || startY == null) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      startX = null;
-      startY = null;
-
-      if (Math.abs(dx) < 45) return;
-      if (Math.abs(dy) > 70) return;
-
-      if (dx < 0) loadPage(current + 1);
-      else loadPage(current - 1);
-    });
-
-    stage.addEventListener('pointercancel', () => {
-      isDragging = false;
-      stage.classList.remove('is-dragging');
-      startX = null;
-      startY = null;
-    });
-  }
+  stage.addEventListener('pointercancel', () => {
+    isDragging = false;
+    stage.classList.remove('is-dragging');
+  });
 });

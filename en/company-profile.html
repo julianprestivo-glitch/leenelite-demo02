@@ -90,8 +90,8 @@
     </div>
 
     <main id="maincontent" tabindex="-1">
-      <section class="pf-viewer" data-profile-viewer data-base="../images/pf/en_x7k3/" data-ext="webp" data-pad="3">
-        <div class="pf-viewer__controls">
+      <section class="pf-viewer" data-profile-viewer data-base="../images/pf/en_x7k3/" data-ext="webp" data-pad="3" data-download="../images/pf/leenelite-company-profile-en.pdf">
+        <div class="pf-toolbar">
           <div class="pf-actions">
             <button class="pf-btn" id="pfPrev" type="button">Prev</button>
             <div class="pf-counter"><span id="pfPage">1</span>/<span id="pfTotal">--</span></div>
@@ -103,13 +103,14 @@
             <button class="pf-btn" id="pfZoomIn" type="button" aria-label="Zoom in">+</button>
             <button class="pf-btn" id="pfZoomReset" type="button">Reset</button>
           </div>
+          <a class="pf-download" id="pfDownload" href="../images/pf/leenelite-company-profile-en.pdf" download>Download Profile</a>
         </div>
 
         <div class="pf-stage" aria-label="Company profile viewer">
-          <img id="pfImage" alt="Company profile page" draggable="false" />
+          <div id="pfPages" class="pf-pages" role="list" aria-label="Company profile pages"></div>
         </div>
 
-        <div class="pf-hint">Tip: Use the buttons or swipe left/right on mobile.</div>
+        <div class="pf-hint">Tip: Use the buttons to move between pages, and zoom in/out to read details.</div>
 
         <div class="pf-toast" id="pfToast" role="status" aria-live="polite"></div>
       </section>
