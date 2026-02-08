@@ -133,6 +133,7 @@
     </div>
 
     <form class="reserve-form" id="reserveForm" novalidate>
+      <input class="visually-hidden" autocomplete="off" name="website" tabindex="-1" type="text" value="" aria-hidden="true" />
       <div class="reserve-grid">
         <label>
           <span>الاسم الكامل <span class="req">*</span></span>
@@ -178,14 +179,14 @@
         </label>
 
         <label>
-          <span>السجل التجاري (CR) <span class="req">*</span></span>
-          <input type="text" name="cr" placeholder="10 أرقام (يبدأ بـ 1 أو 2 أو 7)" inputmode="numeric" maxlength="10" required />
+          <span>السجل التجاري (CR) <span class="req" data-req-cr aria-hidden="true">*</span></span>
+          <input type="text" name="cr" placeholder="10 أرقام (يبدأ بـ 1 أو 2 أو 7)" inputmode="numeric" maxlength="10" />
           <p class="reserve-field-error" data-error-for="cr" role="alert" hidden></p>
         </label>
 
         <label class="span-2">
-          <span>الرقم الضريبي VAT <span class="req">*</span></span>
-          <input type="text" name="vat" placeholder="مثال: 123456789012345" inputmode="numeric" required maxlength="15" pattern="\d{15}">
+          <span>الرقم الضريبي VAT <span class="req" data-req-vat aria-hidden="true">*</span></span>
+          <input type="text" name="vat" placeholder="300000000000000" inputmode="numeric" maxlength="15" pattern="\d{15}">
           <p class="reserve-field-error" data-error-for="vat" role="alert" hidden></p>
         </label>
 
@@ -257,6 +258,8 @@
             <span>أوافق على <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> وعلى استخدام بياناتي للتواصل بشأن طلبي. <span class="req">*</span></span>
           </label>
           <p class="reserve-error" id="reserveError" role="alert" hidden>يرجى الموافقة على سياسة الخصوصية قبل الإرسال.</p>
+          <p class="reserve-hint" id="reserveHint" role="status" hidden>تم استلام طلبك ✅</p>
+
         </div>
         <button type="submit" class="reserve-submit">إرسال طلب الحجز</button>
       </div>

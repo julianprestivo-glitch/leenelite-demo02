@@ -51,6 +51,38 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
       // ignore
     }
+
+  // Simple environment check (local file preview vs deployed)
+  const isLocalPreview = () => {
+    try {
+      const host = String(window.location.hostname || '');
+      const proto = String(window.location.protocol || '');
+      return proto === 'file:' || host === 'localhost' || host === '127.0.0.1';
+    } catch {
+      return true;
+    }
+  };
+
+  const postJson = async (url, payload) => {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload || {})
+    });
+    let data = null;
+    try { data = await res.json(); } catch { data = null; }
+    return { ok: !!(data && data.ok), status: res.status, data };
+  };
+
+  // Expose helpers for other modules on this page
+  try {
+    window.leeneliteTrackConversion = trackConversion;
+    window.leeneliteIsLocalPreview = isLocalPreview;
+    window.leenelitePostJson = postJson;
+  } catch {
+    // ignore
+  }
+
   };
 
   // ---------------------------------------------------------------------------
@@ -287,7 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactForms = document.querySelectorAll('.contact-form');
   if (contactForms && contactForms.length) {
     const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
-    const isArabic = lang.startsWith('ar');
+    const dir = (document.documentElement.getAttribute('dir') || '').toLowerCase();
+    const isArabic = lang.startsWith('ar') || dir === 'rtl';
 
     const getSuccessMessage = () =>
       isArabic
@@ -348,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('blur', clear);
       });
 
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
         // Clear previous
@@ -382,12 +415,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const statusEl = ensureStatusEl(form);
-        statusEl.textContent = getSuccessMessage();
-        statusEl.classList.add('is-success');
 
-        trackConversion('contact_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || '') });
+        // Local preview: keep friendly placeholder without sending
+        if (isLocalPreview()) {
+          statusEl.textContent = getSuccessMessage();
+          statusEl.classList.add('is-success');
+          trackConversion('contact_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), mode: 'local' });
+          form.reset();
+          return;
+        }
 
-        form.reset();
+        // Deployed (SiteGround): send to backend endpoint
+        statusEl.textContent = isArabic ? 'جارٍ الإرسال…' : 'Sending…';
+        statusEl.classList.remove('is-success');
+        statusEl.classList.remove('is-error');
+
+        const payload = {
+          name: String(form.querySelector('[name="name"]')?.value || '').trim(),
+          email: String(form.querySelector('[name="email"]')?.value || '').trim(),
+          phone: String(form.querySelector('[name="phone"]')?.value || '').trim(),
+          message: String(form.querySelector('[name="message"]')?.value || '').trim(),
+          // Honeypot (must stay empty)
+          website: String(form.querySelector('[name="website"]')?.value || '').trim(),
+          lang: isArabic ? 'ar' : 'en',
+          page: String(window.location.pathname || '')
+        };
+
+        try {
+          const { ok } = await postJson('/contact.php', payload);
+          if (!ok) throw new Error('send_failed');
+          statusEl.textContent = getSuccessMessage();
+          statusEl.classList.add('is-success');
+          trackConversion('contact_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), mode: 'server' });
+          form.reset();
+        } catch (err) {
+          statusEl.textContent = isArabic ? 'حدث خطأ أثناء الإرسال. حاول مرة أخرى.' : 'Something went wrong while sending. Please try again.';
+          statusEl.classList.add('is-error');
+        }
       });
     });
   }
@@ -437,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------------------------------------------------------------------------
     // ---------------------------------------------------------------------------
-  // 6a) Leen Elite VIP popup (EN/AR) – home only + premium minimal (2-line)
+  // 6a) Exhibitor Toolkit popup (EN/AR) – home only, premium compact
   // ---------------------------------------------------------------------------
   const initNewsletterPopup = () => {
     // Home only (English + Arabic):
@@ -457,64 +521,131 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isHome) return;
 
     const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
-    const isArabic = lang.startsWith('ar');
+    const dir = (document.documentElement.getAttribute('dir') || '').toLowerCase();
+    const isArabic = lang.startsWith('ar') || dir === 'rtl';
 
+    const isMobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 680px)').matches;
+
+    const isVercelDemo =
+      typeof window.location === 'object' &&
+      (String(window.location.hostname || '').includes('vercel.app') ||
+        String(window.location.hostname || '') === 'localhost' ||
+        String(window.location.hostname || '') === '127.0.0.1');
+
+    const pdfHref = '../downloads/LeenElite_Exhibitor_Toolkit_AR-EN.pdf';
+
+    // Premium two-step UX:
+    // Step 1: a single CTA
+    // Step 2: email capture + unlock
     const copy = isArabic
       ? {
-          title: 'قائمة لين إليت الحصرية',
-          subtitle: 'دعوات حصرية وتحديثات مختارة لأبرز فعالياتنا ومعارضنا.',
+          badge: 'TOOLKIT',
+          title: 'دليل العارض للمعارض',
+          kicker: 'PDF مجاني • قائمة تجهيز + جدول زمني',
+          subtitle: 'ملف عملي مختصر: قائمة تجهيز + جدول زمني + أهم الأخطاء لتفاديها قبل وأثناء المعرض.',
+          start: 'استلم الدليل',
+          startMicro: 'ستدخل بريدك الإلكتروني في الخطوة التالية.',
           placeholder: 'اكتب بريدك الإلكتروني',
-          button: 'انضم الآن',
-          success: 'تم الاشتراك بنجاح ✅',
+          unlock: 'فتح الدليل',
+          micro: 'سيتم فتح الدليل بعد إدخال بريد صحيح.',
+          success: 'تم التسجيل بنجاح ✅',
+          openNow: 'افتح الدليل',
+          noteProd: 'وسيصل رابط الدليل أيضًا إلى بريدك الإلكتروني.',
+          noteDemo: 'ملاحظة: إرسال الرابط إلى البريد متاح في النسخة الرسمية على الاستضافة.',
           invalid: 'يرجى إدخال بريد إلكتروني صحيح.',
           failed: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
           closeLabel: 'إغلاق'
         }
       : {
-          title: 'Leen Elite VIP List',
-          subtitle: 'Exclusive invites & curated updates for our top events and exhibitions.',
-          placeholder: 'Enter your email',
-          button: 'Join Now',
-          success: 'Subscribed successfully ✅',
+          badge: 'TOOLKIT',
+          title: 'Exhibitor Toolkit',
+          kicker: 'Free PDF • Checklist + Timeline',
+          subtitle: 'A practical guide: checklist, timeline, and key mistakes to avoid at exhibitions.',
+          start: 'Get the Toolkit',
+          startMicro: 'You’ll enter your email in the next step.',
+          placeholder: 'Email address',
+          unlock: 'Unlock',
+          micro: 'The toolkit unlocks after a valid email.',
+          success: "You’re all set ✅",
+          openNow: 'Open the PDF',
+          noteProd: "We’ve also emailed you the toolkit link.",
+          noteDemo: 'Note: Email delivery is enabled on the live SiteGround version.',
           invalid: 'Please enter a valid email address.',
           failed: 'Something went wrong. Please try again.',
           closeLabel: 'Close'
         };
 
-    const isMobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 680px)').matches;
+    const deliveryNote = isVercelDemo ? copy.noteDemo : copy.noteProd;
 
     const modal = document.createElement('div');
     modal.className = `nl-modal${isMobile ? ' is-mobile' : ''}`;
     modal.setAttribute('aria-hidden', 'true');
 
-    modal.innerHTML = `
-      <div class="nl-backdrop" data-nl-close></div>
-      <div class="nl-card" role="dialog" aria-modal="true" aria-labelledby="nlTitle">
-        <button class="nl-close" type="button" aria-label="${copy.closeLabel}" data-nl-close>×</button>
+    // Build a wide two-column card with a cover image and main content. The image
+    // should be reversed for RTL languages so that it appears on the right in Arabic.
+    // Cache-bust to avoid clients seeing an old cached cover after updates.
+    const imgSrc = isArabic ? '../images/toolkit-cover-ar.png?v=4' : '../images/toolkit-cover-en.png?v=4';
+    const visualHtml = `
+      <div class="nl-visual">
+        <div class="nl-coverWrap">
+          <img class="nl-cover" src="${imgSrc}" alt="${copy.title}">
+        </div>
+      </div>
+    `;
+    // Main content for the popup: title, step 1 CTA, email form, and status.
+    const mainHtml = `
+      <div class="nl-main">
         <h3 class="nl-title" id="nlTitle">${copy.title}</h3>
-        <p class="nl-subtitle">${copy.subtitle}</p>
-
-        <form class="nl-form" novalidate>
-          <label class="nl-field">
-            <span class="nl-sr">${copy.placeholder}</span>
-            <input class="nl-input" type="email" name="email" placeholder="${copy.placeholder}" autocomplete="email" inputmode="email" required />
-          </label>
-          <button class="nl-submit" type="submit">${copy.button}</button>
-        </form>
-
+        <p class="nl-kicker">${copy.kicker}</p>
+        <div class="nl-step nl-step-1 is-active">
+          <button class="nl-submit nl-start" type="button" data-nl-start>${copy.start}</button>
+        </div>
+        <div class="nl-step nl-step-2" hidden>
+          <form class="nl-form" novalidate>
+            <div class="nl-row is-stacked">
+              <label class="nl-field">
+                <span class="nl-sr">${copy.placeholder}</span>
+                <input class="nl-input" type="email" name="email" placeholder="${copy.placeholder}" autocomplete="email" inputmode="email" required>
+              </label>
+              <button class="nl-submit" type="submit" disabled>${copy.unlock}</button>
+            </div>
+          </form>
+        </div>
         <p class="nl-error" role="alert" hidden></p>
         <p class="nl-success" role="status" aria-live="polite" hidden></p>
+        <p class="nl-note" hidden></p>
+        <a class="nl-download" href="${pdfHref}" target="_blank" rel="noopener" hidden>${copy.openNow}</a>
+      </div>
+    `;
+    // Keep HTML order stable; we swap columns in CSS for RTL to guarantee
+    // the image always appears on the correct side.
+    const gridInner = `${visualHtml}${mainHtml}`;
+    modal.innerHTML = `
+      <div class="nl-backdrop" data-nl-close></div>
+      <div class="nl-card is-wide" role="dialog" aria-modal="true" aria-labelledby="nlTitle">
+        <div class="nl-grabber" aria-hidden="true"></div>
+        <button class="nl-close" type="button" aria-label="${copy.closeLabel}" data-nl-close>×</button>
+        <div class="nl-grid">
+          ${gridInner}
+        </div>
       </div>
     `;
 
     document.body.appendChild(modal);
 
     const card = modal.querySelector('.nl-card');
+    const step1 = modal.querySelector('.nl-step-1');
+    const step2 = modal.querySelector('.nl-step-2');
+    const startBtn = modal.querySelector('[data-nl-start]');
     const form = modal.querySelector('.nl-form');
     const input = modal.querySelector('.nl-input');
-    const submitBtn = modal.querySelector('.nl-submit');
+    const submitBtn = form ? form.querySelector('.nl-submit') : null;
     const errorEl = modal.querySelector('.nl-error');
     const successEl = modal.querySelector('.nl-success');
+    const noteEl = modal.querySelector('.nl-note');
+    const downloadEl = modal.querySelector('.nl-download');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     const showError = (msg) => {
       if (!errorEl) return;
@@ -534,6 +665,65 @@ document.addEventListener('DOMContentLoaded', () => {
       successEl.hidden = false;
     };
 
+    const showNote = (msg) => {
+      if (!noteEl) return;
+      noteEl.textContent = msg;
+      noteEl.hidden = false;
+    };
+
+    const clearSuccess = () => {
+      if (successEl) {
+        successEl.textContent = '';
+        successEl.hidden = true;
+      }
+      if (noteEl) {
+        noteEl.textContent = '';
+        noteEl.hidden = true;
+      }
+      if (downloadEl) downloadEl.hidden = true;
+    };
+
+    const isValidEmail = () => {
+      const email = (input && input.value ? String(input.value).trim() : '');
+      return emailRegex.test(email);
+    };
+
+    const updateCtaState = () => {
+      if (!submitBtn) return;
+      submitBtn.disabled = !isValidEmail();
+    };
+
+    const resetSteps = () => {
+      clearError();
+      clearSuccess();
+      if (form) form.style.display = '';
+      if (step1) step1.classList.add('is-active');
+      if (step2) {
+        step2.hidden = true;
+        step2.classList.remove('is-active');
+      }
+      if (input) input.value = '';
+      updateCtaState();
+    };
+
+    const goToStep2 = () => {
+      clearError();
+      clearSuccess();
+      if (step1) step1.classList.remove('is-active');
+      if (step2) {
+        step2.hidden = false;
+        step2.classList.add('is-active');
+      }
+      window.setTimeout(() => {
+        try {
+          input && input.focus && input.focus();
+        } catch {
+          // ignore
+        }
+      }, 40);
+      updateCtaState();
+    };
+
     const open = () => {
       if (modal.classList.contains('is-open')) return;
       modal.classList.add('is-open');
@@ -542,9 +732,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Lock scroll on desktop modal only.
       if (!isMobile) document.body.classList.add('nl-lock');
 
+      // Reset to step 1 each time it opens
+      resetSteps();
+
       window.setTimeout(() => {
         try {
-          input && input.focus && input.focus();
+          if (startBtn && startBtn.focus) startBtn.focus();
         } catch {
           // ignore
         }
@@ -555,6 +748,8 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('nl-lock');
+      // Keep state clean if reopened
+      resetSteps();
     };
 
     modal.querySelectorAll('[data-nl-close]').forEach((btn) => {
@@ -576,17 +771,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.setTimeout(openOnce, 5000);
 
+    if (startBtn) startBtn.addEventListener('click', goToStep2);
+
+    if (input) {
+      input.addEventListener('input', () => {
+        clearError();
+        updateCtaState();
+      });
+    }
+
     if (form) {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearError();
+        clearSuccess();
 
         const email = (input && input.value ? input.value.trim() : '').toLowerCase();
 
-        // Basic validation
-        const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-        if (!valid) {
+        if (!emailRegex.test(email)) {
           showError(copy.invalid);
+          updateCtaState();
           return;
         }
 
@@ -594,12 +798,6 @@ document.addEventListener('DOMContentLoaded', () => {
           submitBtn.disabled = true;
           submitBtn.classList.add('is-loading');
         }
-
-        const isVercelDemo =
-          typeof window.location === 'object' &&
-          (String(window.location.hostname || '').includes('vercel.app') ||
-            String(window.location.hostname || '') === 'localhost' ||
-            String(window.location.hostname || '') === '127.0.0.1');
 
         const endpoint = isVercelDemo ? '/api/subscribe' : '/subscribe.php';
 
@@ -610,7 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({
               email,
               lang: isArabic ? 'ar' : 'en',
-              page: String(window.location.pathname || '')
+              page: String(window.location.pathname || ''),
+              source: 'exhibitor_toolkit'
             })
           });
 
@@ -619,14 +818,18 @@ document.addEventListener('DOMContentLoaded', () => {
           // Success UI
           if (form) form.style.display = 'none';
           showSuccess(copy.success);
+          showNote(deliveryNote);
+          if (downloadEl) downloadEl.hidden = false;
 
-          trackConversion('newsletter_subscribe', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
+          trackConversion('exhibitor_toolkit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
         } catch {
           showError(copy.failed);
+          if (form) form.style.display = '';
         } finally {
           if (submitBtn) {
-            submitBtn.disabled = false;
             submitBtn.classList.remove('is-loading');
+            // keep disabled until email valid
+            submitBtn.disabled = !emailRegex.test(email);
           }
         }
       });
@@ -958,6 +1161,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const openButtons = document.querySelectorAll('[data-open-reserve-modal]');
   if (!modal || !openButtons.length) return;
 
+  // Reuse shared helpers (defined earlier in this script)
+  const trackConversion = (window && window.leeneliteTrackConversion) ? window.leeneliteTrackConversion : (() => {});
+  const isLocalPreview = (window && window.leeneliteIsLocalPreview) ? window.leeneliteIsLocalPreview : (() => true);
+  const postJson = (window && window.leenelitePostJson) ? window.leenelitePostJson : (async () => ({ ok: false }));
+
+
   const closeButtons = modal.querySelectorAll('[data-close-reserve-modal]');
   const form = modal.querySelector('#reserveForm');
   const hint = modal.querySelector('#reserveHint');
@@ -987,6 +1196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     email: isArabic ? 'البريد الإلكتروني' : 'Email',
     phone: isArabic ? 'رقم الجوال' : 'Phone',
     city: isArabic ? 'المدينة' : 'City',
+    cr: isArabic ? 'السجل التجاري' : 'Commercial Registration',
     vat: isArabic ? 'الرقم الضريبي' : 'VAT Number',
     size: isArabic ? 'حجم المساحة' : 'Space Size',
     type: isArabic ? 'نوع المشاركة' : 'Participation Type',
@@ -1041,25 +1251,258 @@ document.addEventListener('DOMContentLoaded', () => {
   // across all devices. To guarantee consistent UI + coloured flags, we render
   // our own dropdown list and use SVG flag images.
   const flagUrl = (iso) => `https://flagcdn.com/${String(iso || '').toLowerCase()}.svg`;
-
   const COUNTRY_CODES = [
-    { iso: 'SA', dial: '+966', nameAr: 'السعودية', nameEn: 'Saudi Arabia' },
-    { iso: 'AE', dial: '+971', nameAr: 'الإمارات', nameEn: 'United Arab Emirates' },
-    { iso: 'KW', dial: '+965', nameAr: 'الكويت', nameEn: 'Kuwait' },
-    { iso: 'QA', dial: '+974', nameAr: 'قطر', nameEn: 'Qatar' },
-    { iso: 'BH', dial: '+973', nameAr: 'البحرين', nameEn: 'Bahrain' },
-    { iso: 'OM', dial: '+968', nameAr: 'عُمان', nameEn: 'Oman' },
-    { iso: 'EG', dial: '+20',  nameAr: 'مصر', nameEn: 'Egypt' },
-    { iso: 'JO', dial: '+962', nameAr: 'الأردن', nameEn: 'Jordan' },
-    { iso: 'LB', dial: '+961', nameAr: 'لبنان', nameEn: 'Lebanon' },
-    { iso: 'IQ', dial: '+964', nameAr: 'العراق', nameEn: 'Iraq' },
-    { iso: 'MA', dial: '+212', nameAr: 'المغرب', nameEn: 'Morocco' },
-    { iso: 'TR', dial: '+90',  nameAr: 'تركيا', nameEn: 'Türkiye' },
-    { iso: 'US', dial: '+1',   nameAr: 'الولايات المتحدة', nameEn: 'United States' },
-    { iso: 'GB', dial: '+44',  nameAr: 'المملكة المتحدة', nameEn: 'United Kingdom' }
+    { iso: 'SA', dial: '+966' },
+    { iso: 'AF', dial: '+93' },
+    { iso: 'AL', dial: '+355' },
+    { iso: 'DZ', dial: '+213' },
+    { iso: 'AS', dial: '+1684' },
+    { iso: 'AO', dial: '+244' },
+    { iso: 'AI', dial: '+1264' },
+    { iso: 'AG', dial: '+1268' },
+    { iso: 'AR', dial: '+54' },
+    { iso: 'AM', dial: '+374' },
+    { iso: 'AW', dial: '+297' },
+    { iso: 'AU', dial: '+61' },
+    { iso: 'AT', dial: '+43' },
+    { iso: 'AZ', dial: '+994' },
+    { iso: 'BS', dial: '+1242' },
+    { iso: 'BH', dial: '+973' },
+    { iso: 'BD', dial: '+880' },
+    { iso: 'BB', dial: '+1246' },
+    { iso: 'BY', dial: '+375' },
+    { iso: 'BE', dial: '+32' },
+    { iso: 'BZ', dial: '+501' },
+    { iso: 'BJ', dial: '+229' },
+    { iso: 'BM', dial: '+1441' },
+    { iso: 'BT', dial: '+975' },
+    { iso: 'BO', dial: '+591' },
+    { iso: 'BA', dial: '+387' },
+    { iso: 'BW', dial: '+267' },
+    { iso: 'BR', dial: '+55' },
+    { iso: 'IO', dial: '+246' },
+    { iso: 'BN', dial: '+673' },
+    { iso: 'BG', dial: '+359' },
+    { iso: 'BF', dial: '+226' },
+    { iso: 'BI', dial: '+257' },
+    { iso: 'CV', dial: '+238' },
+    { iso: 'KH', dial: '+855' },
+    { iso: 'CM', dial: '+237' },
+    { iso: 'CA', dial: '+1' },
+    { iso: 'KY', dial: '+1345' },
+    { iso: 'CF', dial: '+236' },
+    { iso: 'TD', dial: '+235' },
+    { iso: 'CL', dial: '+56' },
+    { iso: 'CN', dial: '+86' },
+    { iso: 'CX', dial: '+61' },
+    { iso: 'CC', dial: '+61' },
+    { iso: 'CO', dial: '+57' },
+    { iso: 'KM', dial: '+269' },
+    { iso: 'CG', dial: '+242' },
+    { iso: 'CD', dial: '+243' },
+    { iso: 'CK', dial: '+682' },
+    { iso: 'CR', dial: '+506' },
+    { iso: 'HR', dial: '+385' },
+    { iso: 'CU', dial: '+53' },
+    { iso: 'CY', dial: '+357' },
+    { iso: 'CZ', dial: '+420' },
+    { iso: 'CI', dial: '+225' },
+    { iso: 'DK', dial: '+45' },
+    { iso: 'DJ', dial: '+253' },
+    { iso: 'DM', dial: '+1767' },
+    { iso: 'DO', dial: '+1809' },
+    { iso: 'EC', dial: '+593' },
+    { iso: 'EG', dial: '+20' },
+    { iso: 'SV', dial: '+503' },
+    { iso: 'GQ', dial: '+240' },
+    { iso: 'ER', dial: '+291' },
+    { iso: 'EE', dial: '+372' },
+    { iso: 'SZ', dial: '+268' },
+    { iso: 'ET', dial: '+251' },
+    { iso: 'FK', dial: '+500' },
+    { iso: 'FO', dial: '+298' },
+    { iso: 'FJ', dial: '+679' },
+    { iso: 'FI', dial: '+358' },
+    { iso: 'FR', dial: '+33' },
+    { iso: 'GF', dial: '+594' },
+    { iso: 'PF', dial: '+689' },
+    { iso: 'GA', dial: '+241' },
+    { iso: 'GM', dial: '+220' },
+    { iso: 'GE', dial: '+995' },
+    { iso: 'DE', dial: '+49' },
+    { iso: 'GH', dial: '+233' },
+    { iso: 'GI', dial: '+350' },
+    { iso: 'GR', dial: '+30' },
+    { iso: 'GL', dial: '+299' },
+    { iso: 'GD', dial: '+1473' },
+    { iso: 'GP', dial: '+590' },
+    { iso: 'GU', dial: '+1671' },
+    { iso: 'GT', dial: '+502' },
+    { iso: 'GG', dial: '+44' },
+    { iso: 'GN', dial: '+224' },
+    { iso: 'GW', dial: '+245' },
+    { iso: 'GY', dial: '+592' },
+    { iso: 'HT', dial: '+509' },
+    { iso: 'HN', dial: '+504' },
+    { iso: 'HK', dial: '+852' },
+    { iso: 'HU', dial: '+36' },
+    { iso: 'IS', dial: '+354' },
+    { iso: 'IN', dial: '+91' },
+    { iso: 'ID', dial: '+62' },
+    { iso: 'IR', dial: '+98' },
+    { iso: 'IQ', dial: '+964' },
+    { iso: 'IE', dial: '+353' },
+    { iso: 'IM', dial: '+44' },
+    { iso: 'IT', dial: '+39' },
+    { iso: 'JM', dial: '+1876' },
+    { iso: 'JP', dial: '+81' },
+    { iso: 'JE', dial: '+44' },
+    { iso: 'JO', dial: '+962' },
+    { iso: 'KZ', dial: '+76' },
+    { iso: 'KE', dial: '+254' },
+    { iso: 'KI', dial: '+686' },
+    { iso: 'KP', dial: '+850' },
+    { iso: 'KR', dial: '+82' },
+    { iso: 'KW', dial: '+965' },
+    { iso: 'KG', dial: '+996' },
+    { iso: 'LA', dial: '+856' },
+    { iso: 'LV', dial: '+371' },
+    { iso: 'LB', dial: '+961' },
+    { iso: 'LS', dial: '+266' },
+    { iso: 'LR', dial: '+231' },
+    { iso: 'LY', dial: '+218' },
+    { iso: 'LI', dial: '+423' },
+    { iso: 'LT', dial: '+370' },
+    { iso: 'LU', dial: '+352' },
+    { iso: 'MO', dial: '+853' },
+    { iso: 'MG', dial: '+261' },
+    { iso: 'MW', dial: '+265' },
+    { iso: 'MY', dial: '+60' },
+    { iso: 'MV', dial: '+960' },
+    { iso: 'ML', dial: '+223' },
+    { iso: 'MT', dial: '+356' },
+    { iso: 'MH', dial: '+692' },
+    { iso: 'MQ', dial: '+596' },
+    { iso: 'MR', dial: '+222' },
+    { iso: 'MU', dial: '+230' },
+    { iso: 'YT', dial: '+262' },
+    { iso: 'MX', dial: '+52' },
+    { iso: 'FM', dial: '+691' },
+    { iso: 'MD', dial: '+373' },
+    { iso: 'MC', dial: '+377' },
+    { iso: 'MN', dial: '+976' },
+    { iso: 'MS', dial: '+1664' },
+    { iso: 'MA', dial: '+212' },
+    { iso: 'MZ', dial: '+258' },
+    { iso: 'NA', dial: '+264' },
+    { iso: 'NR', dial: '+674' },
+    { iso: 'NP', dial: '+977' },
+    { iso: 'NL', dial: '+31' },
+    { iso: 'NC', dial: '+687' },
+    { iso: 'NZ', dial: '+64' },
+    { iso: 'NI', dial: '+505' },
+    { iso: 'NE', dial: '+227' },
+    { iso: 'NG', dial: '+234' },
+    { iso: 'NU', dial: '+683' },
+    { iso: 'NF', dial: '+672' },
+    { iso: 'MK', dial: '+389' },
+    { iso: 'MP', dial: '+1670' },
+    { iso: 'NO', dial: '+47' },
+    { iso: 'OM', dial: '+968' },
+    { iso: 'PK', dial: '+92' },
+    { iso: 'PW', dial: '+680' },
+    { iso: 'PA', dial: '+507' },
+    { iso: 'PG', dial: '+675' },
+    { iso: 'PY', dial: '+595' },
+    { iso: 'PE', dial: '+51' },
+    { iso: 'PH', dial: '+63' },
+    { iso: 'PN', dial: '+64' },
+    { iso: 'PL', dial: '+48' },
+    { iso: 'PT', dial: '+351' },
+    { iso: 'PR', dial: '+1787' },
+    { iso: 'QA', dial: '+974' },
+    { iso: 'RO', dial: '+40' },
+    { iso: 'RU', dial: '+7' },
+    { iso: 'RW', dial: '+250' },
+    { iso: 'RE', dial: '+262' },
+    { iso: 'SH', dial: '+290' },
+    { iso: 'KN', dial: '+1869' },
+    { iso: 'LC', dial: '+1758' },
+    { iso: 'PM', dial: '+508' },
+    { iso: 'VC', dial: '+1784' },
+    { iso: 'WS', dial: '+685' },
+    { iso: 'SM', dial: '+378' },
+    { iso: 'ST', dial: '+239' },
+    { iso: 'SN', dial: '+221' },
+    { iso: 'RS', dial: '+381' },
+    { iso: 'SC', dial: '+248' },
+    { iso: 'SL', dial: '+232' },
+    { iso: 'SG', dial: '+65' },
+    { iso: 'SK', dial: '+421' },
+    { iso: 'SI', dial: '+386' },
+    { iso: 'SB', dial: '+677' },
+    { iso: 'SO', dial: '+252' },
+    { iso: 'ZA', dial: '+27' },
+    { iso: 'GS', dial: '+500' },
+    { iso: 'SS', dial: '+211' },
+    { iso: 'ES', dial: '+34' },
+    { iso: 'LK', dial: '+94' },
+    { iso: 'SD', dial: '+249' },
+    { iso: 'SR', dial: '+597' },
+    { iso: 'SJ', dial: '+4779' },
+    { iso: 'SE', dial: '+46' },
+    { iso: 'CH', dial: '+41' },
+    { iso: 'SY', dial: '+963' },
+    { iso: 'TW', dial: '+886' },
+    { iso: 'TJ', dial: '+992' },
+    { iso: 'TZ', dial: '+255' },
+    { iso: 'TH', dial: '+66' },
+    { iso: 'TL', dial: '+670' },
+    { iso: 'TG', dial: '+228' },
+    { iso: 'TK', dial: '+690' },
+    { iso: 'TO', dial: '+676' },
+    { iso: 'TT', dial: '+1868' },
+    { iso: 'TN', dial: '+216' },
+    { iso: 'TR', dial: '+90' },
+    { iso: 'TM', dial: '+993' },
+    { iso: 'TV', dial: '+688' },
+    { iso: 'UG', dial: '+256' },
+    { iso: 'UA', dial: '+380' },
+    { iso: 'AE', dial: '+971' },
+    { iso: 'GB', dial: '+44' },
+    { iso: 'US', dial: '+1' },
+    { iso: 'UY', dial: '+598' },
+    { iso: 'UZ', dial: '+998' },
+    { iso: 'VU', dial: '+678' },
+    { iso: 'VE', dial: '+58' },
+    { iso: 'VN', dial: '+84' },
+    { iso: 'WF', dial: '+681' },
+    { iso: 'EH', dial: '+212' },
+    { iso: 'YE', dial: '+967' },
+    { iso: 'ZM', dial: '+260' },
+    { iso: 'ZW', dial: '+263' },
   ];
 
   const placeholderText = isArabic ? 'اختر الكود' : 'Select code';
+
+
+  const displayNames =
+    typeof Intl !== 'undefined' && Intl.DisplayNames
+      ? new Intl.DisplayNames([isArabic ? 'ar' : 'en'], { type: 'region' })
+      : null;
+
+  const getCountryName = (iso) => {
+    const code = String(iso || '').toUpperCase();
+    if (displayNames) {
+      try {
+        return displayNames.of(code) || code;
+      } catch {
+        // ignore
+      }
+    }
+    return code;
+  };
+
 
   const closeCountryDD = () => {
     if (!countryDD) return;
@@ -1092,6 +1535,12 @@ document.addEventListener('DOMContentLoaded', () => {
       img.decoding = 'async';
       img.alt = country.iso;
       img.src = flagUrl(country.iso);
+      // Fallback for networks where the flag CDN is slow/blocked.
+      img.onerror = () => {
+        try {
+          flagWrap.innerHTML = `<span class="flag-fallback">${country.iso}</span>`;
+        } catch (_) {}
+      };
       flagWrap.appendChild(img);
     }
     if (labelEl) labelEl.textContent = country.dial;
@@ -1134,13 +1583,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const img = document.createElement('img');
       img.loading = 'lazy';
       img.decoding = 'async';
-      img.alt = isArabic ? c.nameAr : c.nameEn;
+      img.alt = getCountryName(c.iso);
       img.src = flagUrl(c.iso);
+      img.onerror = () => {
+        try {
+          flag.innerHTML = `<span class="flag-fallback">${c.iso}</span>`;
+        } catch (_) {}
+      };
       flag.appendChild(img);
 
       const name = document.createElement('span');
       name.className = 'opt-name';
-      name.textContent = isArabic ? c.nameAr : c.nameEn;
+      name.textContent = getCountryName(c.iso);
 
       const dialEl = document.createElement('span');
       dialEl.className = 'opt-dial';
@@ -1167,7 +1621,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Init placeholder UI (or keep an existing value if any)
     const current = String(phoneCountry.value || '').trim();
     if (current) setCountryValue(current);
-    else setCountryUI(null);
+    else setCountryValue('+966', 'SA');
 
     countryBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1241,6 +1695,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (!value) {
+      // Optional when the selected country is not Saudi Arabia
+      if (crInput && !crInput.required) {
+        setCrError('');
+        return true;
+      }
       if (showMessage) setCrError(messages.required);
       return false;
     }
@@ -1354,6 +1813,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgRequired = isArabic ? 'الرقم الضريبي مطلوب.' : 'VAT number is required.';
       const msgInvalid = isArabic ? 'الرقم الضريبي يجب أن يتكون من 15 رقمًا.' : 'VAT number must be 15 digits.';
       if (!value) {
+        // Optional when the selected country is not Saudi Arabia
+        if (vatInput && !vatInput.required) {
+          setFieldError('vat', '', vatInput);
+          return true;
+        }
         if (showMessage) setFieldError('vat', msgRequired, vatInput);
         return false;
       }
@@ -1446,10 +1910,47 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hasPhoneSplit) {
       initCountryDropdown();
       updatePhoneFull();
+
+      const setReq = (el, required) => {
+        if (!el) return;
+        el.required = !!required;
+        el.setAttribute('aria-required', required ? 'true' : 'false');
+      };
+
+      const toggleReqStars = (selector, on) => {
+        modal.querySelectorAll(selector).forEach((el) => {
+          el.style.display = on ? '' : 'none';
+        });
+      };
+
+      const applyKsaRequirements = () => {
+        const cc = String(phoneCountry?.value || '').trim();
+        const isKsa = cc === '+966';
+
+        // CR + VAT required ONLY for Saudi numbers
+        setReq(crInput, isKsa);
+        setReq(vatInput, isKsa);
+
+        toggleReqStars('[data-req-cr]', isKsa);
+        toggleReqStars('[data-req-vat]', isKsa);
+
+        // If not required, clear visible errors (but still validate if user typed)
+        if (!isKsa) {
+          setCrError('');
+          setFieldError('vat', '', vatInput);
+          if (crInput) crInput.classList.remove('is-invalid');
+          if (vatInput) vatInput.classList.remove('is-invalid');
+        }
+      };
+
+      // Initial state (default country is Saudi Arabia)
+      applyKsaRequirements();
+
       if (phoneCountry) {
         phoneCountry.addEventListener('change', () => {
           updatePhoneFull();
           clearPhoneError();
+          applyKsaRequirements();
         });
       }
       if (phoneLocal) {
@@ -1495,7 +1996,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.querySelectorAll('input[name="type"]').forEach((el) => el.addEventListener('change', () => clearGroupError('type', '.reserve-options--type')));
     form.querySelectorAll('input[name="category"]').forEach((el) => el.addEventListener('change', () => clearGroupError('category', '.reserve-category')));
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       if (hint) hint.hidden = true;
@@ -1589,7 +2090,67 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (hint) hint.hidden = false;
+      // Local preview: show success UI without sending
+      if (isLocalPreview()) {
+        if (hint) {
+          hint.textContent = isArabic ? 'تم استلام طلبك ✅ (وضع المعاينة المحلية)' : 'Request received ✅ (local preview)';
+          hint.hidden = false;
+        }
+        trackConversion('reserve_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), mode: 'local' });
+        try { form.reset(); } catch {}
+        return;
+      }
+
+      // Deployed (SiteGround): send to backend endpoint
+      const submitBtn = form.querySelector('.reserve-submit');
+      if (submitBtn) submitBtn.disabled = true;
+
+      const payload = {
+        full_name: String(form.querySelector('[name="full_name"]')?.value || '').trim(),
+        company: String(form.querySelector('[name="company"]')?.value || '').trim(),
+        email: String(form.querySelector('[name="email"]')?.value || '').trim(),
+        // Phone: prefer computed full phone if present, else try build from split
+        phone: (() => {
+          const full = String(form.querySelector('[name="phone"]')?.value || '').trim();
+          if (full) return full;
+          const cc = String(form.querySelector('[name="phone_country"]')?.value || '').trim();
+          const local = String(form.querySelector('[name="phone_local"]')?.value || '').trim();
+          return (cc || '') + (local ? ' ' + local : '');
+        })(),
+        city: String(form.querySelector('[name="city"]')?.value || '').trim(),
+        cr: String(form.querySelector('[name="cr"]')?.value || '').trim(),
+        vat: String(form.querySelector('[name="vat"]')?.value || '').trim(),
+        size: String(form.querySelector('[name="size"]')?.value || '').trim(),
+        type: String(form.querySelector('input[name="type"]:checked')?.value || '').trim(),
+        category: String(form.querySelector('input[name="category"]:checked')?.value || '').trim(),
+        notes: String(form.querySelector('[name="notes"]')?.value || '').trim(),
+        website: String(form.querySelector('[name="website"]')?.value || '').trim(),
+        lang: isArabic ? 'ar' : 'en',
+        page: String(window.location.pathname || '')
+      };
+
+      try {
+        if (hint) {
+          hint.textContent = isArabic ? 'جارٍ إرسال الطلب…' : 'Sending request…';
+          hint.hidden = false;
+        }
+        const { ok } = await postJson('/reserve.php', payload);
+        if (!ok) throw new Error('send_failed');
+
+        if (hint) {
+          hint.textContent = isArabic ? 'تم استلام طلب الحجز بنجاح ✅' : 'Booking request received successfully ✅';
+          hint.hidden = false;
+        }
+        trackConversion('reserve_submit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), mode: 'server' });
+        try { form.reset(); } catch {}
+      } catch (err) {
+        if (error) {
+          error.textContent = isArabic ? 'حدث خطأ أثناء الإرسال. حاول مرة أخرى.' : 'Something went wrong while sending. Please try again.';
+          error.hidden = false;
+        }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
   }
 

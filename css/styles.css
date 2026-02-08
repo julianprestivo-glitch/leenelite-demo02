@@ -2069,7 +2069,7 @@ body.upcoming-exhibitions-page .page-side-media{
   margin: 0;
   background: rgba(18,18,18,0.98);
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 18px;
+  border-radius: 16px;
   box-shadow: 0 24px 70px rgba(0,0,0,0.70);
   max-height: calc(100vh - 56px);
   max-height: calc(100dvh - 56px);
@@ -2883,7 +2883,7 @@ body.modal-open{ overflow: hidden; }
   transform: translateY(-50%);
   z-index: 4;
   width: 56px;
-  height: 56px;
+  height: 52px;
   border-radius: 999px;
   border: 1px solid rgba(211, 180, 78, 0.55);
   background: rgba(0, 0, 0, 0.34);
@@ -3126,7 +3126,7 @@ body.pf-body .pf-counter{
 }
 
 .pf-stage{
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.65);
   box-shadow: 0 22px 60px rgba(0,0,0,0.60);
@@ -3280,15 +3280,44 @@ body.pf-body .pf-counter{
 .nl-card{
   position: relative;
   z-index: 1;
-  width: min(860px, calc(100vw - 32px));
+  font-family: inherit;
+  width: min(520px, calc(100vw - 32px));
   border-radius: 22px;
   border: 1px solid transparent;
   background:
     linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.88)) padding-box,
     linear-gradient(90deg, rgba(211,180,78,0.22), rgba(234,189,99,0.72), rgba(211,180,78,0.22)) border-box;
   box-shadow: 0 28px 85px rgba(0,0,0,0.66);
-  padding: 34px 34px 30px;
+  padding: 26px 26px 22px;
   backdrop-filter: blur(14px);
+}
+
+/* Premium two-step flow */
+.nl-step{ display: none; }
+.nl-step.is-active{ display: block; }
+.nl-step[hidden]{ display: none !important; }
+
+/* Ensure the HTML `hidden` attribute always wins (buttons/links too) */
+.nl-modal [hidden]{
+  display: none !important;
+}
+
+.nl-start{
+  width: 100%;
+  max-width: 420px;
+  margin: 6px auto 0;
+  display: block;
+}
+
+.nl-row.is-stacked{
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.nl-row.is-stacked .nl-submit{
+  width: 100%;
+  min-width: 0;
 }
 
 
@@ -3304,7 +3333,7 @@ body.pf-body .pf-counter{
     radial-gradient(circle at 50% 8%, rgba(234,189,99,0.14) 0%, transparent 55%),
     repeating-radial-gradient(circle at 30% 70%, rgba(255,255,255,0.08) 0 1px, transparent 1px 10px),
     repeating-radial-gradient(circle at 70% 35%, rgba(255,255,255,0.06) 0 1px, transparent 1px 12px);
-  opacity: 0.55;
+  opacity: 0.38;
   filter: blur(0.15px);
   mix-blend-mode: screen;
 }
@@ -3341,11 +3370,14 @@ body.pf-body .pf-counter{
   transition: background var(--ease-fast), border-color var(--ease-fast), transform var(--ease-fast), filter var(--ease-fast);
 }
 
+/* RTL support (Arabic pages use dir="rtl" on <html>) */
+html[dir="rtl"] .nl-close,
 body.rtl .nl-close{
   right: 16px;
   left: auto;
 }
 
+html[dir="rtl"] .nl-input,
 body.rtl .nl-input{
   text-align: right;
 }
@@ -3363,7 +3395,16 @@ body.rtl .nl-input{
   color: var(--colour-gold);
   font-weight: 900;
   letter-spacing: 0.25px;
-  font-size: clamp(26px, 3vw, 44px);
+  font-size: clamp(22px, 2.6vw, 34px);
+}
+
+.nl-kicker{
+  margin: -2px 0 14px;
+  text-align: center;
+  color: rgba(255,255,255,0.70);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
 }
 
 .nl-subtitle{
@@ -3372,9 +3413,88 @@ body.rtl .nl-input{
   color: rgba(255,255,255,0.82);
   font-weight: 700;
   line-height: 1.7;
-  font-size: clamp(14px, 1.35vw, 20px);
+  font-size: clamp(13px, 1.2vw, 18px);
 }
 
+
+
+.nl-topline{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 10px;
+}
+
+.nl-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(211,180,78,0.40);
+  background: rgba(0,0,0,0.35);
+  color: rgba(234,189,99,0.96);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.nl-row{
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.nl-row .nl-field{
+  flex: 1;
+  max-width: none;
+}
+
+.nl-row .nl-submit{
+  min-width: 180px;
+}
+
+.nl-micro{
+  margin: 10px 0 0;
+  text-align: center;
+  color: rgba(255,255,255,0.62);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.nl-note{
+  margin: 10px 0 0;
+  text-align: center;
+  color: rgba(255,255,255,0.70);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.nl-grabber{
+  display: none;
+  width: 54px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  margin: 0 auto 12px;
+}
+
+.nl-submit:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+  box-shadow: none;
+}
+
+.nl-submit:disabled:hover{
+  transform: none;
+  filter: none;
+}
 
 .nl-form{
   display: flex;
@@ -3385,14 +3505,14 @@ body.rtl .nl-input{
 }
 
 .nl-field{
-  width: min(700px, 92vw);
-  max-width: 740px;
+  width: 100%;
+  max-width: 520px;
 }
 
 .nl-input{
   width: 100%;
-  height: 56px;
-  border-radius: 18px;
+  height: 52px;
+  border-radius: 16px;
   border: 1px solid rgba(211,180,78,0.32);
   background: rgba(255,255,255,0.05);
   color: rgba(255,255,255,0.94);
@@ -3412,9 +3532,9 @@ body.rtl .nl-input{
 }
 
 .nl-submit{
-  height: 56px;
+  height: 52px;
   min-width: 240px;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 0;
   background: linear-gradient(90deg, #D3B44E, #EABD63);
   color: #111;
@@ -3422,6 +3542,9 @@ body.rtl .nl-input{
   padding: 0 22px;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 14px 35px rgba(234,189,99,0.18);
   transition: transform var(--ease-fast), filter var(--ease-fast);
 }
@@ -3434,6 +3557,39 @@ body.rtl .nl-input{
 .nl-submit.is-loading{
   opacity: 0.75;
 }
+
+.nl-download{
+  height: 52px;
+  min-width: 240px;
+  border-radius: 16px;
+  border: 1px solid rgba(211,180,78,0.55);
+  background: rgba(0,0,0,0.38);
+  color: rgba(234,189,99,0.96);
+  font-weight: 900;
+  padding: 0 22px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.30);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform var(--ease-fast), filter var(--ease-fast), background var(--ease-fast), border-color var(--ease-fast);
+}
+
+.nl-download:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  background: rgba(0,0,0,0.48);
+  border-color: rgba(234,189,99,0.70);
+}
+
+@media (max-width: 680px){
+  .nl-download{
+    width: 100%;
+  }
+}
+
 
 .nl-error{
   margin: 14px 0 0;
@@ -3493,8 +3649,35 @@ body.nl-lock{
     width: 100%;
     max-width: 100%;
   }
+  .nl-row{
+    width: 100%;
+    flex-direction: column;
+    max-width: 100%;
+  }
+  .nl-row .nl-submit{
+    width: 100%;
+    min-width: 0;
+  }
   .nl-submit{
     width: 100%;
+  }
+
+  /* Bottom-sheet behavior on mobile */
+  .nl-modal.is-mobile{
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+  .nl-modal.is-mobile .nl-grabber{
+    display: block;
+  }
+  .nl-modal.is-mobile .nl-card{
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    padding: 22px 16px 18px;
+  }
+  .nl-modal.is-mobile .nl-backdrop{
+    background: rgba(0,0,0,0.62);
   }
 }
 
@@ -3807,7 +3990,8 @@ body.rtl .right-col {
   padding: 12px 12px;
   border-radius: 12px;
   background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.14);
+  /* Slightly more premium contrast */
+  border: 1px solid rgba(211, 180, 78, 0.22);
   color: rgba(255,255,255,0.90);
   display: flex;
   align-items: center;
@@ -3822,12 +4006,12 @@ body.rtl .right-col {
 }
 
 .country-dd__flag{
-  width: 26px;
-  height: 18px;
+  width: 28px;
+  height: 20px;
   border-radius: 4px;
   overflow: hidden;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(211, 180, 78, 0.22);
   flex: 0 0 auto;
   display: grid;
   place-items: center;
@@ -3849,6 +4033,14 @@ body.rtl .right-col {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: rgba(234,189,99,0.95);
+}
+
+.flag-fallback{
+  font-size: 11px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.90);
+  letter-spacing: 0.6px;
 }
 
 .country-dd__chev{
@@ -3898,11 +4090,11 @@ body.rtl .right-col {
 }
 
 .country-dd__option .opt-flag{
-  width: 26px;
-  height: 18px;
+  width: 28px;
+  height: 20px;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(211, 180, 78, 0.18);
   flex: 0 0 auto;
 }
 
@@ -3952,7 +4144,7 @@ body.rtl .right-col {
   width: fit-content;
   max-width: 100%;
   padding: 12px 12px;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1px solid rgba(211, 180, 78, 0.22);
   background:
     radial-gradient(120% 140% at 50% 0%, rgba(211, 180, 78, 0.10), rgba(0,0,0,0.20) 55%, rgba(0,0,0,0.42));
@@ -4118,4 +4310,161 @@ body.pf-body .pf-counter{
   min-height: 0;
   max-height: none;
   width: 100%;
+}
+
+/* Ensure the HTML `hidden` attribute always wins (prevents accidental display)
+   NOTE: Some author styles (e.g. display:flex) can override the UA rule. */
+.nl-modal [hidden]{
+  display: none !important;
+}
+
+/* ======================================================================
+   Exhibitor Toolkit Wide Popup (Option B)
+   ----------------------------------------------------------------------
+   Custom styles for the wide two-column version of the newsletter popup.
+   This design uses a cover image and concise text to create a premium
+   presentation in both English (LTR) and Arabic (RTL) layouts.
+   ---------------------------------------------------------------------- */
+
+.nl-card.is-wide{
+  /* Compact, premium modal size (balanced / “global” comfortable) */
+  width: min(740px, calc(100vw - 32px));
+  max-height: min(72vh, 500px);
+  padding: 18px 18px 16px;
+  overflow: hidden;
+}
+
+.nl-card.is-wide .nl-grid{
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  grid-template-areas: "visual main";
+  min-height: 320px;
+  gap: 14px;
+}
+
+/* RTL: keep the same HTML order but swap areas so image becomes right */
+html[dir="rtl"] .nl-card.is-wide .nl-grid{
+  grid-template-areas: "main visual";
+}
+body.rtl .nl-card.is-wide .nl-grid{
+  grid-template-areas: "main visual";
+}
+
+.nl-card.is-wide .nl-topline,
+.nl-card.is-wide .nl-subtitle,
+.nl-card.is-wide .nl-chiprow{
+  display: none !important;
+}
+
+.nl-card.is-wide .nl-visual{
+  grid-area: visual;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.nl-card.is-wide .nl-coverWrap{
+  width: 100%;
+  height: 320px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+}
+
+.nl-card.is-wide .nl-cover{
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.nl-card.is-wide .nl-main{
+  grid-area: main;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.nl-card.is-wide .nl-close{
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+/* Wide layout title alignment (better reading flow) */
+.nl-card.is-wide .nl-title{
+  margin: 0;
+  text-align: center;
+  line-height: 1.15;
+  letter-spacing: -0.2px;
+  max-width: 380px;
+  font-size: clamp(20px, 2.1vw, 30px);
+}
+
+.nl-card.is-wide .nl-kicker{
+  margin: -2px 0 10px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* Keep primary CTA aligned (not centered) in wide mode */
+.nl-card.is-wide .nl-start{
+  width: min(320px, 100%);
+  margin: 4px auto 0;
+}
+
+.nl-card.is-wide .nl-row{
+  gap: 10px;
+}
+
+/* Step 2 (email) should match the same compact width as the CTA */
+.nl-card.is-wide .nl-form{
+  width: min(320px, 100%);
+  align-items: stretch;
+}
+
+.nl-card.is-wide .nl-input,
+.nl-card.is-wide .nl-submit,
+.nl-card.is-wide .nl-download{
+  height: 48px;
+  border-radius: 14px;
+}
+
+.nl-card.is-wide .nl-submit,
+.nl-card.is-wide .nl-download{
+  font-size: 0.95rem;
+}
+
+.nl-card.is-wide .nl-submit,
+.nl-card.is-wide .nl-download{
+  width: min(320px, 100%);
+  min-width: 0;
+}
+
+@media (max-width: 680px){
+  .nl-card.is-wide{
+    width: calc(100vw - 22px);
+    max-height: 86vh;
+  }
+  .nl-card.is-wide .nl-grid{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "visual"
+      "main";
+    min-height: 0;
+  }
+  .nl-card.is-wide .nl-visual{
+    padding: 12px 12px;
+  }
+  .nl-card.is-wide .nl-coverWrap{
+    height: 240px;
+  }
 }

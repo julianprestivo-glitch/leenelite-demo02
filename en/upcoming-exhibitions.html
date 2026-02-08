@@ -133,6 +133,7 @@
     </div>
 
     <form class="reserve-form" id="reserveForm" novalidate>
+      <input class="visually-hidden" autocomplete="off" name="website" tabindex="-1" type="text" value="" aria-hidden="true" />
       <div class="reserve-grid">
         <label>
           <span>Full Name <span class="req">*</span></span>
@@ -178,14 +179,14 @@
         </label>
 
         <label>
-          <span>Commercial Registration (CR) <span class="req">*</span></span>
-          <input type="text" name="cr" placeholder="10 digits (starts with 1, 2, or 7)" inputmode="numeric" maxlength="10" required />
+          <span>Commercial Registration (CR) <span class="req" data-req-cr aria-hidden="true">*</span></span>
+          <input type="text" name="cr" placeholder="10 digits (starts with 1, 2, or 7)" inputmode="numeric" maxlength="10" />
           <p class="reserve-field-error" data-error-for="cr" role="alert" hidden></p>
         </label>
 
         <label class="span-2">
-          <span>VAT Number <span class="req">*</span></span>
-          <input type="text" name="vat" placeholder="e.g., 123456789012345" inputmode="numeric" required maxlength="15" pattern="\d{15}">
+          <span>VAT Number <span class="req" data-req-vat aria-hidden="true">*</span></span>
+          <input type="text" name="vat" placeholder="300000000000000" inputmode="numeric" maxlength="15" pattern="\d{15}">
           <p class="reserve-field-error" data-error-for="vat" role="alert" hidden></p>
         </label>
 
@@ -257,6 +258,8 @@
             <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the use of my information to contact me about my request. <span class="req">*</span></span>
           </label>
           <p class="reserve-error" id="reserveError" role="alert" hidden>Please agree to the Privacy Policy before submitting.</p>
+          <p class="reserve-hint" id="reserveHint" role="status" hidden>Request received ✅</p>
+
           
         </div>
         <button type="submit" class="reserve-submit">Submit Booking Request</button>
