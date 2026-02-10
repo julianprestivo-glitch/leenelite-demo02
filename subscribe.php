@@ -11,20 +11,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   exit;
 }
 
+$cfg = @include __DIR__ . '/config/form-config.php';
+if (!is_array($cfg)) $cfg = [];
+
+$honeypot = $cfg['honeypot_field'] ?? 'website';
+
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true);
+if (!is_array($data)) $data = [];
 
-$email = '';
-$lang = '';
-$page = '';
-$source = '';
-
-if (is_array($data)) {
-  $email = isset($data['email']) ? trim((string)$data['email']) : '';
-  $lang  = isset($data['lang']) ? trim((string)$data['lang']) : '';
-  $page  = isset($data['page']) ? trim((string)$data['page']) : '';
-  $source = isset($data['source']) ? trim((string)$data['source']) : '';
+// Honeypot (optional; front-end may not send it)
+if (!empty($data[$honeypot])) {
+  http_response_code(200);
+  echo json_encode(['ok' => true]);
+  exit;
 }
+
+$email  = isset($data['email']) ? trim((string)$data['email']) : '';
+$lang   = isset($data['lang']) ? trim((string)$data['lang']) : '';
+$page   = isset($data['page']) ? trim((string)$data['page']) : '';
+$source = isset($data['source']) ? trim((string)$data['source']) : '';
 
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
   http_response_code(400);
@@ -38,8 +44,12 @@ $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
 $toolkitPath = '/downloads/LeenElite_Exhibitor_Toolkit_AR-EN.pdf';
 $toolkitUrl = ($host ? ($scheme . '://' . $host . $toolkitPath) : $toolkitPath);
 
+// Destination + sender (configurable)
+$to        = $cfg['to_email']   ?? 'info@leenelite.com';
+$fromEmail = $cfg['from_email'] ?? 'info@leenelite.com';
+$fromName  = $cfg['from_name']  ?? 'Leen Elite';
+
 // 1) Notify site owner (lead capture)
-$to = 'info@leenelite.com';
 $subject = 'Leen Elite – Exhibitor Toolkit Request';
 $message = "New toolkit request:\n\n" .
            "Email: {$email}\n" .
@@ -47,12 +57,13 @@ $message = "New toolkit request:\n\n" .
            "Page: {$page}\n" .
            "Source: {$source}\n" .
            "Toolkit: {$toolkitUrl}\n" .
-           "Date (server): " . date('c') . "\n";
+           "Date (server): " . date('c') . "\n" .
+           "IP: " . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n";
 
 $headers = [];
 $headers[] = 'MIME-Version: 1.0';
 $headers[] = 'Content-type: text/plain; charset=UTF-8';
-$headers[] = 'From: Leen Elite <info@leenelite.com>'; // adjust if needed
+$headers[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
 $headers[] = 'Reply-To: ' . $email;
 
 $sentAdmin = @mail($to, $subject, $message, implode("\r\n", $headers));
@@ -87,7 +98,7 @@ $userMessage = $isArabic ? ($userMessageAr . "\n\n---\n\n" . $userMessageEn) : (
 $userHeaders = [];
 $userHeaders[] = 'MIME-Version: 1.0';
 $userHeaders[] = 'Content-type: text/plain; charset=UTF-8';
-$userHeaders[] = 'From: Leen Elite <info@leenelite.com>'; // adjust if needed
+$userHeaders[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
 
 $sentUser = @mail($email, $userSubject, $userMessage, implode("\r\n", $userHeaders));
 

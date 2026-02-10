@@ -110,12 +110,25 @@
         </div>
 
         <div class="right-col section-fade">
-          <!-- لين وورلد (على اليمين) -->
+                    <!-- لين وورلد (على اليمين) -->
           <div class="placeholder-card">
             <div class="ph-visual ph-visual--contain" aria-hidden="true">
               <img draggable="false" loading="lazy" src="../images/upcoming-exhibitions-cover.png" alt="لين وورلد" />
             </div>
-            <p class="ph-title">قريبًا</p>
+
+            <div class="brochure-title-badge">نشرة فعاليات لين وورلد – العدد الأول (٢٠٢٦)</div>
+
+            <div class="brochure-actions brochure-actions--compact">
+              <button class="brochure-view" type="button"
+                data-open-pdf-modal
+                data-pdf-src="../downloads/LeenWorld_2026_Brochure.pdf"
+                data-pdf-title="نشرة فعاليات لين وورلد – العدد الأول (٢٠٢٦)"
+                aria-label="عرض نشرة فعاليات لين وورلد – العدد الأول (٢٠٢٦)">
+                عرض
+              </button>
+              <a class="brochure-download" href="../downloads/LeenWorld_2026_Brochure.pdf" download>تحميل</a>
+            </div>
+
             <button class="reserve-btn" type="button" data-open-reserve-modal>احجز مساحتك الآن</button>
             <p class="ph-note">ملحوظة: تخصيص رقم وموقع المساحة يتم بعد تأكيد الحجز وفقًا للتوافر.</p>
           </div>
@@ -268,7 +281,31 @@
 </div>
 
 
-    <footer class="site-footer">
+    
+
+<!-- Leen World Brochure – Premium PDF Modal -->
+<div class="pdf-modal" id="brochureModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="brochureTitle">
+  <div class="pdf-modal__overlay" data-close-pdf-modal></div>
+  <div class="pdf-modal__panel" role="document">
+    <div class="pdf-modal__header">
+      <div class="pdf-modal__titlewrap">
+        <div id="brochureTitle" class="pdf-modal__title">نشرة فعاليات لين وورلد – العدد الأول (٢٠٢٦)</div>
+        <div class="pdf-modal__sub">PDF</div>
+      </div>
+      <div class="pdf-modal__actions">
+        <a class="pdf-modal__btn pdf-modal__btn--ghost" href="../downloads/LeenWorld_2026_Brochure.pdf" download data-pdf-download>تحميل</a>
+        <button class="pdf-modal__btn" type="button" data-pdf-fullscreen aria-label="ملء الشاشة">⤢</button>
+        <button class="pdf-modal__btn pdf-modal__btn--close" type="button" data-close-pdf-modal aria-label="إغلاق">×</button>
+      </div>
+    </div>
+    <div class="pdf-modal__body">
+      <iframe class="pdf-modal__frame" title="نشرة فعاليات لين وورلد PDF" loading="lazy" data-pdf-frame src="" referrerpolicy="no-referrer"></iframe>
+    </div>
+  </div>
+</div>
+
+
+<footer class="site-footer">
       <div class="footer-inner">
         <div class="brand">
           <img draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg" alt="LEEN ELITE" />

@@ -14,6 +14,58 @@
  * - Section reveal animation (IntersectionObserver).
  */
 
+/* -----------------------------------------------------------------------------
+   Visual viewport height helper (mobile keyboard + address bar safe)
+   Sets CSS var: --vvh = 1% of the visual viewport height in px.
+----------------------------------------------------------------------------- */
+(() => {
+  try {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const set = () => {
+      const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+      if (!h || !root) return;
+      root.style.setProperty('--vvh', `${h * 0.01}px`);
+    };
+    const onResize = () => window.requestAnimationFrame(set);
+    set();
+    window.addEventListener('resize', onResize, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onResize, { passive: true });
+      window.visualViewport.addEventListener('scroll', onResize, { passive: true });
+    }
+  } catch {
+    // ignore
+  }
+})();
+
+/* -----------------------------------------------------------------------------
+   Visual viewport height helper (mobile keyboard + address bar safe)
+   Sets CSS var: --vvh = 1% of the visual viewport height in px.
+----------------------------------------------------------------------------- */
+(() => {
+  try {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const set = () => {
+      const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+      if (!h || !root) return;
+      root.style.setProperty('--vvh', `${h * 0.01}px`);
+    };
+    const onResize = () => window.requestAnimationFrame(set);
+    set();
+    window.addEventListener('resize', onResize, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onResize, { passive: true });
+      // Some browsers update height on scroll (address bar show/hide)
+      window.visualViewport.addEventListener('scroll', onResize, { passive: true });
+    }
+  } catch {
+    // ignore
+  }
+})();
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
@@ -2117,6 +2169,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const local = String(form.querySelector('[name="phone_local"]')?.value || '').trim();
           return (cc || '') + (local ? ' ' + local : '');
         })(),
+        phone_country: String(form.querySelector('[name="phone_country"]')?.value || '').trim(),
+        phone_local: String(form.querySelector('[name="phone_local"]')?.value || '').trim(),
         city: String(form.querySelector('[name="city"]')?.value || '').trim(),
         cr: String(form.querySelector('[name="cr"]')?.value || '').trim(),
         vat: String(form.querySelector('[name="vat"]')?.value || '').trim(),
@@ -2124,6 +2178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: String(form.querySelector('input[name="type"]:checked')?.value || '').trim(),
         category: String(form.querySelector('input[name="category"]:checked')?.value || '').trim(),
         notes: String(form.querySelector('[name="notes"]')?.value || '').trim(),
+        privacy_consent: !!(privacy && privacy.checked),
         website: String(form.querySelector('[name="website"]')?.value || '').trim(),
         lang: isArabic ? 'ar' : 'en',
         page: String(window.location.pathname || '')
@@ -2170,4 +2225,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+});
+
+
+/* -----------------------------------------------------------------------------
+   Brochure PDF Modal (Upcoming Exhibitions)
+----------------------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('brochureModal');
+  const openButtons = document.querySelectorAll('[data-open-pdf-modal]');
+  if (!modal || !openButtons.length) return;
+
+  const closeTriggers = modal.querySelectorAll('[data-close-pdf-modal]');
+  const frame = modal.querySelector('[data-pdf-frame]');
+  const titleEl = modal.querySelector('#brochureTitle');
+  const downloadEl = modal.querySelector('[data-pdf-download]');
+  const fullscreenBtn = modal.querySelector('[data-pdf-fullscreen]');
+
+  const syncBodyModalOpen = () => {
+    const anyOpen = !!document.querySelector('.reserve-modal.is-open, .pdf-modal.is-open');
+    if (anyOpen) document.body.classList.add('modal-open');
+    else document.body.classList.remove('modal-open');
+  };
+
+  const openModal = (btn) => {
+    const src = btn.getAttribute('data-pdf-src') || '';
+    const title = btn.getAttribute('data-pdf-title') || '';
+
+    if (titleEl && title) titleEl.textContent = title;
+    if (downloadEl && src) downloadEl.setAttribute('href', src);
+
+    // Set iframe src at open-time to avoid unnecessary loads on initial page render
+    if (frame) frame.src = src ? `${src}#view=FitH` : '';
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    syncBodyModalOpen();
+
+    const focusTarget = modal.querySelector('[data-close-pdf-modal][aria-label]') || modal.querySelector('[data-close-pdf-modal]');
+    if (focusTarget) focusTarget.focus();
+  };
+
+  const closeModal = () => {
+    modal.classList.remove('is-open');
+    modal.classList.remove('is-fullscreen');
+    modal.setAttribute('aria-hidden', 'true');
+
+    // Stop PDF rendering when closing (saves CPU on mobile)
+    if (frame) frame.src = '';
+
+    // Exit native fullscreen if active
+    if (document.fullscreenElement) {
+      try { document.exitFullscreen(); } catch (_) {}
+    }
+
+    syncBodyModalOpen();
+  };
+
+  openButtons.forEach((btn) => btn.addEventListener('click', () => openModal(btn)));
+  closeTriggers.forEach((el) => el.addEventListener('click', closeModal));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      const isNowFullscreen = !modal.classList.contains('is-fullscreen');
+      modal.classList.toggle('is-fullscreen');
+
+      // Attempt native fullscreen for a more premium feel (falls back to CSS fullscreen)
+      const panel = modal.querySelector('.pdf-modal__panel');
+      if (isNowFullscreen && panel && panel.requestFullscreen) {
+        panel.requestFullscreen().catch(() => {});
+      } else if (!isNowFullscreen && document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+  }
 });
