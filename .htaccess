@@ -4,6 +4,8 @@
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  # Block direct access to private lead logs
+  RewriteRule ^storage/ - [F,L]
   # Default language: EN
   RewriteRule ^$ en/index.html [R=301,L]
 </IfModule>

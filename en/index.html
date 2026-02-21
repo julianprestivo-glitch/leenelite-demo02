@@ -22,13 +22,12 @@
 <link href="../images/leenelite-logo-white.svg" rel="icon" type="image/png"/>
 <title>Leen Elite | Integrated Event Services</title>
 <link href="../css/styles.css" rel="stylesheet"/>
-<link rel="preload" as="image" href="../images/ambition-building.webp" fetchpriority="high"/>
+<link as="image" fetchpriority="high" href="../images/ambition-building.webp" rel="preload"/>
 <script defer="" src="../js/script.js"></script>
 <link href="../manifest.webmanifest" rel="manifest"/>
-<link rel="alternate" hreflang="en" href="https://www.leenelite.com/en/index.html" />
-<link rel="alternate" hreflang="ar" href="https://www.leenelite.com/ar/index.html" />
-<link rel="alternate" hreflang="x-default" href="https://www.leenelite.com/en/index.html" />
-
+<link href="https://www.leenelite.com/en/index.html" hreflang="en" rel="alternate"/>
+<link href="https://www.leenelite.com/ar/index.html" hreflang="ar" rel="alternate"/>
+<link href="https://www.leenelite.com/en/index.html" hreflang="x-default" rel="alternate"/>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -58,7 +57,151 @@
   ]
 }
 </script>
+<!-- Unified Image Canvas (One-piece feel) + Seamless Overlap Blend -->
+<style>
+  :root{
+    /* Blend zone: small and subtle (not a visible band) */
+    --blend-h: 96px;
+    --blend-blur: 14px;
 
+    /* Global grade (premium, minimal) */
+    --grade-vignette: rgba(0,0,0,.58);
+    --grade-gold: rgba(210,170,85,.18);
+    --grade-neutral: rgba(255,255,255,.05);
+
+    /* Grain (very subtle) */
+    --grain-a: rgba(255,255,255,.06);
+    --grain-b: rgba(0,0,0,.10);
+  }
+
+  /* Global unifier: haze + vignette + ultra-subtle grain */
+  body{
+    position: relative;
+  }
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(1200px 700px at 50% 8%, rgba(210,170,85,.14), transparent 60%),
+      radial-gradient(900px 520px at 18% 30%, rgba(124,92,255,.08), transparent 62%),
+      radial-gradient(900px 520px at 86% 70%, rgba(34,197,94,.06), transparent 62%),
+      linear-gradient(to bottom, rgba(0,0,0,.38), rgba(0,0,0,.55));
+    mix-blend-mode: multiply;
+    opacity: .85;
+  }
+  body::after{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(1200px 900px at 50% 20%, rgba(0,0,0,0), var(--grade-vignette)),
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,0) 0,
+        rgba(255,255,255,0) 10px,
+        rgba(255,255,255,.02) 10px,
+        rgba(255,255,255,.02) 11px
+      );
+    opacity: .20;
+    mix-blend-mode: overlay;
+  }
+
+  /*
+    Sections become part of one canvas:
+    - Keep their background images (no breaking existing hero slider logic)
+    - Add subtle per-section grade overlay (.img-grade) using --img-tint
+    - Add overlap blend at top/bottom using background: inherit + blur + mask
+  */
+  section.section-fade{
+    position: relative;
+    overflow: visible !important;
+    isolation: isolate;
+    z-index: 1;
+  }
+
+  /* Ensure section content sits above grade/overlaps */
+  section.section-fade > *{
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Per-section grade layer (tint + soft contrast) */
+  section.section-fade .img-grade{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background:
+      radial-gradient(900px 520px at 50% 10%, rgba(255,255,255,.05), rgba(255,255,255,0) 62%),
+      radial-gradient(900px 520px at 50% 88%, rgba(0,0,0,.22), rgba(0,0,0,0) 62%),
+      linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.52));
+    opacity: .70;
+  }
+  /* Tint that matches each image mood (set per section via --img-tint) */
+  section.section-fade .img-grade::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(900px 520px at 50% 35%, var(--img-tint, var(--grade-gold)), transparent 68%),
+      linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.22));
+    opacity: .85;
+    mix-blend-mode: soft-light;
+  }
+
+  /* Top overlap (pull previous image into current) */
+  section.section-fade::before{
+    content:"";
+    position:absolute;
+    left:-2%;
+    width:104%;
+    top: calc(-1 * var(--blend-h));
+    height: var(--blend-h);
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    filter: blur(var(--blend-blur));
+    transform: scale(1.05);
+    opacity: .60;
+    pointer-events:none;
+    z-index: 2;
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+            mask-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+    mix-blend-mode: soft-light;
+  }
+
+  /* Bottom overlap (push current image into next) */
+  section.section-fade::after{
+    content:"";
+    position:absolute;
+    left:-2%;
+    width:104%;
+    bottom: calc(-1 * var(--blend-h));
+    height: var(--blend-h);
+    background: inherit;
+    background-size: cover;
+    background-position: center;
+    filter: blur(var(--blend-blur));
+    transform: scale(1.05);
+    opacity: .60;
+    pointer-events:none;
+    z-index: 2;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+    mix-blend-mode: soft-light;
+  }
+
+  /* Mobile safety: reduce blend height + blur */
+  @media (max-width: 900px){
+    :root{ --blend-h: 70px; --blend-blur: 11px; }
+    section.section-fade::before, section.section-fade::after{ opacity:.52; }
+    section.section-fade .img-grade{ opacity:.62; }
+  }
+</style>
 </head>
 <body>
 <!-- Skip link for keyboard navigation -->
@@ -67,47 +210,43 @@
 <!-- The overlay displays a brief fly‑in animation of the Leen Elite logo on first visit.
          It is removed after playing once per browser session.  See styles.css and
          script.js for implementation details. -->
-<div id="intro-overlay" aria-label="Loading">
-  <div class="intro-shell">
-    <div class="intro-card">
-      <div class="intro-logo-wrap" aria-hidden="true">
-        <span class="intro-light-ring"></span>
-        <img id="intro-logo" src="../images/leenelite-loader-logo.png" alt="LEEN ELITE Logo" />
-      </div>
-
-      <div class="intro-headline">
+<div aria-label="Loading" id="intro-overlay">
+<div class="intro-shell">
+<div class="intro-card">
+<div aria-hidden="true" class="intro-logo-wrap">
+<span class="intro-light-ring"></span>
+<img alt="LEEN ELITE Logo" id="intro-logo" src="../images/leenelite-loader-logo.png"/>
+</div>
+<div class="intro-headline">
         Crafting an unforgettable event journey
-        <br />
-        <span class="intro-brand">LEEN&nbsp;ELITE</span>
-      </div>
-
-      <div class="intro-sub">
+        <br/>
+<span class="intro-brand">LEEN ELITE</span>
+</div>
+<div class="intro-sub">
         Please hold while we set the stage
       </div>
-
-      <div class="intro-progress-shell" aria-hidden="true">
-        <div class="intro-progress-track">
-          <div class="intro-progress-fill"></div>
-          <div class="intro-progress-glow"></div>
-        </div>
-        <div class="intro-phases">
-          <span class="intro-phase-indicator"></span>
-          <span class="intro-label">Concept &amp; Story</span>
-          <span class="intro-label">Experience Engineering</span>
-          <span class="intro-label">Live Execution</span>
-        </div>
-      </div>
-
-      <div class="intro-footer-line" aria-hidden="true">
+<div aria-hidden="true" class="intro-progress-shell">
+<div class="intro-progress-track">
+<div class="intro-progress-fill"></div>
+<div class="intro-progress-glow"></div>
+</div>
+<div class="intro-phases">
+<span class="intro-phase-indicator"></span>
+<span class="intro-label">Concept &amp; Story</span>
+<span class="intro-label">Experience Engineering</span>
+<span class="intro-label">Live Execution</span>
+</div>
+</div>
+<div aria-hidden="true" class="intro-footer-line">
         Loading your experience
         <span class="intro-dots">
-          <span class="intro-dot"></span>
-          <span class="intro-dot"></span>
-          <span class="intro-dot"></span>
-        </span>
-      </div>
-    </div>
-  </div>
+<span class="intro-dot"></span>
+<span class="intro-dot"></span>
+<span class="intro-dot"></span>
+</span>
+</div>
+</div>
+</div>
 </div>
 <!-- Top navigation bar -->
 <div class="top-nav">
@@ -115,8 +254,8 @@
 <img alt="Leen Elite logo" draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg"/>
         LEEN ELITE
       </div>
-<button class="nav-toggle" type="button" aria-label="Open menu" aria-controls="primary-nav" aria-expanded="false">
-  <span></span><span></span><span></span>
+<button aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu" class="nav-toggle" type="button">
+<span></span><span></span><span></span>
 </button>
 <nav id="primary-nav">
 <a class="active" href="#hero">Home</a>
@@ -124,15 +263,15 @@
 <a href="#have">Why Us</a>
 <a href="#projects">Our Projects</a>
 <div class="nav-submenu">
-  <a class="nav-submenu__trigger" href="#offer">What We Offer</a>
-  <div class="nav-submenu__panel" aria-label="Services">
-    <a href="events.html">Events &amp; Conferences</a>
-    <a href="exhibitions.html">Exhibitions</a>
-    <a href="upcoming-exhibitions.html">Our Upcoming Exhibitions</a>
-    <a href="giveaways.html">Gifts &amp; Trophies</a>
-  </div>
+<a class="nav-submenu__trigger" href="#offer">What We Offer</a>
+<div aria-label="Services" class="nav-submenu__panel">
+<a href="events.html">Events &amp; Conferences</a>
+<a href="exhibitions.html">Exhibitions</a>
+<a href="upcoming-exhibitions.html">Our Upcoming Exhibitions</a>
+<a href="giveaways.html">Gifts &amp; Trophies</a>
 </div>
-<a href="company-profile.html" target="_blank" rel="noopener">Company Profile</a>
+</div>
+<a href="company-profile.html" rel="noopener" target="_blank">Company Profile</a>
 <a href="#contact">Contact</a>
 </nav>
 <div class="social-icons">
@@ -175,7 +314,6 @@
 <rect height="7" rx="1.2" stroke="currentColor" stroke-width="1.7" width="7" x="3" y="14"></rect>
 <rect height="7" rx="1.2" stroke="currentColor" stroke-width="1.7" width="7" x="14" y="14"></rect>
 </svg>
-
 </a>
 <a aria-label="What We Offer" href="#offer"><svg fill="none" height="22" viewbox="0 0 24 24" width="22" xmlns="http://www.w3.org/2000/svg">
 <path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"></path>
@@ -191,19 +329,15 @@
 <!-- Main content container -->
 <main id="maincontent" tabindex="-1">
 <!-- Hero section -->
-<section class="animated-bg section-fade hero-ambition" data-slides='[{"image": "../images/ambition-building.webp", "title": "AN AMBITION THAT REACHES THE SKY...", "subtitle": "WITH A GLOBAL VISION.", "wings": true, "duration": 8000}, {"image": "../images/diamond.webp", "title": "INTEGRATED SUITE OF SERVICES", "subtitle": "From concept to final execution — experiences that exceed expectations."}, {"image": "../images/501.webp", "title": "INVALUABLE LEGACY OF EXPERIENCE", "subtitle": "A trusted partner since 2009 in major national projects.", "fit": "contain"}]' id="hero" style="background-image: url('../images/ambition-building.webp');">
+<section class="animated-bg section-fade hero-ambition" data-slides='[{"image": "../images/ambition-building.webp", "title": "AN AMBITION THAT REACHES THE SKY...", "subtitle": "WITH A GLOBAL VISION.", "wings": true, "duration": 30000}, {"image": "../images/diamond.webp", "title": "INTEGRATED SUITE OF SERVICES", "subtitle": "From concept to final execution — experiences that exceed expectations.", "duration": 12000}, {"image": "../images/501.webp", "title": "INVALUABLE LEGACY OF EXPERIENCE", "subtitle": "A trusted partner since 2009 in major national projects.", "fit": "contain", "duration": 12000}]' id="hero" style="background-image: url('../images/ambition-building.webp'); --img-tint: rgba(210,170,85,.22);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="hero-shapes"><span class="blob b1"></span><span class="blob b2"></span></div>
-<div class="hero-beam" aria-hidden="true"></div>
-<div class="hero-wings" aria-hidden="true">
-  <img class="hero-wing hero-wing--left" src="../images/wing-left.webp" alt="" />
-  <img class="hero-wing hero-wing--right" src="../images/wing-right.webp" alt="" />
+<div aria-hidden="true" class="hero-beam"></div>
+<div aria-hidden="true" class="hero-wings">
+<img alt="" class="hero-wing hero-wing--left" src="../images/wing-left.webp"/>
+<img alt="" class="hero-wing hero-wing--right" src="../images/wing-right.webp"/>
 </div>
-<button class="hero-slide-next" type="button" aria-label="Next slide" data-hero-next>
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</button>
+
 <div class="content">
 <h1 aria-live="polite" class="hero-heading">AN AMBITION THAT REACHES THE SKY...</h1>
 <p aria-live="polite" class="hero-subtitle">WITH A GLOBAL VISION.</p>
@@ -216,7 +350,7 @@
 </div>
 </section>
 <!-- About section -->
-<section class="section-fade" id="about" style="background-image: url('../images/background-streak.webp');">
+<section class="section-fade" id="about" style="background-image: url('../images/background-streak.webp'); --img-tint: rgba(210,170,85,.14);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="content">
 <h2>Who We Are</h2>
@@ -225,7 +359,7 @@
 </div>
 </section>
 <!-- Why us section -->
-<section class="section-fade" id="have" style="background-image: url('../images/map.webp');">
+<section class="section-fade" id="have" style="background-image: url('../images/map.webp'); --img-tint: rgba(34,197,94,.14);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="content">
 <h2>Why Us</h2>
@@ -248,65 +382,65 @@
 </div>
 </section>
 <!-- Projects section -->
-<section class="section-fade" id="projects" style="background-image: url('../images/104.webp');">
+<section class="section-fade" id="projects" style="background-image: url('../images/104.webp'); --img-tint: rgba(255,255,255,.08);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="content">
 <h2>Our Projects</h2>
 <p>This journey has culminated in the execution of mega-projects that we are proud of, solidifying our position as a trusted partner in major national projects.</p>
 <div class="card-grid">
 <div class="card project-card" data-active="A">
-<button class="project-media" type="button" aria-label="Toggle images for King Khalid International Airport">
-  <span class="project-img imgA" style="--img:url('../images/projects/King%20Khaled%20Airport/1.jpg');"></span>
-  <span class="project-img imgB" style="--img:url('../images/projects/King%20Khaled%20Airport/2.jpg');"></span>
-  <span class="project-overlay" aria-hidden="true"></span>
-  <span class="project-dots" aria-hidden="true"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
+<button aria-label="Toggle images for King Khalid International Airport" class="project-media" type="button">
+<span class="project-img imgA" style="--img:url('../images/projects/King%20Khaled%20Airport/1.jpg');"></span>
+<span class="project-img imgB" style="--img:url('../images/projects/King%20Khaled%20Airport/2.jpg');"></span>
+<span aria-hidden="true" class="project-overlay"></span>
+<span aria-hidden="true" class="project-dots"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
 </button>
 <div class="card-content">
-  <h4>King Khalid International Airport</h4>
-  <p>A landmark national project delivered with commitment to the highest standards of quality and safety.</p>
+<h4>King Khalid International Airport</h4>
+<p>A landmark national project delivered with commitment to the highest standards of quality and safety.</p>
 </div>
 </div>
 <div class="card project-card" data-active="A">
-<button class="project-media" type="button" aria-label="Toggle images for NEOM">
-  <span class="project-img imgA" style="--img:url('../images/projects/Neom/1.jpg');"></span>
-  <span class="project-img imgB" style="--img:url('../images/projects/Neom/2.jpg');"></span>
-  <span class="project-overlay" aria-hidden="true"></span>
-  <span class="project-dots" aria-hidden="true"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
+<button aria-label="Toggle images for NEOM" class="project-media" type="button">
+<span class="project-img imgA" style="--img:url('../images/projects/Neom/1.jpg');"></span>
+<span class="project-img imgB" style="--img:url('../images/projects/Neom/2.jpg');"></span>
+<span aria-hidden="true" class="project-overlay"></span>
+<span aria-hidden="true" class="project-dots"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
 </button>
 <div class="card-content">
-  <h4>NEOM</h4>
-  <p>A future-focused mega-project supported with professionalism and reliable execution.</p>
+<h4>NEOM</h4>
+<p>A future-focused mega-project supported with professionalism and reliable execution.</p>
 </div>
 </div>
 <div class="card project-card" data-active="A">
-<button class="project-media" type="button" aria-label="Toggle images for Misk Schools">
-  <span class="project-img imgA" style="--img:url('../images/projects/Misk%20Schools/1.jpg');"></span>
-  <span class="project-img imgB" style="--img:url('../images/projects/Misk%20Schools/2.jpg');"></span>
-  <span class="project-overlay" aria-hidden="true"></span>
-  <span class="project-dots" aria-hidden="true"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
+<button aria-label="Toggle images for Misk Schools" class="project-media" type="button">
+<span class="project-img imgA" style="--img:url('../images/projects/Misk%20Schools/1.jpg');"></span>
+<span class="project-img imgB" style="--img:url('../images/projects/Misk%20Schools/2.jpg');"></span>
+<span aria-hidden="true" class="project-overlay"></span>
+<span aria-hidden="true" class="project-dots"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
 </button>
 <div class="card-content">
-  <h4>Misk Schools</h4>
-  <p>A flagship education project delivered with precision.</p>
+<h4>Misk Schools</h4>
+<p>A flagship education project delivered with precision.</p>
 </div>
 </div>
 <div class="card project-card" data-active="A">
-<button class="project-media" type="button" aria-label="Toggle images for The Avenues Towers">
-  <span class="project-img imgA" style="--img:url('../images/projects/The%20Avenues%20Towers/1.jpg');"></span>
-  <span class="project-img imgB" style="--img:url('../images/projects/The%20Avenues%20Towers/2.jpg');"></span>
-  <span class="project-overlay" aria-hidden="true"></span>
-  <span class="project-dots" aria-hidden="true"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
+<button aria-label="Toggle images for The Avenues Towers" class="project-media" type="button">
+<span class="project-img imgA" style="--img:url('../images/projects/The%20Avenues%20Towers/1.jpg');"></span>
+<span class="project-img imgB" style="--img:url('../images/projects/The%20Avenues%20Towers/2.jpg');"></span>
+<span aria-hidden="true" class="project-overlay"></span>
+<span aria-hidden="true" class="project-dots"><span class="project-dot dotA"></span><span class="project-dot dotB"></span></span>
 </button>
 <div class="card-content">
-  <h4>The Avenues Towers</h4>
-  <p>A prominent large-scale development delivered with trusted capabilities and attention to detail.</p>
+<h4>The Avenues Towers</h4>
+<p>A prominent large-scale development delivered with trusted capabilities and attention to detail.</p>
 </div>
 </div>
 </div>
 </div>
 </section>
 <!-- Offer section -->
-<section class="section-fade" id="offer" style="background-image: url('../images/wave.webp');">
+<section class="section-fade" id="offer" style="background-image: url('../images/wave.webp'); --img-tint: rgba(124,92,255,.14);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="content">
 <h2>What We Offer</h2>
@@ -320,15 +454,14 @@
 </div>
 </section>
 <!-- Contact section -->
-<section class="section-fade" id="contact" style="background-image: url('../images/map.webp');">
+<section class="section-fade" id="contact" style="background-image: url('../images/map.webp'); --img-tint: rgba(34,197,94,.12);"><div aria-hidden="true" class="img-grade"></div>
 <div class="overlay"></div>
 <div class="content">
 <h2>Contact Us</h2>
 <p>For inquiries, email us at <a href="mailto:info@leenelite.com">info@leenelite.com</a>, or use the form below.</p>
 <form aria-labelledby="contactFormHeading" class="contact-form">
 <div class="visually-hidden" id="contactFormHeading">Contact Form</div>
-<input class="visually-hidden" autocomplete="off" name="website" tabindex="-1" type="text" value="" aria-hidden="true"/>
-
+<input aria-hidden="true" autocomplete="off" class="visually-hidden" name="website" tabindex="-1" type="text" value=""/>
 <label for="contact-name">Name <span class="req">*</span></label>
 <input id="contact-name" name="name" required="" type="text"/>
 <label for="contact-email">Email <span class="req">*</span></label>
@@ -346,20 +479,20 @@
 </div>
 <div class="clients-block">
 <h3>Our Priority Clients</h3>
-<div class="clients-marquee" data-clients-marquee data-total="25">
-  <div class="clients-marquee-viewport" aria-label="Priority clients logos" role="region" tabindex="0">
-    <div class="clients-marquee-row" data-dir="left">
-      <div class="clients-marquee-track" aria-hidden="true"><div class="client-tile"><img src="../images/clients/client-01.png" alt="Client logo 1" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-02.png" alt="Client logo 2" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-03.png" alt="Client logo 3" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-04.png" alt="Client logo 4" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-05.png" alt="Client logo 5" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-06.png" alt="Client logo 6" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-07.png" alt="Client logo 7" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-08.png" alt="Client logo 8" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-09.png" alt="Client logo 9" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-10.png" alt="Client logo 10" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-11.png" alt="Client logo 11" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-12.png" alt="Client logo 12" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-13.png" alt="Client logo 13" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-01.png" alt="Client logo 1" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-02.png" alt="Client logo 2" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-03.png" alt="Client logo 3" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-04.png" alt="Client logo 4" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-05.png" alt="Client logo 5" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-06.png" alt="Client logo 6" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-07.png" alt="Client logo 7" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-08.png" alt="Client logo 8" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-09.png" alt="Client logo 9" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-10.png" alt="Client logo 10" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-11.png" alt="Client logo 11" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-12.png" alt="Client logo 12" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-13.png" alt="Client logo 13" loading="lazy" decoding="async" draggable="false"></div></div>
-    </div>
-    <div class="clients-marquee-row" data-dir="right">
-      <div class="clients-marquee-track" aria-hidden="true"><div class="client-tile"><img src="../images/clients/client-14.png" alt="Client logo 14" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-15.png" alt="Client logo 15" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-16.png" alt="Client logo 16" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-17.png" alt="Client logo 17" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-18.png" alt="Client logo 18" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-19.png" alt="Client logo 19" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-20.png" alt="Client logo 20" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-21.png" alt="Client logo 21" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-22.png" alt="Client logo 22" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-23.png" alt="Client logo 23" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-24.png" alt="Client logo 24" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-25.png" alt="Client logo 25" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-14.png" alt="Client logo 14" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-15.png" alt="Client logo 15" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-16.png" alt="Client logo 16" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-17.png" alt="Client logo 17" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-18.png" alt="Client logo 18" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-19.png" alt="Client logo 19" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-20.png" alt="Client logo 20" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-21.png" alt="Client logo 21" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-22.png" alt="Client logo 22" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-23.png" alt="Client logo 23" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-24.png" alt="Client logo 24" loading="lazy" decoding="async" draggable="false"></div><div class="client-tile"><img src="../images/clients/client-25.png" alt="Client logo 25" loading="lazy" decoding="async" draggable="false"></div></div>
-    </div>
-  </div>
-  <noscript>
-    <div class="clients-noscript">
-      <img alt="Logos of Leen Elite priority clients" class="clients-image" decoding="async" loading="lazy" src="../images/priority-clients-en.webp"/>
-    </div>
-  </noscript>
+<div class="clients-marquee" data-clients-marquee="" data-total="25">
+<div aria-label="Priority clients logos" class="clients-marquee-viewport" role="region" tabindex="0">
+<div class="clients-marquee-row" data-dir="left">
+<div aria-hidden="true" class="clients-marquee-track"><div class="client-tile"><img alt="Client logo 1" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-01.png"/></div><div class="client-tile"><img alt="Client logo 2" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-02.png"/></div><div class="client-tile"><img alt="Client logo 3" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-03.png"/></div><div class="client-tile"><img alt="Client logo 4" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-04.png"/></div><div class="client-tile"><img alt="Client logo 5" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-05.png"/></div><div class="client-tile"><img alt="Client logo 6" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-06.png"/></div><div class="client-tile"><img alt="Client logo 7" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-07.png"/></div><div class="client-tile"><img alt="Client logo 8" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-08.png"/></div><div class="client-tile"><img alt="Client logo 9" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-09.png"/></div><div class="client-tile"><img alt="Client logo 10" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-10.png"/></div><div class="client-tile"><img alt="Client logo 11" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-11.png"/></div><div class="client-tile"><img alt="Client logo 12" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-12.png"/></div><div class="client-tile"><img alt="Client logo 13" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-13.png"/></div><div class="client-tile"><img alt="Client logo 1" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-01.png"/></div><div class="client-tile"><img alt="Client logo 2" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-02.png"/></div><div class="client-tile"><img alt="Client logo 3" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-03.png"/></div><div class="client-tile"><img alt="Client logo 4" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-04.png"/></div><div class="client-tile"><img alt="Client logo 5" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-05.png"/></div><div class="client-tile"><img alt="Client logo 6" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-06.png"/></div><div class="client-tile"><img alt="Client logo 7" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-07.png"/></div><div class="client-tile"><img alt="Client logo 8" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-08.png"/></div><div class="client-tile"><img alt="Client logo 9" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-09.png"/></div><div class="client-tile"><img alt="Client logo 10" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-10.png"/></div><div class="client-tile"><img alt="Client logo 11" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-11.png"/></div><div class="client-tile"><img alt="Client logo 12" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-12.png"/></div><div class="client-tile"><img alt="Client logo 13" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-13.png"/></div></div>
+</div>
+<div class="clients-marquee-row" data-dir="right">
+<div aria-hidden="true" class="clients-marquee-track"><div class="client-tile"><img alt="Client logo 14" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-14.png"/></div><div class="client-tile"><img alt="Client logo 15" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-15.png"/></div><div class="client-tile"><img alt="Client logo 16" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-16.png"/></div><div class="client-tile"><img alt="Client logo 17" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-17.png"/></div><div class="client-tile"><img alt="Client logo 18" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-18.png"/></div><div class="client-tile"><img alt="Client logo 19" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-19.png"/></div><div class="client-tile"><img alt="Client logo 20" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-20.png"/></div><div class="client-tile"><img alt="Client logo 21" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-21.png"/></div><div class="client-tile"><img alt="Client logo 22" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-22.png"/></div><div class="client-tile"><img alt="Client logo 23" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-23.png"/></div><div class="client-tile"><img alt="Client logo 24" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-24.png"/></div><div class="client-tile"><img alt="Client logo 25" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-25.png"/></div><div class="client-tile"><img alt="Client logo 14" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-14.png"/></div><div class="client-tile"><img alt="Client logo 15" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-15.png"/></div><div class="client-tile"><img alt="Client logo 16" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-16.png"/></div><div class="client-tile"><img alt="Client logo 17" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-17.png"/></div><div class="client-tile"><img alt="Client logo 18" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-18.png"/></div><div class="client-tile"><img alt="Client logo 19" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-19.png"/></div><div class="client-tile"><img alt="Client logo 20" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-20.png"/></div><div class="client-tile"><img alt="Client logo 21" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-21.png"/></div><div class="client-tile"><img alt="Client logo 22" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-22.png"/></div><div class="client-tile"><img alt="Client logo 23" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-23.png"/></div><div class="client-tile"><img alt="Client logo 24" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-24.png"/></div><div class="client-tile"><img alt="Client logo 25" decoding="async" draggable="false" loading="lazy" src="../images/clients/client-25.png"/></div></div>
+</div>
+</div>
+<noscript>
+<div class="clients-noscript">
+<img alt="Logos of Leen Elite priority clients" class="clients-image" decoding="async" loading="lazy" src="../images/priority-clients-en.webp">
+</img></div>
+</noscript>
 </div>
 </div>
 </div>
@@ -368,9 +501,9 @@
 <footer class="site-footer">
 <div class="footer-inner">
 <div class="brand">
-<img alt="LEEN ELITE" draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg"/>
+<img alt="LEEN ELITE" draggable="false" loading="lazy" src="../images/leenelite-logo-white-small.svg">
 <strong>LEEN ELITE</strong>
-</div>
+</img></div>
 <div class="links">
 <a href="#hero">Home</a>
 <a href="#about">About</a>
@@ -384,8 +517,8 @@
 <a aria-label="X" href="https://x.com/LeenElite" rel="noopener" target="_blank"><img alt="X (Twitter)" draggable="false" loading="lazy" src="../images/icons/x.svg"/></a>
 <a aria-label="Snapchat" href="https://www.snapchat.com/@leenelite" rel="noopener" target="_blank"><img alt="Snapchat" draggable="false" loading="lazy" src="../images/icons/snapchat.svg"/></a>
 <a aria-label="LinkedIn" href="https://www.linkedin.com/in/leen-elite-263290394/" rel="noopener" target="_blank">
-<img alt="LinkedIn" draggable="false" loading="lazy" src="../images/icons/linkedin.svg"/>
-</a>
+<img alt="LinkedIn" draggable="false" loading="lazy" src="../images/icons/linkedin.svg">
+</img></a>
 <a aria-label="TikTok" href="https://www.tiktok.com/@leen.elite" rel="noopener" target="_blank"><img alt="TikTok" draggable="false" loading="lazy" src="../images/icons/tiktok.svg"/></a>
 <a aria-label="Facebook" href="https://www.facebook.com/profile.php?id=61582702317436" rel="noopener" target="_blank"><img alt="Facebook" draggable="false" loading="lazy" src="../images/icons/facebook.svg"/></a>
 </div>

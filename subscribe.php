@@ -1,9 +1,11 @@
 <?php
-// Leen Elite – Exhibitor Toolkit lead capture endpoint (SiteGround / Apache)
+// Leen Elite – Newsletter / Updates subscription endpoint (SiteGround / Apache)
 // NOTE: PHP does not execute on Vercel static hosting.
 // This file is intended for the production Apache/cPanel environment.
 
 header('Content-Type: application/json; charset=UTF-8');
+
+require_once __DIR__ . '/lib/smtp_mailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   http_response_code(405);
@@ -38,25 +40,21 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
   exit;
 }
 
-// Build an absolute URL to the toolkit PDF (works on live domain)
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-$toolkitPath = '/downloads/LeenElite_Exhibitor_Toolkit_AR-EN.pdf';
-$toolkitUrl = ($host ? ($scheme . '://' . $host . $toolkitPath) : $toolkitPath);
-
 // Destination + sender (configurable)
 $to        = $cfg['to_email']   ?? 'info@leenelite.com';
 $fromEmail = $cfg['from_email'] ?? 'info@leenelite.com';
 $fromName  = $cfg['from_name']  ?? 'Leen Elite';
 
-// 1) Notify site owner (lead capture)
-$subject = 'Leen Elite – Exhibitor Toolkit Request';
-$message = "New toolkit request:\n\n" .
+$smtp = $cfg['smtp'] ?? [];
+$smtpEnabled = (bool)($smtp['enabled'] ?? false);
+
+// 1) Notify site owner (new subscription)
+$subject = 'Leen Elite – New Subscription';
+$message = "New newsletter subscription:\n\n" .
            "Email: {$email}\n" .
            "Language: {$lang}\n" .
            "Page: {$page}\n" .
            "Source: {$source}\n" .
-           "Toolkit: {$toolkitUrl}\n" .
            "Date (server): " . date('c') . "\n" .
            "IP: " . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n";
 
@@ -66,7 +64,22 @@ $headers[] = 'Content-type: text/plain; charset=UTF-8';
 $headers[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
 $headers[] = 'Reply-To: ' . $email;
 
-$sentAdmin = @mail($to, $subject, $message, implode("\r\n", $headers));
+$sentAdmin = false;
+
+if ($smtpEnabled) {
+  [$ok, $err, $dbg] = leenelite_send_smtp(
+    $smtp,
+    $fromEmail,
+    $fromName,
+    $to,
+    $subject,
+    $message,
+    ['Reply-To' => $email]
+  );
+  $sentAdmin = $ok;
+} else {
+  $sentAdmin = @mail($to, $subject, $message, implode("\r\n", $headers));
+}
 
 if (!$sentAdmin) {
   http_response_code(500);
@@ -74,22 +87,20 @@ if (!$sentAdmin) {
   exit;
 }
 
-// 2) Email the toolkit link to the visitor (best-effort)
+// 2) Confirmation email to the visitor (best-effort)
 $isArabic = (strpos(strtolower($lang), 'ar') === 0);
 
-$userSubject = $isArabic ? 'Leen Elite – دليل العارض للمعارض' : 'Leen Elite – Exhibitor Toolkit';
+$userSubject = $isArabic ? 'Leen Elite – تم تأكيد الاشتراك' : 'Leen Elite – Subscription confirmed';
 
 $userMessageAr = "مرحبًا،\n\n" .
-  "شكرًا لتسجيلك. يمكنك تحميل/فتح دليل العارض للمعارض من الرابط التالي:\n" .
-  "{$toolkitUrl}\n\n" .
-  "إذا لم تقم بطلب هذا الدليل، يمكنك تجاهل هذه الرسالة.\n\n" .
+  "شكرًا لاشتراكك. سيتم إرسال أهم تحديثات لين إيليت إلى بريدك الإلكتروني عند توفرها.\n\n" .
+  "يمكنك تجاهل هذه الرسالة إذا لم تقم بالاشتراك.\n\n" .
   "مع التحية،\n" .
   "Leen Elite\n";
 
 $userMessageEn = "Hello,\n\n" .
-  "Thank you for your request. You can open/download the Exhibitor Toolkit here:\n" .
-  "{$toolkitUrl}\n\n" .
-  "If you did not request this toolkit, you can ignore this message.\n\n" .
+  "Thanks for subscribing. We'll email you important Leen Elite updates when they're available.\n\n" .
+  "If you did not subscribe, you can ignore this message.\n\n" .
   "Regards,\n" .
   "Leen Elite\n";
 
@@ -100,7 +111,21 @@ $userHeaders[] = 'MIME-Version: 1.0';
 $userHeaders[] = 'Content-type: text/plain; charset=UTF-8';
 $userHeaders[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
 
-$sentUser = @mail($email, $userSubject, $userMessage, implode("\r\n", $userHeaders));
+$sentUser = false;
+if ($smtpEnabled) {
+  [$ok2, $err2, $dbg2] = leenelite_send_smtp(
+    $smtp,
+    $fromEmail,
+    $fromName,
+    $email,
+    $userSubject,
+    $userMessage,
+    ['Reply-To' => $to]
+  );
+  $sentUser = $ok2;
+} else {
+  $sentUser = @mail($email, $userSubject, $userMessage, implode("\r\n", $userHeaders));
+}
 
 // Optional: best-effort CSV log (may require writable permission)
 try {
@@ -108,7 +133,7 @@ try {
   if (!is_dir($dir)) {
     @mkdir($dir, 0755, true);
   }
-  $csv = $dir . '/toolkit_leads.csv';
+  $csv = $dir . '/newsletter_leads.csv';
   $line = [date('c'), $email, $lang, $page, $source];
   $fp = @fopen($csv, 'a');
   if ($fp) {

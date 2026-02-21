@@ -39,32 +39,6 @@
   }
 })();
 
-/* -----------------------------------------------------------------------------
-   Visual viewport height helper (mobile keyboard + address bar safe)
-   Sets CSS var: --vvh = 1% of the visual viewport height in px.
------------------------------------------------------------------------------ */
-(() => {
-  try {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    const root = document.documentElement;
-    const set = () => {
-      const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-      if (!h || !root) return;
-      root.style.setProperty('--vvh', `${h * 0.01}px`);
-    };
-    const onResize = () => window.requestAnimationFrame(set);
-    set();
-    window.addEventListener('resize', onResize, { passive: true });
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', onResize, { passive: true });
-      // Some browsers update height on scroll (address bar show/hide)
-      window.visualViewport.addEventListener('scroll', onResize, { passive: true });
-    }
-  } catch {
-    // ignore
-  }
-})();
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const prefersReducedMotion =
@@ -104,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // ignore
     }
 
+  };
+
   // Simple environment check (local file preview vs deployed)
   const isLocalPreview = () => {
     try {
@@ -134,8 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch {
     // ignore
   }
-
-  };
 
   // ---------------------------------------------------------------------------
   // 1) Header height sync (prevents fixed header overlap on all pages)
@@ -273,65 +247,105 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4) Optional hero slider (home only)
   // ---------------------------------------------------------------------------
   // ---------------------------------------------------------------------------
-  // 4) Hero slider (home): manual only + single left arrow + swipe
+  // 4) Hero slider (home): AUTO + smooth crossfade + swipe (no manual arrow)
   // ---------------------------------------------------------------------------
   const hero = document.querySelector('#hero');
   if (hero && hero.dataset && hero.dataset.slides) {
     try {
       const slides = JSON.parse(hero.dataset.slides);
-      if (Array.isArray(slides) && slides.length > 1) {
+      if (Array.isArray(slides) && slides.length > 0) {
         const headingEl = hero.querySelector('.hero-heading');
         const subtitleEl = hero.querySelector('.hero-subtitle');
-        const nextBtn = hero.querySelector('[data-hero-next]');
 
         const wingsIndexRaw = slides.findIndex((s) => s && s.wings);
         const wingsIndex = wingsIndexRaw >= 0 ? wingsIndexRaw : 0;
 
         let current = wingsIndex;
-        let interacted = false;
 
-        let startX = null;
-        let startY = null;
+        // Crossfade layers (keeps hero.style.backgroundImage in sync for section blending)
+        let layerA = hero.querySelector('.hero-bg-layer.layer-a');
+        let layerB = hero.querySelector('.hero-bg-layer.layer-b');
+        let activeLayer = null;
+
+        const ensureLayers = () => {
+          if (layerA && layerB) return;
+          layerA = document.createElement('div');
+          layerB = document.createElement('div');
+          layerA.className = 'hero-bg-layer layer-a is-active';
+          layerB.className = 'hero-bg-layer layer-b';
+          // Insert behind existing layers
+          hero.insertBefore(layerA, hero.firstChild);
+          hero.insertBefore(layerB, hero.firstChild);
+          activeLayer = layerA;
+        };
+
+        const clampMs = (ms, min = 4000, max = 60000) => {
+          const n = Number(ms);
+          if (!Number.isFinite(n)) return null;
+          return Math.max(min, Math.min(max, n));
+        };
+
+        const getSlideDuration = () => {
+          const s = slides[current] || {};
+          const d = clampMs(s.duration, 4000, 60000);
+          // Default: 12s (as requested)
+          return d != null ? d : 12000;
+        };
 
         const applySlide = () => {
           const slide = slides[current] || {};
           if (slide.image) {
             const imgUrl = `url('${slide.image}')`;
+
+            // Keep background image on the section itself (used by seamless section blending)
             hero.style.backgroundImage = imgUrl;
-            // Expose the current slide image to CSS (for contain + blurred backdrop)
+
+            // Expose to CSS (blurred backdrop helper)
             hero.style.setProperty('--hero-bg-image', imgUrl);
+
+            // Crossfade visual layer
+            ensureLayers();
+            const nextLayer = activeLayer === layerA ? layerB : layerA;
+            if (nextLayer) {
+              nextLayer.style.backgroundImage = imgUrl;
+              nextLayer.classList.add('is-active');
+              if (activeLayer && activeLayer !== nextLayer) activeLayer.classList.remove('is-active');
+              activeLayer = nextLayer;
+            }
           }
+
           hero.classList.toggle('hero-fit-contain', slide.fit === 'contain');
           hero.classList.toggle('hero-ambition', !!slide.wings);
+
           if (headingEl) headingEl.textContent = slide.title || '';
           if (subtitleEl) subtitleEl.textContent = slide.subtitle || '';
         };
 
+        let timer = null;
+        const scheduleNext = () => {
+          if (prefersReducedMotion) return;
+          if (timer) window.clearTimeout(timer);
+          timer = window.setTimeout(() => {
+            current = (current + 1) % slides.length;
+            applySlide();
+            scheduleNext();
+          }, getSlideDuration());
+        };
+
         const goNext = () => {
-          interacted = true;
-          if (nextBtn) nextBtn.classList.remove('is-attn');
+          if (!slides.length) return;
           current = (current + 1) % slides.length;
           applySlide();
+          scheduleNext();
         };
 
         applySlide();
-
-        // Attention pulse after ~8s on the wings slide (if user didn't interact).
-        window.setTimeout(() => {
-          if (!nextBtn) return;
-          if (interacted) return;
-          if (current !== wingsIndex) return;
-          nextBtn.classList.add('is-attn');
-        }, 8000);
-
-        if (nextBtn) {
-          nextBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            goNext();
-          });
-        }
+        scheduleNext();
 
         // Swipe support (mobile/tablet)
+        let startX = null;
+        let startY = null;
+
         hero.addEventListener('pointerdown', (e) => {
           // Ignore swipe if user starts on a link/button inside hero.
           const interactive = e.target && e.target.closest('a, button');
@@ -363,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Fail silently in production.
     }
   }
+
 
 
   // ---------------------------------------------------------------------------
@@ -569,14 +584,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     })();
 
-    const isHome = /\/(en|ar)(\/index\.html)?\/?$/.test(pathname);
+    const isHome = /(\/)(en|ar)(\/index\.html)?\/?$/.test(pathname);
     if (!isHome) return;
+
+    // Avoid showing too often
+    const SEEN_KEY = 'leenelite_newsletter_seen_v1';
+    try {
+      if (localStorage.getItem(SEEN_KEY)) return;
+    } catch {}
 
     const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
     const dir = (document.documentElement.getAttribute('dir') || '').toLowerCase();
     const isArabic = lang.startsWith('ar') || dir === 'rtl';
 
-    const isMobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 680px)').matches;
+    const isMobile =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(max-width: 680px)').matches;
 
     const isVercelDemo =
       typeof window.location === 'object' &&
@@ -584,44 +607,33 @@ document.addEventListener('DOMContentLoaded', () => {
         String(window.location.hostname || '') === 'localhost' ||
         String(window.location.hostname || '') === '127.0.0.1');
 
-    const pdfHref = '../downloads/LeenElite_Exhibitor_Toolkit_AR-EN.pdf';
-
-    // Premium two-step UX:
-    // Step 1: a single CTA
-    // Step 2: email capture + unlock
     const copy = isArabic
       ? {
-          badge: 'TOOLKIT',
-          title: 'دليل العارض للمعارض',
-          kicker: 'PDF مجاني • قائمة تجهيز + جدول زمني',
-          subtitle: 'ملف عملي مختصر: قائمة تجهيز + جدول زمني + أهم الأخطاء لتفاديها قبل وأثناء المعرض.',
-          start: 'استلم الدليل',
-          startMicro: 'ستدخل بريدك الإلكتروني في الخطوة التالية.',
+          title: 'اشترك ليصلك كل جديد',
+          kicker: 'تحديثات • فعاليات • معارض • عروض خاصة',
+          subcopy:
+            'سجل بريدك الإلكتروني لتصلك أهم الأخبار والتحديثات الخاصة بخدماتنا — بدون رسائل مزعجة.',
+          start: 'اشترك الآن',
           placeholder: 'اكتب بريدك الإلكتروني',
-          unlock: 'فتح الدليل',
-          micro: 'سيتم فتح الدليل بعد إدخال بريد صحيح.',
-          success: 'تم التسجيل بنجاح ✅',
-          openNow: 'افتح الدليل',
-          noteProd: 'وسيصل رابط الدليل أيضًا إلى بريدك الإلكتروني.',
-          noteDemo: 'ملاحظة: إرسال الرابط إلى البريد متاح في النسخة الرسمية على الاستضافة.',
+          submit: 'تأكيد الاشتراك',
+          success: 'تم الاشتراك بنجاح ✅',
+          noteProd: 'سيصلك إشعار بأهم التحديثات فور صدورها.',
+          noteDemo: 'ملاحظة: إرسال البريد مفعل على نسخة الاستضافة الرسمية.',
           invalid: 'يرجى إدخال بريد إلكتروني صحيح.',
           failed: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
           closeLabel: 'إغلاق'
         }
       : {
-          badge: 'TOOLKIT',
-          title: 'Exhibitor Toolkit',
-          kicker: 'Free PDF • Checklist + Timeline',
-          subtitle: 'A practical guide: checklist, timeline, and key mistakes to avoid at exhibitions.',
-          start: 'Get the Toolkit',
-          startMicro: 'You’ll enter your email in the next step.',
+          title: 'Stay in the loop',
+          kicker: 'Updates • Events • Exhibitions • Offers',
+          subcopy:
+            'Subscribe with your email to receive important news and updates about our services—no spam.',
+          start: 'Subscribe',
           placeholder: 'Email address',
-          unlock: 'Unlock',
-          micro: 'The toolkit unlocks after a valid email.',
-          success: "You’re all set ✅",
-          openNow: 'Open the PDF',
-          noteProd: "We’ve also emailed you the toolkit link.",
-          noteDemo: 'Note: Email delivery is enabled on the live SiteGround version.',
+          submit: 'Confirm subscription',
+          success: 'Subscribed successfully ✅',
+          noteProd: 'You’ll receive important updates as they happen.',
+          noteDemo: 'Note: Email delivery is enabled on the live hosting version.',
           invalid: 'Please enter a valid email address.',
           failed: 'Something went wrong. Please try again.',
           closeLabel: 'Close'
@@ -633,57 +645,44 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.className = `nl-modal${isMobile ? ' is-mobile' : ''}`;
     modal.setAttribute('aria-hidden', 'true');
 
-    // Build a wide two-column card with a cover image and main content. The image
-    // should be reversed for RTL languages so that it appears on the right in Arabic.
-    // Cache-bust to avoid clients seeing an old cached cover after updates.
-    const imgSrc = isArabic ? '../images/toolkit-cover-ar.png?v=4' : '../images/toolkit-cover-en.png?v=4';
-    const visualHtml = `
-      <div class="nl-visual">
-        <div class="nl-coverWrap">
-          <img class="nl-cover" src="${imgSrc}" alt="${copy.title}">
-        </div>
-      </div>
-    `;
-    // Main content for the popup: title, step 1 CTA, email form, and status.
     const mainHtml = `
       <div class="nl-main">
         <h3 class="nl-title" id="nlTitle">${copy.title}</h3>
         <p class="nl-kicker">${copy.kicker}</p>
+        <p class="nl-subcopy">${copy.subcopy}</p>
+
         <div class="nl-step nl-step-1 is-active">
           <button class="nl-submit nl-start" type="button" data-nl-start>${copy.start}</button>
         </div>
+
         <div class="nl-step nl-step-2" hidden>
           <form class="nl-form" novalidate>
             <div class="nl-row is-stacked">
               <label class="nl-field">
                 <span class="nl-sr">${copy.placeholder}</span>
-                <input class="nl-input" type="email" name="email" placeholder="${copy.placeholder}" autocomplete="email" inputmode="email" required>
+                <input class="nl-input" type="email" name="email" placeholder="${copy.placeholder}"
+                  autocomplete="email" inputmode="email" required>
               </label>
-              <button class="nl-submit" type="submit" disabled>${copy.unlock}</button>
+              <button class="nl-submit" type="submit" disabled>${copy.submit}</button>
             </div>
           </form>
         </div>
+
         <p class="nl-error" role="alert" hidden></p>
         <p class="nl-success" role="status" aria-live="polite" hidden></p>
         <p class="nl-note" hidden></p>
-        <a class="nl-download" href="${pdfHref}" target="_blank" rel="noopener" hidden>${copy.openNow}</a>
-      </div>
-    `;
-    // Keep HTML order stable; we swap columns in CSS for RTL to guarantee
-    // the image always appears on the correct side.
-    const gridInner = `${visualHtml}${mainHtml}`;
-    modal.innerHTML = `
-      <div class="nl-backdrop" data-nl-close></div>
-      <div class="nl-card is-wide" role="dialog" aria-modal="true" aria-labelledby="nlTitle">
-        <div class="nl-grabber" aria-hidden="true"></div>
-        <button class="nl-close" type="button" aria-label="${copy.closeLabel}" data-nl-close>×</button>
-        <div class="nl-grid">
-          ${gridInner}
-        </div>
       </div>
     `;
 
-    document.body.appendChild(modal);
+    modal.innerHTML = `
+      <div class="nl-backdrop" data-nl-close></div>
+      <div class="nl-card" role="dialog" aria-modal="true" aria-labelledby="nlTitle">
+        <button class="nl-close" type="button" aria-label="${copy.closeLabel}" data-nl-close>×</button>
+        ${mainHtml}
+      </div>
+    `;
+
+document.body.appendChild(modal);
 
     const card = modal.querySelector('.nl-card');
     const step1 = modal.querySelector('.nl-step-1');
@@ -695,7 +694,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorEl = modal.querySelector('.nl-error');
     const successEl = modal.querySelector('.nl-success');
     const noteEl = modal.querySelector('.nl-note');
-    const downloadEl = modal.querySelector('.nl-download');
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -732,7 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
         noteEl.textContent = '';
         noteEl.hidden = true;
       }
-      if (downloadEl) downloadEl.hidden = true;
     };
 
     const isValidEmail = () => {
@@ -778,59 +775,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const open = () => {
       if (modal.classList.contains('is-open')) return;
+      resetSteps();
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
-
-      // Lock scroll on desktop modal only.
-      if (!isMobile) document.body.classList.add('nl-lock');
-
-      // Reset to step 1 each time it opens
-      resetSteps();
-
-      window.setTimeout(() => {
-        try {
-          if (startBtn && startBtn.focus) startBtn.focus();
-        } catch {
-          // ignore
-        }
-      }, 50);
+      document.body.classList.add('nl-lock');
     };
 
     const close = () => {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('nl-lock');
-      // Keep state clean if reopened
-      resetSteps();
+      try {
+        localStorage.setItem(SEEN_KEY, '1');
+      } catch {}
     };
 
-    modal.querySelectorAll('[data-nl-close]').forEach((btn) => {
-      btn.addEventListener('click', close);
-    });
-
+    modal.querySelectorAll('[data-nl-close]').forEach((btn) => btn.addEventListener('click', close));
     window.addEventListener('keydown', (e) => {
       if (!modal.classList.contains('is-open')) return;
       if (e.key === 'Escape') close();
     });
 
-    // Show logic: open after 5 seconds (home only)
-    let opened = false;
-    const openOnce = () => {
-      if (opened) return;
-      opened = true;
-      open();
-    };
-
-    window.setTimeout(openOnce, 5000);
+    if (card) card.addEventListener('click', (e) => e.stopPropagation());
 
     if (startBtn) startBtn.addEventListener('click', goToStep2);
 
-    if (input) {
-      input.addEventListener('input', () => {
-        clearError();
-        updateCtaState();
-      });
-    }
+    if (input) input.addEventListener('input', () => {
+      clearError();
+      updateCtaState();
+    });
 
     if (form) {
       form.addEventListener('submit', async (e) => {
@@ -838,8 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearError();
         clearSuccess();
 
-        const email = (input && input.value ? input.value.trim() : '').toLowerCase();
-
+        const email = (input && input.value ? String(input.value).trim().toLowerCase() : '');
         if (!emailRegex.test(email)) {
           showError(copy.invalid);
           updateCtaState();
@@ -861,37 +833,34 @@ document.addEventListener('DOMContentLoaded', () => {
               email,
               lang: isArabic ? 'ar' : 'en',
               page: String(window.location.pathname || ''),
-              source: 'exhibitor_toolkit'
+              source: 'newsletter_popup'
             })
           });
 
           if (!res.ok) throw new Error('request_failed');
 
-          // Success UI
-          if (form) form.style.display = 'none';
           showSuccess(copy.success);
           showNote(deliveryNote);
-          if (downloadEl) downloadEl.hidden = false;
 
-          trackConversion('exhibitor_toolkit', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
+          // Auto close after a short moment
+          window.setTimeout(close, 1800);
+
+          if (typeof trackConversion === 'function') {
+            trackConversion('newsletter_updates', { lang: isArabic ? 'ar' : 'en', page: String(window.location.pathname || ''), email });
+          }
         } catch {
           showError(copy.failed);
-          if (form) form.style.display = '';
+          if (submitBtn) submitBtn.disabled = false;
         } finally {
-          if (submitBtn) {
-            submitBtn.classList.remove('is-loading');
-            // keep disabled until email valid
-            submitBtn.disabled = !emailRegex.test(email);
-          }
+          if (submitBtn) submitBtn.classList.remove('is-loading');
+          updateCtaState();
         }
       });
     }
 
-    // If user clicks the card itself (not inputs/buttons), don't close.
-    if (card) {
-      card.addEventListener('click', (e) => e.stopPropagation());
-    }
-  };
+    // Show after a short delay (home only)
+    window.setTimeout(open, 5000);
+  };;
 
   initNewsletterPopup();
 

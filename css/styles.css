@@ -1162,11 +1162,12 @@ body.rtl .contact-info {
 .clients-marquee-row[data-dir="right"] .clients-marquee-track { animation: clientsMarqueeRight 96s linear infinite; }
 
 /* Pause on hover/focus for readability */
-.clients-marquee:hover .clients-marquee-track,
-.clients-marquee:focus-within .clients-marquee-track {
-  animation-play-state: paused;
+@media (hover: hover) and (pointer: fine){
+  .clients-marquee:hover .clients-marquee-track,
+  .clients-marquee:focus-within .clients-marquee-track{
+    animation-play-state: paused;
+  }
 }
-
 /* Subtle edge shine + fade (premium look) */
 .clients-marquee-viewport::before,
 .clients-marquee-viewport::after {
@@ -1454,6 +1455,94 @@ body.rtl .left-col {
   /* add bottom margin for separation between paragraphs */
   margin: 0 0 16px;
 }
+
+
+/* -----------------------------------------------------------------------------
+   Privacy Policy page – side visual (EN/AR)
+   - Left column always matches the full content height (no empty space)
+   - Responsive artwork per breakpoint (desktop/tablet/mobile)
+----------------------------------------------------------------------------- */
+body.privacy-page main{
+  background: var(--colour-black-2);
+}
+
+/* Make the left column stretch to the full height of the right column */
+body.privacy-page .page-container{
+  align-items: stretch;
+}
+
+/* Desktop / laptop (default): tall artwork so it still looks good on long pages */
+body.privacy-page .left-col{
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  justify-content: center;
+
+  /* allow the column to stretch with the page (no sticky height cap) */
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: 100%;
+  align-self: stretch;
+
+  background-color: #000;
+  background-image: url("../images/privacy-policy-bg.jpg");
+  background-image: image-set(
+    url("../images/privacy-policy-bg.webp") type("image/webp"),
+    url("../images/privacy-policy-bg.jpg") type("image/jpeg")
+  );
+
+  /* Fill the column completely (no letterboxing). Some cropping is expected. */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+body.privacy-page .left-col::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 70% 40%, rgba(211, 180, 78, 0.14) 0%, transparent 58%),
+    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.75) 100%);
+}
+
+body.privacy-page .left-col > *{
+  position: relative;
+  z-index: 1;
+}
+
+body.privacy-page .right-col{
+  background: rgba(0,0,0,0.86);
+  backdrop-filter: blur(10px);
+}
+
+/* Large tablets / smaller laptops: use a more balanced artwork ratio */
+@media (min-width: 901px) and (max-width: 1200px){
+  body.privacy-page .left-col{
+    background-image: url("../images/privacy-policy-bg-tablet.jpg");
+    background-image: image-set(
+      url("../images/privacy-policy-bg-tablet.webp") type("image/webp"),
+      url("../images/privacy-policy-bg-tablet.jpg") type("image/jpeg")
+    );
+  }
+}
+
+/* Phones + tablets (stacked layout): keep a premium banner height and use banner artwork */
+@media (max-width: 900px){
+  body.privacy-page .left-col{
+    height: clamp(260px, 42svh, 440px);
+    min-height: 0;
+    background-image: url("../images/privacy-policy-bg-mobile.jpg");
+    background-image: image-set(
+      url("../images/privacy-policy-bg-mobile.webp") type("image/webp"),
+      url("../images/privacy-policy-bg-mobile.jpg") type("image/jpeg")
+    );
+  }
+}
+
 
 /* ---------------------------------------------------------------------------
    Service detail pages (Events / Exhibitions / Upcoming Exhibitions / Gifts)
@@ -3559,15 +3648,24 @@ body.pf-body .pf-counter{
   position: relative;
   z-index: 1;
   font-family: inherit;
-  width: min(520px, calc(100vw - 32px));
+  width: min(440px, calc(100vw - 32px));
   border-radius: 22px;
   border: 1px solid transparent;
   background:
     linear-gradient(rgba(0,0,0,0.88), rgba(0,0,0,0.88)) padding-box,
     linear-gradient(90deg, rgba(211,180,78,0.22), rgba(234,189,99,0.72), rgba(211,180,78,0.22)) border-box;
   box-shadow: 0 28px 85px rgba(0,0,0,0.66);
-  padding: 26px 26px 22px;
+  padding: 22px 22px 18px;
   backdrop-filter: blur(14px);
+}
+
+.nl-main{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
 }
 
 /* Premium two-step flow */
@@ -3673,7 +3771,7 @@ body.rtl .nl-input{
   color: var(--colour-gold);
   font-weight: 900;
   letter-spacing: 0.25px;
-  font-size: clamp(22px, 2.6vw, 34px);
+  font-size: clamp(20px, 2.4vw, 30px);
 }
 
 .nl-kicker{
@@ -3940,23 +4038,31 @@ body.nl-lock{
     width: 100%;
   }
 
-  /* Bottom-sheet behavior on mobile */
+  /* Mobile behavior: centered premium modal (prevents clipping on small screens) */
   .nl-modal.is-mobile{
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 12px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
   }
   .nl-modal.is-mobile .nl-grabber{
-    display: block;
+    display: none;
   }
   .nl-modal.is-mobile .nl-card{
-    width: 100%;
-    border-radius: 22px 22px 0 0;
-    padding: 22px 16px 18px;
+    width: min(720px, calc(100vw - 24px));
+    border-radius: 20px;
+    /* Dynamic height: uses visual viewport to stay fully visible with address bar + keyboard */
+    max-height: calc(var(--vvh, 1vh) * 100 - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Extra bottom padding so CTAs never sit under iPhone home indicator */
+    padding: 22px 16px calc(18px + env(safe-area-inset-bottom));
   }
   .nl-modal.is-mobile .nl-backdrop{
     background: rgba(0,0,0,0.62);
   }
+
 }
 
 
@@ -4733,7 +4839,7 @@ body.rtl .nl-card.is-wide .nl-grid{
   .nl-card.is-wide{
     width: calc(100vw - 22px);
     /* Use dynamic viewport height to avoid clipping behind mobile browser UI */
-    max-height: calc(100dvh - 12px);
+    max-height: calc(var(--vvh, 1vh) * 100 - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   }
   .nl-card.is-wide .nl-grid{
     grid-template-columns: 1fr;
@@ -4758,4 +4864,52 @@ body.rtl .nl-card.is-wide .nl-grid{
 @media (max-width: 680px) and (max-height: 620px){
   .nl-card.is-wide .nl-coverWrap{ height: 150px; }
   .nl-card.is-wide .nl-main{ padding: 12px 14px; }
+}
+
+
+/* ==========================================================
+   HOME_HERO_ABOUT_SEAM_OVERRIDE
+   Strengthen only the first transition (HERO -> ABOUT)
+   while keeping the existing unified-canvas blending for all image sections.
+   ========================================================== */
+#hero.section-fade::after{ opacity: .72; }
+#about.section-fade::before{ opacity: .72; }
+@media (max-width: 900px){
+  #hero.section-fade::after, #about.section-fade::before{ opacity: .62; }
+}
+
+
+/* ==========================================================
+   HERO_CROSSFADE_LAYERS
+   Smooth auto slider transitions without affecting section blend.
+   ========================================================== */
+#hero{ position: relative; }
+#hero .hero-bg-layer{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 900ms ease;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+#hero .hero-bg-layer.is-active{ opacity: 1; }
+
+/* Respect "contain" slide request */
+#hero.hero-fit-contain .hero-bg-layer{
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Extra line for the wide newsletter popup (not hidden like .nl-subtitle) */
+.nl-subcopy{
+  margin: -8px 0 18px;
+  text-align: center;
+  color: rgba(255,255,255,0.82);
+  font-weight: 700;
+  line-height: 1.65;
+  font-size: 0.98rem;
 }

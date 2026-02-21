@@ -2,6 +2,8 @@
 // Leen Elite – Reserve/Booking request endpoint (SiteGround / Apache)
 header('Content-Type: application/json; charset=UTF-8');
 
+require_once __DIR__ . '/lib/smtp_mailer.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   http_response_code(405);
   echo json_encode(['ok' => false, 'error' => 'method_not_allowed']);
@@ -149,6 +151,9 @@ $to        = $cfg['to_email']   ?? 'info@leenelite.com';
 $fromEmail = $cfg['from_email'] ?? 'info@leenelite.com';
 $fromName  = $cfg['from_name']  ?? 'Leen Elite';
 
+$smtp = $cfg['smtp'] ?? [];
+$smtpEnabled = (bool)($smtp['enabled'] ?? false);
+
 $subject = 'Leen Elite – New Space Booking Request';
 
 $body = "New space booking request:\n\n"
@@ -182,12 +187,85 @@ $headers[] = 'Content-type: text/plain; charset=UTF-8';
 $headers[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
 $headers[] = 'Reply-To: ' . $email;
 
-$sent = @mail($to, $subject, $body, implode("\r\n", $headers));
+// --- Send admin notification ----------------------------------------------
+$sentAdmin = false;
+if ($smtpEnabled) {
+  [$ok, $err, $dbg] = leenelite_send_smtp(
+    $smtp,
+    $fromEmail,
+    $fromName,
+    $to,
+    $subject,
+    $body,
+    ['Reply-To' => $email]
+  );
+  $sentAdmin = $ok;
+} else {
+  $sentAdmin = @mail($to, $subject, $body, implode("\r\n", $headers));
+}
 
-if (!$sent) {
+if (!$sentAdmin) {
   http_response_code(500);
   echo json_encode(['ok' => false, 'error' => 'send_failed']);
   exit;
 }
 
-echo json_encode(['ok' => true]);
+// --- Confirmation email to visitor (best-effort) --------------------------
+$isArabic = (strpos(strtolower($lang), 'ar') === 0) || (strpos($page, '/ar/') !== false);
+
+$userSubject = $isArabic
+  ? 'Leen Elite – تم استلام طلب الحجز'
+  : 'Leen Elite – We received your booking request';
+
+$summaryAr = "الاسم: {$full_name}\n" .
+  "الشركة: {$company}\n" .
+  "المدينة: {$city}\n" .
+  "المساحة: {$size} م²\n" .
+  "نوع المشاركة: {$type}\n" .
+  "تصنيف المساحة: {$category}\n";
+
+$summaryEn = "Name: {$full_name}\n" .
+  "Company: {$company}\n" .
+  "City: {$city}\n" .
+  "Space size: {$size} m²\n" .
+  "Participation type: {$type}\n" .
+  "Space category: {$category}\n";
+
+$userMessageAr = "مرحبًا {$full_name}،\n\n" .
+  "شكرًا لتقديم طلب حجز المساحة لدى لين إيليت. تم استلام طلبك وسيتواصل معك فريقنا قريبًا.\n\n" .
+  "ملخص الطلب:\n{$summaryAr}\n" .
+  ( $notes ? ("ملاحظات: {$notes}\n\n") : "\n" ) .
+  "مع التحية،\nLeen Elite\n";
+
+$userMessageEn = "Hello {$full_name},\n\n" .
+  "Thanks for your space booking request with Leen Elite. We received your request and our team will contact you shortly.\n\n" .
+  "Request summary:\n{$summaryEn}\n" .
+  ( $notes ? ("Notes: {$notes}\n\n") : "\n" ) .
+  "Regards,\nLeen Elite\n";
+
+$userBody = $isArabic
+  ? ($userMessageAr . "\n\n---\n\n" . $userMessageEn)
+  : ($userMessageEn . "\n\n---\n\n" . $userMessageAr);
+
+$sentUser = false;
+if ($smtpEnabled) {
+  [$ok2, $err2, $dbg2] = leenelite_send_smtp(
+    $smtp,
+    $fromEmail,
+    $fromName,
+    $email,
+    $userSubject,
+    $userBody,
+    ['Reply-To' => $to]
+  );
+  $sentUser = $ok2;
+} else {
+  $userHeaders = [];
+  $userHeaders[] = 'MIME-Version: 1.0';
+  $userHeaders[] = 'Content-type: text/plain; charset=UTF-8';
+  $userHeaders[] = 'From: ' . $fromName . ' <' . $fromEmail . '>';
+  $userHeaders[] = 'Reply-To: ' . $to;
+  $sentUser = @mail($email, $userSubject, $userBody, implode("\r\n", $userHeaders));
+}
+
+echo json_encode(['ok' => true, 'user_mail_sent' => (bool)$sentUser]);
